@@ -10,6 +10,7 @@ import {
   Users,
   MessageSquare,
   Mail,
+  CalendarDays,
   FileUp,
   UserCog,
   LogOut,
@@ -20,6 +21,7 @@ const navItems = [
   { href: "/comptes", label: "Comptes", icon: Building2 },
   { href: "/contacts", label: "Contacts", icon: Users },
   { href: "/interactions", label: "Interactions", icon: MessageSquare },
+  { href: "/evenements", label: "Événements", icon: CalendarDays },
   { href: "/campagnes", label: "Campagnes email", icon: Mail },
 ];
 

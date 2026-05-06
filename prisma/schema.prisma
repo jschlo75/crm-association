@@ -31,6 +31,14 @@ enum StatutCampagne {
   ENVOYEE
 }
 
+enum StatutParticipant {
+  CIBLE
+  INVITE
+  A_ACCEPTE
+  A_PARTICIPE
+  A_REFUSE
+}
+
 model User {
   id           String        @id @default(cuid())
   nom          String
@@ -62,22 +70,23 @@ model Compte {
 }
 
 model Contact {
-  id           String        @id @default(cuid())
-  prenom       String
-  nom          String
-  poste        String?
-  email        String?
-  telephone    String?
-  adresse      String?
-  codePostal   String?
-  ville        String?
-  pays         String        @default("France")
-  notes        String?
-  compteId     String?
-  compte       Compte?       @relation(fields: [compteId], references: [id], onDelete: SetNull)
-  createdAt    DateTime      @default(now())
-  updatedAt    DateTime      @updatedAt
-  interactions Interaction[]
+  id                    String                 @id @default(cuid())
+  prenom                String
+  nom                   String
+  poste                 String?
+  email                 String?
+  telephone             String?
+  adresse               String?
+  codePostal            String?
+  ville                 String?
+  pays                  String                 @default("France")
+  notes                 String?
+  compteId              String?
+  compte                Compte?                @relation(fields: [compteId], references: [id], onDelete: SetNull)
+  createdAt             DateTime               @default(now())
+  updatedAt             DateTime               @updatedAt
+  interactions          Interaction[]
+  evenementParticipants EvenementParticipant[]
 }
 
 model Interaction {
@@ -110,6 +119,30 @@ model Campagne {
   destinataires   CampagneDestinataire[]
   createdAt       DateTime       @default(now())
   updatedAt       DateTime       @updatedAt
+}
+
+model Evenement {
+  id           String                 @id @default(cuid())
+  titre        String
+  date         DateTime
+  lieu         String?
+  objectifs    String?
+  createdAt    DateTime               @default(now())
+  updatedAt    DateTime               @updatedAt
+  participants EvenementParticipant[]
+}
+
+model EvenementParticipant {
+  id          String            @id @default(cuid())
+  evenementId String
+  evenement   Evenement         @relation(fields: [evenementId], references: [id], onDelete: Cascade)
+  contactId   String
+  contact     Contact           @relation(fields: [contactId], references: [id], onDelete: Cascade)
+  statut      StatutParticipant @default(CIBLE)
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+
+  @@unique([evenementId, contactId])
 }
 
 model CampagneDestinataire {
