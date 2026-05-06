@@ -81,6 +81,8 @@ model Contact {
   ville                 String?
   pays                  String                 @default("France")
   notes                 String?
+  isMembre              Boolean                @default(false)
+  dateAdhesion          DateTime?
   compteId              String?
   compte                Compte?                @relation(fields: [compteId], references: [id], onDelete: SetNull)
   createdAt             DateTime               @default(now())

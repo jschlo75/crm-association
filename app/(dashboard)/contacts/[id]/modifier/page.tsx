@@ -3,6 +3,7 @@ import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { redirect, notFound } from "next/navigation";
 import { ContactForm } from "@/components/ui/contact-form";
+import { format } from "date-fns";
 
 export default async function ModifierContactPage({ params }: { params: Promise<{ id: string }> }) {
   const session = await getServerSession(authOptions);
@@ -30,6 +31,10 @@ export default async function ModifierContactPage({ params }: { params: Promise<
           pays: contact.pays,
           notes: contact.notes || "",
           compteId: contact.compteId || "",
+          isMembre: contact.isMembre,
+          dateAdhesion: contact.dateAdhesion
+            ? format(new Date(contact.dateAdhesion), "yyyy-MM-dd")
+            : "",
         }}
       />
     </div>

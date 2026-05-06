@@ -3,7 +3,7 @@ import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { Mail, Phone, Building2, MessageSquare, Pencil, Plus } from "lucide-react";
+import { Mail, Phone, Building2, MessageSquare, Pencil, Plus, BadgeCheck, CalendarDays } from "lucide-react";
 import { formatDate, TYPE_INTERACTION_LABELS, TYPE_INTERACTION_ICONS } from "@/lib/utils";
 import { DeleteContactButton } from "./delete-button";
 import { AddressMap } from "@/components/ui/address-map";
@@ -44,6 +44,12 @@ export default async function ContactDetailPage({ params }: { params: Promise<{ 
                 <Building2 size={13} />
                 {contact.compte.nom}
               </Link>
+            )}
+            {contact.isMembre && (
+              <span className="inline-flex items-center gap-1 mt-1 text-xs font-medium text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-full">
+                <BadgeCheck size={12} />
+                Membre SNHF
+              </span>
             )}
           </div>
         </div>
@@ -87,6 +93,12 @@ export default async function ContactDetailPage({ params }: { params: Promise<{ 
               />
             )}
           </div>
+          {contact.isMembre && contact.dateAdhesion && (
+            <div className="flex items-center gap-2 text-sm text-gray-600">
+              <CalendarDays size={14} className="text-gray-400 flex-shrink-0" />
+              <span>Adhésion : {formatDate(contact.dateAdhesion)}</span>
+            </div>
+          )}
           {contact.notes && (
             <div className="pt-3 border-t border-gray-100">
               <p className="text-xs font-medium text-gray-500 mb-1">Notes</p>

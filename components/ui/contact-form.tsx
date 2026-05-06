@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
+import { format } from "date-fns";
 
 type ContactFormData = {
   prenom: string;
@@ -15,6 +16,8 @@ type ContactFormData = {
   pays: string;
   notes: string;
   compteId: string;
+  isMembre: boolean;
+  dateAdhesion: string;
 };
 
 type Props = {
@@ -30,6 +33,9 @@ export function ContactForm({ defaultValues, defaultCompteId }: Props) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [comptes, setComptes] = useState<Compte[]>([]);
+  // Controlled fields
+  const [compteId, setCompteId] = useState(defaultValues?.compteId || defaultCompteId || "");
+  const [isMembre, setIsMembre] = useState(defaultValues?.isMembre ?? false);
 
   useEffect(() => {
     fetch("/api/comptes").then((r) => r.json()).then(setComptes);
@@ -55,7 +61,9 @@ export function ContactForm({ defaultValues, defaultCompteId }: Props) {
       ville: getValue("ville"),
       pays: getValue("pays") || "France",
       notes: getValue("notes"),
-      compteId: getValue("compteId"),
+      compteId,
+      isMembre,
+      dateAdhesion: isMembre ? getValue("dateAdhesion") : "",
     };
 
     const url = isEdit ? `/api/contacts/${defaultValues!.id}` : "/api/contacts";
@@ -108,7 +116,8 @@ export function ContactForm({ defaultValues, defaultCompteId }: Props) {
             <label className={labelClass}>Compte associé</label>
             <select
               name="compteId"
-              defaultValue={defaultValues?.compteId || defaultCompteId || ""}
+              value={compteId}
+              onChange={(e) => setCompteId(e.target.value)}
               className={inputClass}
             >
               <option value="">— Aucun —</option>
@@ -126,6 +135,31 @@ export function ContactForm({ defaultValues, defaultCompteId }: Props) {
             <input name="telephone" defaultValue={defaultValues?.telephone} className={inputClass} />
           </div>
         </div>
+      </div>
+
+      {/* Adhésion */}
+      <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 space-y-4">
+        <h2 className="font-semibold text-gray-900">Adhésion SNHF</h2>
+        <label className="flex items-center gap-3 cursor-pointer">
+          <input
+            type="checkbox"
+            checked={isMembre}
+            onChange={(e) => setIsMembre(e.target.checked)}
+            className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+          />
+          <span className="text-sm font-medium text-gray-700">Membre de l'association</span>
+        </label>
+        {isMembre && (
+          <div className="ml-7">
+            <label className={labelClass}>Date d'adhésion</label>
+            <input
+              name="dateAdhesion"
+              type="date"
+              defaultValue={defaultValues?.dateAdhesion}
+              className="w-48 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+            />
+          </div>
+        )}
       </div>
 
       <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 space-y-4">
