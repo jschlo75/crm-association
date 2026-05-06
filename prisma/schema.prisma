@@ -41,6 +41,7 @@ enum StatutParticipant {
 
 model User {
   id           String        @id @default(cuid())
+  prenom       String?
   nom          String
   email        String        @unique
   password     String

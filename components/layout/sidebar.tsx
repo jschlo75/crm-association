@@ -14,6 +14,7 @@ import {
   FileUp,
   UserCog,
   LogOut,
+  UserCircle,
 } from "lucide-react";
 
 const navItems = [
@@ -30,7 +31,7 @@ const adminNavItems = [
   { href: "/admin", label: "Administration", icon: UserCog },
 ];
 
-export function Sidebar({ role }: { role: string }) {
+export function Sidebar({ role, userName }: { role: string; userName: string }) {
   const pathname = usePathname();
 
   return (
@@ -79,7 +80,20 @@ export function Sidebar({ role }: { role: string }) {
         )}
       </nav>
 
-      <div className="p-4 border-t border-blue-800">
+      <div className="p-4 border-t border-blue-800 space-y-1">
+        {/* Profil utilisateur */}
+        <Link
+          href="/profil"
+          className={cn(
+            "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors w-full",
+            pathname === "/profil"
+              ? "bg-blue-700 text-white"
+              : "text-blue-200 hover:bg-blue-800 hover:text-white"
+          )}
+        >
+          <UserCircle size={18} />
+          <span className="truncate">{userName || "Mon profil"}</span>
+        </Link>
         <button
           onClick={() => signOut({ callbackUrl: "/login" })}
           className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-blue-200 hover:bg-blue-800 hover:text-white transition-colors w-full"
