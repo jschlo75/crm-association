@@ -4,13 +4,14 @@ import { prisma } from "@/lib/prisma";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import {
-  Building2, Mail, Phone, MapPin, Users, MessageSquare,
+  Building2, Mail, Phone, Users, MessageSquare,
   Pencil, Plus, Trash2
 } from "lucide-react";
 import {
   formatDate, TYPE_COMPTE_LABELS, TYPE_INTERACTION_LABELS, TYPE_INTERACTION_ICONS
 } from "@/lib/utils";
 import { DeleteCompteButton } from "./delete-button";
+import { AddressMap } from "@/components/ui/address-map";
 
 export default async function CompteDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const session = await getServerSession(authOptions);
@@ -77,16 +78,12 @@ export default async function CompteDetailPage({ params }: { params: Promise<{ i
               </div>
             )}
             {(compte.adresse || compte.ville) && (
-              <div className="flex items-start gap-2 text-gray-600">
-                <MapPin size={14} className="text-gray-400 flex-shrink-0 mt-0.5" />
-                <div>
-                  {compte.adresse && <div>{compte.adresse}</div>}
-                  {(compte.codePostal || compte.ville) && (
-                    <div>{compte.codePostal} {compte.ville}</div>
-                  )}
-                  {compte.pays && compte.pays !== "France" && <div>{compte.pays}</div>}
-                </div>
-              </div>
+              <AddressMap
+                adresse={compte.adresse}
+                codePostal={compte.codePostal}
+                ville={compte.ville}
+                pays={compte.pays}
+              />
             )}
           </div>
           {compte.notes && (

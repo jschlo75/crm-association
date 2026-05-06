@@ -3,9 +3,10 @@ import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { Mail, Phone, MapPin, Building2, MessageSquare, Pencil, Plus } from "lucide-react";
+import { Mail, Phone, Building2, MessageSquare, Pencil, Plus } from "lucide-react";
 import { formatDate, TYPE_INTERACTION_LABELS, TYPE_INTERACTION_ICONS } from "@/lib/utils";
 import { DeleteContactButton } from "./delete-button";
+import { AddressMap } from "@/components/ui/address-map";
 
 export default async function ContactDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const session = await getServerSession(authOptions);
@@ -78,15 +79,12 @@ export default async function ContactDetailPage({ params }: { params: Promise<{ 
               </div>
             )}
             {(contact.adresse || contact.ville) && (
-              <div className="flex items-start gap-2 text-gray-600">
-                <MapPin size={14} className="text-gray-400 flex-shrink-0 mt-0.5" />
-                <div>
-                  {contact.adresse && <div>{contact.adresse}</div>}
-                  {(contact.codePostal || contact.ville) && (
-                    <div>{contact.codePostal} {contact.ville}</div>
-                  )}
-                </div>
-              </div>
+              <AddressMap
+                adresse={contact.adresse}
+                codePostal={contact.codePostal}
+                ville={contact.ville}
+                pays={contact.pays}
+              />
             )}
           </div>
           {contact.notes && (
