@@ -9,7 +9,7 @@ const interactionSchema = z.object({
   type: z.enum(["APPEL", "EMAIL", "REUNION"]),
   sujet: z.string().min(1),
   description: z.string().optional(),
-  compteId: z.string().optional().or(z.literal("")),
+  organisationId: z.string().optional().or(z.literal("")),
   contactId: z.string().optional().or(z.literal("")),
 });
 
@@ -28,7 +28,7 @@ export async function GET(req: NextRequest) {
     },
     orderBy: { date: "desc" },
     include: {
-      compte: { select: { id: true, nom: true } },
+      organisation: { select: { id: true, nom: true } },
       contact: { select: { id: true, prenom: true, nom: true } },
       user: { select: { id: true, nom: true } },
     },
@@ -46,12 +46,12 @@ export async function POST(req: NextRequest) {
   const parsed = interactionSchema.safeParse(body);
   if (!parsed.success) return NextResponse.json({ error: parsed.error }, { status: 400 });
 
-  const { date, compteId, contactId, ...rest } = parsed.data;
+  const { date, organisationId, contactId, ...rest } = parsed.data;
   const interaction = await prisma.interaction.create({
     data: {
       ...rest,
       date: new Date(date),
-      compteId: compteId || null,
+      organisationId: organisationId || null,
       contactId: contactId || null,
       userId,
     },

@@ -9,7 +9,7 @@ const interactionSchema = z.object({
   type: z.enum(["APPEL", "EMAIL", "REUNION"]),
   sujet: z.string().min(1),
   description: z.string().optional(),
-  compteId: z.string().optional().or(z.literal("")),
+  organisationId: z.string().optional().or(z.literal("")),
   contactId: z.string().optional().or(z.literal("")),
 });
 
@@ -31,13 +31,13 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
   const parsed = interactionSchema.safeParse(body);
   if (!parsed.success) return NextResponse.json({ error: parsed.error }, { status: 400 });
 
-  const { date, compteId, contactId, ...rest } = parsed.data;
+  const { date, organisationId, contactId, ...rest } = parsed.data;
   const interaction = await prisma.interaction.update({
     where: { id },
     data: {
       ...rest,
       date: new Date(date),
-      compteId: compteId || null,
+      organisationId: organisationId || null,
       contactId: contactId || null,
     },
   });

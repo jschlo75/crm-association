@@ -4,8 +4,8 @@ import { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense } from "react";
 
-type Compte = { id: string; nom: string };
-type Contact = { id: string; prenom: string; nom: string; compte: { nom: string } | null };
+type Organisation = { id: string; nom: string };
+type Contact = { id: string; prenom: string; nom: string; organisation: { nom: string } | null };
 
 const TYPES = [
   { value: "APPEL", label: "📞 Appel téléphonique" },
@@ -16,16 +16,16 @@ const TYPES = [
 function NouvelleInteractionForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const preCompteId = searchParams.get("compteId") || "";
+  const preOrganisationId = searchParams.get("organisationId") || "";
   const preContactId = searchParams.get("contactId") || "";
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [comptes, setComptes] = useState<Compte[]>([]);
+  const [organisations, setOrganisations] = useState<Organisation[]>([]);
   const [contacts, setContacts] = useState<Contact[]>([]);
 
   useEffect(() => {
-    fetch("/api/comptes").then((r) => r.json()).then(setComptes);
+    fetch("/api/organisations").then((r) => r.json()).then(setOrganisations);
     fetch("/api/contacts").then((r) => r.json()).then(setContacts);
   }, []);
 
@@ -43,7 +43,7 @@ function NouvelleInteractionForm() {
       type: getValue("type"),
       sujet: getValue("sujet"),
       description: getValue("description"),
-      compteId: getValue("compteId"),
+      organisationId: getValue("organisationId"),
       contactId: getValue("contactId"),
     };
 
@@ -101,13 +101,13 @@ function NouvelleInteractionForm() {
 
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 space-y-4">
           <h2 className="font-semibold text-gray-900">Rattachement</h2>
-          <p className="text-sm text-gray-500">Liez cette interaction à un compte et/ou un contact.</p>
+          <p className="text-sm text-gray-500">Liez cette interaction à une organisation et/ou un contact.</p>
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className={labelClass}>Compte</label>
-              <select name="compteId" defaultValue={preCompteId} className={inputClass}>
-                <option value="">— Aucun —</option>
-                {comptes.map((c) => <option key={c.id} value={c.id}>{c.nom}</option>)}
+              <label className={labelClass}>Organisation</label>
+              <select name="organisationId" defaultValue={preOrganisationId} className={inputClass}>
+                <option value="">— Aucune —</option>
+                {organisations.map((o) => <option key={o.id} value={o.id}>{o.nom}</option>)}
               </select>
             </div>
             <div>
@@ -116,7 +116,7 @@ function NouvelleInteractionForm() {
                 <option value="">— Aucun —</option>
                 {contacts.map((c) => (
                   <option key={c.id} value={c.id}>
-                    {c.prenom} {c.nom}{c.compte ? ` (${c.compte.nom})` : ""}
+                    {c.prenom} {c.nom}{c.organisation ? ` (${c.organisation.nom})` : ""}
                   </option>
                 ))}
               </select>

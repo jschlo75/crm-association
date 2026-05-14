@@ -4,7 +4,7 @@ import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { z } from "zod";
 
-const compteSchema = z.object({
+const organisationSchema = z.object({
   nom: z.string().min(1),
   type: z.enum(["ENTREPRISE", "ASSOCIATION", "COLLECTIVITE", "PARTICULIER", "AUTRE"]),
   email: z.string().email().optional().or(z.literal("")),
@@ -22,7 +22,7 @@ export async function GET(_: NextRequest, { params }: { params: Promise<{ id: st
   if (!session) return NextResponse.json({ error: "Non autorisé" }, { status: 401 });
 
   const { id } = await params;
-  const compte = await prisma.compte.findUnique({
+  const organisation = await prisma.organisation.findUnique({
     where: { id },
     include: {
       contacts: { orderBy: { nom: "asc" } },
@@ -33,8 +33,8 @@ export async function GET(_: NextRequest, { params }: { params: Promise<{ id: st
     },
   });
 
-  if (!compte) return NextResponse.json({ error: "Introuvable" }, { status: 404 });
-  return NextResponse.json(compte);
+  if (!organisation) return NextResponse.json({ error: "Introuvable" }, { status: 404 });
+  return NextResponse.json(organisation);
 }
 
 export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
@@ -45,20 +45,19 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
 
   const { id } = await params;
   const body = await req.json();
-  const parsed = compteSchema.safeParse(body);
+  const parsed = organisationSchema.safeParse(body);
   if (!parsed.success) return NextResponse.json({ error: parsed.error }, { status: 400 });
 
   const { email, parentId, ...rest } = parsed.data;
-  // Empêcher un compte d'être son propre parent
   if (parentId && parentId === id) {
-    return NextResponse.json({ error: "Un compte ne peut pas être son propre parent" }, { status: 400 });
+    return NextResponse.json({ error: "Une organisation ne peut pas être sa propre parente" }, { status: 400 });
   }
-  const compte = await prisma.compte.update({
+  const organisation = await prisma.organisation.update({
     where: { id },
     data: { ...rest, email: email || null, parentId: parentId || null },
   });
 
-  return NextResponse.json(compte);
+  return NextResponse.json(organisation);
 }
 
 export async function DELETE(_: NextRequest, { params }: { params: Promise<{ id: string }> }) {
@@ -68,6 +67,6 @@ export async function DELETE(_: NextRequest, { params }: { params: Promise<{ id:
     return NextResponse.json({ error: "Non autorisé" }, { status: 403 });
 
   const { id } = await params;
-  await prisma.compte.delete({ where: { id } });
+  await prisma.organisation.delete({ where: { id } });
   return NextResponse.json({ ok: true });
 }

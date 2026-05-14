@@ -53,24 +53,25 @@ model User {
   campagnes    Campagne[]
 }
 
-model Compte {
-  id           String        @id @default(cuid())
-  nom          String
-  type         TypeCompte    @default(AUTRE)
-  email        String?
-  telephone    String?
-  adresse      String?
-  codePostal   String?
-  ville        String?
-  pays         String        @default("France")
-  notes        String?
-  parentId     String?
-  parent       Compte?       @relation("CompteHierarchie", fields: [parentId], references: [id], onDelete: SetNull)
-  sousComptes  Compte[]      @relation("CompteHierarchie")
-  createdAt    DateTime      @default(now())
-  updatedAt    DateTime      @updatedAt
-  contacts     Contact[]
-  interactions Interaction[]
+model Organisation {
+  @@map("Compte")
+  id                String         @id @default(cuid())
+  nom               String
+  type              TypeCompte     @default(AUTRE)
+  email             String?
+  telephone         String?
+  adresse           String?
+  codePostal        String?
+  ville             String?
+  pays              String         @default("France")
+  notes             String?
+  parentId          String?
+  parent            Organisation?  @relation("OrganisationHierarchie", fields: [parentId], references: [id], onDelete: SetNull)
+  sousOrganisations Organisation[] @relation("OrganisationHierarchie")
+  createdAt         DateTime       @default(now())
+  updatedAt         DateTime       @updatedAt
+  contacts          Contact[]
+  interactions      Interaction[]
 }
 
 model Contact {
@@ -87,8 +88,8 @@ model Contact {
   notes                 String?
   isMembre              Boolean                @default(false)
   dateAdhesion          DateTime?
-  compteId              String?
-  compte                Compte?                @relation(fields: [compteId], references: [id], onDelete: SetNull)
+  organisationId        String?                @map("compteId")
+  organisation          Organisation?          @relation(fields: [organisationId], references: [id], onDelete: SetNull)
   createdAt             DateTime               @default(now())
   updatedAt             DateTime               @updatedAt
   interactions          Interaction[]
@@ -101,8 +102,8 @@ model Interaction {
   type        TypeInteraction
   sujet       String
   description String?
-  compteId    String?
-  compte      Compte?         @relation(fields: [compteId], references: [id], onDelete: SetNull)
+  organisationId String?        @map("compteId")
+  organisation   Organisation?  @relation(fields: [organisationId], references: [id], onDelete: SetNull)
   contactId   String?
   contact     Contact?        @relation(fields: [contactId], references: [id], onDelete: SetNull)
   userId      String
@@ -119,7 +120,7 @@ model Campagne {
   statut          StatutCampagne @default(BROUILLON)
   dateEnvoi       DateTime?
   nbDestinataires Int            @default(0)
-  filtreCompteId  String?
+  filtreOrganisationId String?        @map("filtreCompteId")
   userId          String
   user            User           @relation(fields: [userId], references: [id])
   destinataires   CampagneDestinataire[]

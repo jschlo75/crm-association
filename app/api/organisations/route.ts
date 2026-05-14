@@ -4,7 +4,7 @@ import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { z } from "zod";
 
-const compteSchema = z.object({
+const organisationSchema = z.object({
   nom: z.string().min(1),
   type: z.enum(["ENTREPRISE", "ASSOCIATION", "COLLECTIVITE", "PARTICULIER", "AUTRE"]),
   email: z.string().email().optional().or(z.literal("")),
@@ -24,13 +24,13 @@ export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
   const q = searchParams.get("q") || "";
 
-  const comptes = await prisma.compte.findMany({
+  const organisations = await prisma.organisation.findMany({
     where: q ? { nom: { contains: q, mode: "insensitive" } } : undefined,
     orderBy: { nom: "asc" },
     include: { _count: { select: { contacts: true, interactions: true } } },
   });
 
-  return NextResponse.json(comptes);
+  return NextResponse.json(organisations);
 }
 
 export async function POST(req: NextRequest) {
@@ -40,11 +40,11 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Non autorisé" }, { status: 403 });
 
   const body = await req.json();
-  const parsed = compteSchema.safeParse(body);
+  const parsed = organisationSchema.safeParse(body);
   if (!parsed.success) return NextResponse.json({ error: parsed.error }, { status: 400 });
 
   const { email, parentId, ...rest } = parsed.data;
-  const compte = await prisma.compte.create({
+  const organisation = await prisma.organisation.create({
     data: {
       ...rest,
       email: email || null,
@@ -52,5 +52,5 @@ export async function POST(req: NextRequest) {
     },
   });
 
-  return NextResponse.json(compte, { status: 201 });
+  return NextResponse.json(organisation, { status: 201 });
 }

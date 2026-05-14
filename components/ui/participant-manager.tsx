@@ -11,7 +11,7 @@ type Contact = {
   prenom: string;
   nom: string;
   poste?: string | null;
-  compte?: { id: string; nom: string } | null;
+  organisation?: { id: string; nom: string } | null;
 };
 
 type Participant = {
@@ -46,7 +46,7 @@ export function ParticipantManager({
         (c) =>
           !addedIds.has(c.id) &&
           (search === "" ||
-            `${c.prenom} ${c.nom} ${c.compte?.nom ?? ""}`.toLowerCase().includes(search.toLowerCase()))
+            `${c.prenom} ${c.nom} ${c.organisation?.nom ?? ""}`.toLowerCase().includes(search.toLowerCase()))
       ),
     [allContacts, addedIds, search]
   );
@@ -204,7 +204,7 @@ export function ParticipantManager({
                     </div>
                   </td>
                   <td className="px-6 py-3 text-gray-500 text-xs">
-                    {p.contact.compte?.nom ?? <span className="text-gray-300">—</span>}
+                    {p.contact.organisation?.nom ?? <span className="text-gray-300">—</span>}
                   </td>
                   <td className="px-6 py-3">
                     {isAdmin ? (

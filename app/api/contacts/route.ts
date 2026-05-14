@@ -15,7 +15,7 @@ const contactSchema = z.object({
   ville: z.string().optional(),
   pays: z.string().optional(),
   notes: z.string().optional(),
-  compteId: z.string().optional().or(z.literal("")),
+  organisationId: z.string().optional().or(z.literal("")),
   isMembre: z.boolean().optional(),
   dateAdhesion: z.string().optional().or(z.literal("")),
 });
@@ -39,7 +39,7 @@ export async function GET(req: NextRequest) {
       : undefined,
     orderBy: [{ nom: "asc" }, { prenom: "asc" }],
     include: {
-      compte: { select: { id: true, nom: true } },
+      organisation: { select: { id: true, nom: true } },
       _count: { select: { interactions: true } },
     },
   });
@@ -57,12 +57,12 @@ export async function POST(req: NextRequest) {
   const parsed = contactSchema.safeParse(body);
   if (!parsed.success) return NextResponse.json({ error: parsed.error }, { status: 400 });
 
-  const { email, compteId, isMembre, dateAdhesion, ...rest } = parsed.data;
+  const { email, organisationId, isMembre, dateAdhesion, ...rest } = parsed.data;
   const contact = await prisma.contact.create({
     data: {
       ...rest,
       email: email || null,
-      compteId: compteId || null,
+      organisationId: organisationId || null,
       isMembre: isMembre ?? false,
       dateAdhesion: dateAdhesion ? new Date(dateAdhesion) : null,
     },

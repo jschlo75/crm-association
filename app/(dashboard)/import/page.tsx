@@ -10,12 +10,12 @@ import {
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
-type ImportType = "comptes" | "contacts";
+type ImportType = "organisations" | "contacts";
 type Step = "choose" | "upload" | "mapping" | "preview" | "result";
 
 type FieldDef = { key: string; label: string; required: boolean };
 
-const COMPTE_FIELDS: FieldDef[] = [
+const ORGANISATION_FIELDS: FieldDef[] = [
   { key: "nom",        label: "Nom",          required: true  },
   { key: "type",       label: "Type",         required: false },
   { key: "email",      label: "Email",        required: false },
@@ -38,7 +38,7 @@ const CONTACT_FIELDS: FieldDef[] = [
   { key: "ville",      label: "Ville",        required: false },
   { key: "pays",       label: "Pays",         required: false },
   { key: "notes",      label: "Notes",        required: false },
-  { key: "compte",     label: "Compte (nom)", required: false },
+  { key: "organisation", label: "Organisation (nom)", required: false },
 ];
 
 // ─── Auto-détection des colonnes ──────────────────────────────────────────────
@@ -55,7 +55,7 @@ const SYNONYMS: Record<string, string[]> = {
   pays:       ["pays", "country", "nation"],
   notes:      ["notes", "commentaires", "remarques", "observations", "note", "comment", "comments"],
   poste:      ["poste", "fonction", "titre", "title", "job", "position", "rôle", "role"],
-  compte:     ["compte", "société", "societe", "company", "organisation", "organization", "entreprise", "établissement", "etablissement"],
+  organisation: ["organisation", "compte", "société", "societe", "company", "organization", "entreprise", "établissement", "etablissement"],
 };
 
 function autoDetect(headers: string[]): Record<string, string> {
@@ -79,18 +79,18 @@ function autoDetect(headers: string[]): Record<string, string> {
 async function downloadTemplate(type: ImportType) {
   const XLSX = await import("xlsx");
 
-  if (type === "comptes") {
+  if (type === "organisations") {
     const ws = XLSX.utils.aoa_to_sheet([
       ["Nom", "Type", "Email", "Téléphone", "Adresse", "Code postal", "Ville", "Pays", "Notes"],
       ["Association Exemple", "ASSOCIATION", "contact@exemple.fr", "01 23 45 67 89", "12 rue des Roses", "75001", "Paris", "France", ""],
       ["Mairie de Lyon", "COLLECTIVITE", "mairie@lyon.fr", "04 72 10 30 30", "Place de la Comédie", "69001", "Lyon", "France", ""],
     ]);
     const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, "Comptes");
-    XLSX.writeFile(wb, "template_comptes.xlsx");
+    XLSX.utils.book_append_sheet(wb, ws, "Organisations");
+    XLSX.writeFile(wb, "template_organisations.xlsx");
   } else {
     const ws = XLSX.utils.aoa_to_sheet([
-      ["Prénom", "Nom", "Poste", "Email", "Téléphone", "Adresse", "Code postal", "Ville", "Pays", "Notes", "Compte"],
+      ["Prénom", "Nom", "Poste", "Email", "Téléphone", "Adresse", "Code postal", "Ville", "Pays", "Notes", "Organisation"],
       ["Marie", "Dupont", "Présidente", "m.dupont@exemple.fr", "06 12 34 56 78", "", "", "Paris", "France", "", "Association Exemple"],
       ["Jean", "Martin", "Directeur", "j.martin@mairie.fr", "04 72 10 30 31", "", "", "Lyon", "France", "", "Mairie de Lyon"],
     ]);
@@ -118,7 +118,7 @@ export default function ImportPage() {
   const [dragOver, setDragOver] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
 
-  const fields = importType === "comptes" ? COMPTE_FIELDS : CONTACT_FIELDS;
+  const fields = importType === "organisations" ? ORGANISATION_FIELDS : CONTACT_FIELDS;
 
   // ─── Parse du fichier ────────────────────────────────────────────────────────
 
@@ -260,9 +260,9 @@ export default function ImportPage() {
                 <FileSpreadsheet size={28} className="text-blue-500 mb-3" />
                 <div className="font-semibold text-gray-900 capitalize">{t}</div>
                 <div className="text-sm text-gray-500 mt-1">
-                  {t === "comptes"
+                  {t === "organisations"
                     ? "Importer des organisations, entreprises, associations…"
-                    : "Importer des interlocuteurs, avec rattachement optionnel à un compte"}
+                    : "Importer des interlocuteurs, avec rattachement optionnel à une organisation"}
                 </div>
               </button>
             ))}
@@ -276,7 +276,7 @@ export default function ImportPage() {
           <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 space-y-4">
             <div className="flex items-center justify-between">
               <h2 className="font-semibold text-gray-900">
-                Importer des {importType}
+                Importer des {importType === "organisations" ? "organisations" : "contacts"}
               </h2>
               <button
                 onClick={() => downloadTemplate(importType)}

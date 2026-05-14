@@ -15,30 +15,30 @@ type ContactFormData = {
   ville: string;
   pays: string;
   notes: string;
-  compteId: string;
+  organisationId: string;
   isMembre: boolean;
   dateAdhesion: string;
 };
 
 type Props = {
   defaultValues?: Partial<ContactFormData> & { id?: string };
-  defaultCompteId?: string;
+  defaultOrganisationId?: string;
 };
 
-type Compte = { id: string; nom: string };
+type Organisation = { id: string; nom: string };
 
-export function ContactForm({ defaultValues, defaultCompteId }: Props) {
+export function ContactForm({ defaultValues, defaultOrganisationId }: Props) {
   const router = useRouter();
   const isEdit = !!defaultValues?.id;
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [comptes, setComptes] = useState<Compte[]>([]);
+  const [organisations, setOrganisations] = useState<Organisation[]>([]);
   // Controlled fields
-  const [compteId, setCompteId] = useState(defaultValues?.compteId || defaultCompteId || "");
+  const [organisationId, setOrganisationId] = useState(defaultValues?.organisationId || defaultOrganisationId || "");
   const [isMembre, setIsMembre] = useState(defaultValues?.isMembre ?? false);
 
   useEffect(() => {
-    fetch("/api/comptes").then((r) => r.json()).then(setComptes);
+    fetch("/api/organisations").then((r) => r.json()).then(setOrganisations);
   }, []);
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
@@ -61,7 +61,7 @@ export function ContactForm({ defaultValues, defaultCompteId }: Props) {
       ville: getValue("ville"),
       pays: getValue("pays") || "France",
       notes: getValue("notes"),
-      compteId,
+      organisationId,
       isMembre,
       dateAdhesion: isMembre ? getValue("dateAdhesion") : "",
     };
@@ -113,16 +113,16 @@ export function ContactForm({ defaultValues, defaultCompteId }: Props) {
             <input name="poste" defaultValue={defaultValues?.poste} className={inputClass} />
           </div>
           <div>
-            <label className={labelClass}>Compte associé</label>
+            <label className={labelClass}>Organisation associée</label>
             <select
-              name="compteId"
-              value={compteId}
-              onChange={(e) => setCompteId(e.target.value)}
+              name="organisationId"
+              value={organisationId}
+              onChange={(e) => setOrganisationId(e.target.value)}
               className={inputClass}
             >
-              <option value="">— Aucun —</option>
-              {comptes.map((c) => (
-                <option key={c.id} value={c.id}>{c.nom}</option>
+              <option value="">— Aucune —</option>
+              {organisations.map((o) => (
+                <option key={o.id} value={o.id}>{o.nom}</option>
               ))}
             </select>
           </div>

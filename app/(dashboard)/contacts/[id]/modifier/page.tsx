@@ -30,7 +30,7 @@ export default async function ModifierContactPage({ params }: { params: Promise<
           ville: contact.ville || "",
           pays: contact.pays,
           notes: contact.notes || "",
-          compteId: contact.compteId || "",
+          organisationId: contact.organisationId || "",
           isMembre: contact.isMembre,
           dateAdhesion: contact.dateAdhesion
             ? format(new Date(contact.dateAdhesion), "yyyy-MM-dd")

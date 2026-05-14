@@ -12,7 +12,7 @@ import {
 
 const navItems = [
   { href: "/dashboard",    label: "Tableau de bord",  icon: LayoutDashboard },
-  { href: "/comptes",      label: "Comptes",           icon: Building2 },
+  { href: "/organisations", label: "Organisations",      icon: Building2 },
   { href: "/contacts",     label: "Contacts",          icon: Users },
   { href: "/interactions", label: "Interactions",      icon: MessageSquare },
   { href: "/evenements",   label: "Événements",        icon: CalendarDays },

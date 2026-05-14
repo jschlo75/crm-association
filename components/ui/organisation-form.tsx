@@ -3,7 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 
-type CompteFormData = {
+type OrganisationFormData = {
   nom: string;
   type: string;
   email: string;
@@ -17,10 +17,10 @@ type CompteFormData = {
 };
 
 type Props = {
-  defaultValues?: Partial<CompteFormData> & { id?: string };
+  defaultValues?: Partial<OrganisationFormData> & { id?: string };
 };
 
-type CompteOption = { id: string; nom: string };
+type OrganisationOption = { id: string; nom: string };
 
 const TYPES = [
   { value: "ENTREPRISE", label: "Entreprise" },
@@ -30,20 +30,19 @@ const TYPES = [
   { value: "AUTRE", label: "Autre" },
 ];
 
-export function CompteForm({ defaultValues }: Props) {
+export function OrganisationForm({ defaultValues }: Props) {
   const router = useRouter();
   const isEdit = !!defaultValues?.id;
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [comptes, setComptes] = useState<CompteOption[]>([]);
+  const [organisations, setOrganisations] = useState<OrganisationOption[]>([]);
   const [parentId, setParentId] = useState(defaultValues?.parentId || "");
 
   useEffect(() => {
-    fetch("/api/comptes")
+    fetch("/api/organisations")
       .then((r) => r.json())
-      .then((data: CompteOption[]) => {
-        // Exclure le compte lui-même de la liste des parents possibles
-        setComptes(data.filter((c) => c.id !== defaultValues?.id));
+      .then((data: OrganisationOption[]) => {
+        setOrganisations(data.filter((o) => o.id !== defaultValues?.id));
       });
   }, [defaultValues?.id]);
 
@@ -69,7 +68,7 @@ export function CompteForm({ defaultValues }: Props) {
       parentId,
     };
 
-    const url = isEdit ? `/api/comptes/${defaultValues!.id}` : "/api/comptes";
+    const url = isEdit ? `/api/organisations/${defaultValues!.id}` : "/api/organisations";
     const method = isEdit ? "PUT" : "POST";
 
     const res = await fetch(url, {
@@ -79,8 +78,8 @@ export function CompteForm({ defaultValues }: Props) {
     });
 
     if (res.ok) {
-      const compte = await res.json();
-      router.push(`/comptes/${compte.id}`);
+      const organisation = await res.json();
+      router.push(`/organisations/${organisation.id}`);
       router.refresh();
     } else {
       const d = await res.json();
@@ -116,15 +115,15 @@ export function CompteForm({ defaultValues }: Props) {
             </select>
           </div>
           <div>
-            <label className={labelClass}>Compte parent</label>
+            <label className={labelClass}>Organisation parente</label>
             <select
               value={parentId}
               onChange={(e) => setParentId(e.target.value)}
               className={inputClass}
             >
-              <option value="">— Aucun (compte racine) —</option>
-              {comptes.map((c) => (
-                <option key={c.id} value={c.id}>{c.nom}</option>
+              <option value="">— Aucune (racine) —</option>
+              {organisations.map((o) => (
+                <option key={o.id} value={o.id}>{o.nom}</option>
               ))}
             </select>
           </div>
@@ -178,7 +177,7 @@ export function CompteForm({ defaultValues }: Props) {
           disabled={loading}
           className="bg-blue-600 text-white px-6 py-2 rounded-lg font-medium hover:bg-blue-700 disabled:opacity-50 transition-colors text-sm"
         >
-          {loading ? "Enregistrement..." : isEdit ? "Mettre à jour" : "Créer le compte"}
+          {loading ? "Enregistrement..." : isEdit ? "Mettre à jour" : "Créer l'organisation"}
         </button>
         <button
           type="button"

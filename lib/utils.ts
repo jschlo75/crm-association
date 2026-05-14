@@ -21,7 +21,7 @@ export const TYPE_INTERACTION_LABELS: Record<string, string> = {
   REUNION: "Réunion",
 };
 
-export const TYPE_COMPTE_LABELS: Record<string, string> = {
+export const TYPE_ORGANISATION_LABELS: Record<string, string> = {
   ENTREPRISE: "Entreprise",
   ASSOCIATION: "Association",
   COLLECTIVITE: "Collectivité",

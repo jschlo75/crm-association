@@ -15,7 +15,7 @@ const rowSchema = z.object({
   ville: z.string().optional().or(z.null()),
   pays: z.string().optional().or(z.null()),
   notes: z.string().optional().or(z.null()),
-  compte: z.string().optional().or(z.null()),
+  organisation: z.string().optional().or(z.null()),
 });
 
 export async function POST(req: NextRequest) {
@@ -31,18 +31,18 @@ export async function POST(req: NextRequest) {
   let updated = 0;
   const errors: string[] = [];
 
-  // Cache des comptes pour éviter N+1 queries
-  const compteCache = new Map<string, string>();
+  // Cache des organisations pour éviter N+1 queries
+  const organisationCache = new Map<string, string>();
 
-  async function findCompteId(nomCompte: string): Promise<string | null> {
-    const key = nomCompte.toLowerCase();
-    if (compteCache.has(key)) return compteCache.get(key)!;
-    const c = await prisma.compte.findFirst({
-      where: { nom: { equals: nomCompte, mode: "insensitive" } },
+  async function findOrganisationId(nomOrg: string): Promise<string | null> {
+    const key = nomOrg.toLowerCase();
+    if (organisationCache.has(key)) return organisationCache.get(key)!;
+    const o = await prisma.organisation.findFirst({
+      where: { nom: { equals: nomOrg, mode: "insensitive" } },
       select: { id: true },
     });
-    if (c) compteCache.set(key, c.id);
-    return c?.id ?? null;
+    if (o) organisationCache.set(key, o.id);
+    return o?.id ?? null;
   }
 
   for (let i = 0; i < rows.length; i++) {
@@ -52,13 +52,13 @@ export async function POST(req: NextRequest) {
       continue;
     }
 
-    const { email, compte: nomCompte, ...rest } = parsed.data;
+    const { email, organisation: nomOrg, ...rest } = parsed.data;
 
-    let compteId: string | null = null;
-    if (nomCompte) {
-      compteId = await findCompteId(nomCompte);
-      if (!compteId) {
-        errors.push(`Ligne ${i + 2} (${rest.prenom} ${rest.nom}) : compte "${nomCompte}" introuvable, contact importé sans rattachement`);
+    let organisationId: string | null = null;
+    if (nomOrg) {
+      organisationId = await findOrganisationId(nomOrg);
+      if (!organisationId) {
+        errors.push(`Ligne ${i + 2} (${rest.prenom} ${rest.nom}) : organisation "${nomOrg}" introuvable, contact importé sans rattachement`);
       }
     }
 
@@ -76,7 +76,7 @@ export async function POST(req: NextRequest) {
           data: {
             ...rest,
             email: email || existing.email,
-            compteId: compteId ?? existing.compteId,
+            organisationId: organisationId ?? existing.organisationId,
             pays: rest.pays || existing.pays,
           },
         });
@@ -86,7 +86,7 @@ export async function POST(req: NextRequest) {
           data: {
             ...rest,
             email: email || null,
-            compteId,
+            organisationId,
             pays: rest.pays || "France",
           },
         });

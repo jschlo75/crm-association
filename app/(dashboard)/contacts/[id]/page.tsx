@@ -4,7 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { Mail, Phone, Building2, MessageSquare, Pencil, Plus, BadgeCheck, CalendarDays } from "lucide-react";
-import { formatDate, TYPE_INTERACTION_LABELS, TYPE_INTERACTION_ICONS } from "@/lib/utils";
+import { formatDate, TYPE_INTERACTION_LABELS, TYPE_INTERACTION_ICONS, TYPE_ORGANISATION_LABELS } from "@/lib/utils";
 import { DeleteContactButton } from "./delete-button";
 import { AddressMap } from "@/components/ui/address-map";
 
@@ -16,10 +16,10 @@ export default async function ContactDetailPage({ params }: { params: Promise<{ 
   const contact = await prisma.contact.findUnique({
     where: { id },
     include: {
-      compte: true,
+      organisation: true,
       interactions: {
         orderBy: { date: "desc" },
-        include: { compte: true, user: true },
+        include: { organisation: true, user: true },
       },
     },
   });
@@ -39,10 +39,10 @@ export default async function ContactDetailPage({ params }: { params: Promise<{ 
           <div>
             <h1 className="text-2xl font-bold text-gray-900">{contact.prenom} {contact.nom}</h1>
             {contact.poste && <p className="text-gray-500 text-sm">{contact.poste}</p>}
-            {contact.compte && (
-              <Link href={`/comptes/${contact.compte.id}`} className="text-sm text-blue-600 hover:underline flex items-center gap-1 mt-0.5">
+            {contact.organisation && (
+              <Link href={`/organisations/${contact.organisation.id}`} className="text-sm text-blue-600 hover:underline flex items-center gap-1 mt-0.5">
                 <Building2 size={13} />
-                {contact.compte.nom}
+                {contact.organisation.nom}
               </Link>
             )}
             {contact.isMembre && (
@@ -138,11 +138,11 @@ export default async function ContactDetailPage({ params }: { params: Promise<{ 
                     </div>
                     <div className="text-xs text-gray-500 mt-1 flex items-center gap-2">
                       <span>{formatDate(i.date)}</span>
-                      {i.compte && (
+                      {i.organisation && (
                         <>
                           <span>·</span>
-                          <Link href={`/comptes/${i.compte.id}`} className="hover:text-blue-600">
-                            {i.compte.nom}
+                          <Link href={`/organisations/${i.organisation.id}`} className="hover:text-blue-600">
+                            {i.organisation.nom}
                           </Link>
                         </>
                       )}

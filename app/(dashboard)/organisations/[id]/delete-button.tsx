@@ -3,13 +3,13 @@
 import { useRouter } from "next/navigation";
 import { Trash2 } from "lucide-react";
 
-export function DeleteCompteButton({ id }: { id: string }) {
+export function DeleteOrganisationButton({ id }: { id: string }) {
   const router = useRouter();
 
   async function handleDelete() {
-    if (!confirm("Supprimer ce compte ? Les contacts et interactions associés resteront.")) return;
-    await fetch(`/api/comptes/${id}`, { method: "DELETE" });
-    router.push("/comptes");
+    if (!confirm("Supprimer cette organisation ? Les contacts et interactions associés resteront.")) return;
+    await fetch(`/api/organisations/${id}`, { method: "DELETE" });
+    router.push("/organisations");
     router.refresh();
   }
 

@@ -39,13 +39,12 @@ export async function POST(req: NextRequest) {
     const { email, ...rest } = parsed.data;
 
     try {
-      // Upsert : si un compte avec le même nom existe déjà, on le met à jour
-      const existing = await prisma.compte.findFirst({
+      const existing = await prisma.organisation.findFirst({
         where: { nom: { equals: rest.nom, mode: "insensitive" } },
       });
 
       if (existing) {
-        await prisma.compte.update({
+        await prisma.organisation.update({
           where: { id: existing.id },
           data: {
             ...rest,
@@ -56,7 +55,7 @@ export async function POST(req: NextRequest) {
         });
         updated++;
       } else {
-        await prisma.compte.create({
+        await prisma.organisation.create({
           data: {
             ...rest,
             type: rest.type ?? "AUTRE",

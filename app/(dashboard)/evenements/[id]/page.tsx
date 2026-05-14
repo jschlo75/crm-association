@@ -18,14 +18,14 @@ export default async function EvenementDetailPage({ params }: { params: Promise<
       where: { id },
       include: {
         participants: {
-          include: { contact: { include: { compte: true } } },
+          include: { contact: { include: { organisation: true } } },
           orderBy: { contact: { nom: "asc" } },
         },
       },
     }),
     prisma.contact.findMany({
       orderBy: [{ nom: "asc" }, { prenom: "asc" }],
-      include: { compte: true },
+      include: { organisation: true },
     }),
   ]);
 
@@ -93,7 +93,7 @@ export default async function EvenementDetailPage({ params }: { params: Promise<
             prenom: p.contact.prenom,
             nom: p.contact.nom,
             poste: p.contact.poste,
-            compte: p.contact.compte ? { id: p.contact.compte.id, nom: p.contact.compte.nom } : null,
+            organisation: p.contact.organisation ? { id: p.contact.organisation.id, nom: p.contact.organisation.nom } : null,
           },
         }))}
         allContacts={allContacts.map((c) => ({
@@ -101,7 +101,7 @@ export default async function EvenementDetailPage({ params }: { params: Promise<
           prenom: c.prenom,
           nom: c.nom,
           poste: c.poste,
-          compte: c.compte ? { id: c.compte.id, nom: c.compte.nom } : null,
+          organisation: c.organisation ? { id: c.organisation.id, nom: c.organisation.nom } : null,
         }))}
         isAdmin={role === "ADMIN"}
       />

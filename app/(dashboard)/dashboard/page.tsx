@@ -1,7 +1,7 @@
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { formatDate, TYPE_INTERACTION_LABELS, TYPE_INTERACTION_ICONS } from "@/lib/utils";
+import { formatDate, TYPE_INTERACTION_LABELS, TYPE_INTERACTION_ICONS, TYPE_ORGANISATION_LABELS } from "@/lib/utils";
 import Link from "next/link";
 import { Building2, Users, MessageSquare, Plus } from "lucide-react";
 
@@ -16,12 +16,12 @@ export default async function DashboardPage() {
     prisma.interaction.findMany({
       take: 8,
       orderBy: { date: "desc" },
-      include: { compte: true, contact: true, user: true },
+      include: { organisation: true, contact: true, user: true },
     }),
   ]);
 
   const stats = [
-    { label: "Comptes", value: nbComptes, icon: Building2, href: "/comptes", color: "bg-blue-600" },
+    { label: "Organisations", value: nbComptes, icon: Building2, href: "/organisations", color: "bg-blue-600" },
     { label: "Contacts", value: nbContacts, icon: Users, href: "/contacts", color: "bg-emerald-600" },
     { label: "Interactions", value: nbInteractions, icon: MessageSquare, href: "/interactions", color: "bg-purple-600" },
   ];
@@ -102,11 +102,11 @@ export default async function DashboardPage() {
                         </Link>
                       </>
                     )}
-                    {interaction.compte && (
+                    {interaction.organisation && (
                       <>
                         <span>·</span>
-                        <Link href={`/comptes/${interaction.compte.id}`} className="hover:text-blue-600">
-                          {interaction.compte.nom}
+                        <Link href={`/organisations/${interaction.organisation.id}`} className="hover:text-blue-600">
+                          {interaction.organisation.nom}
                         </Link>
                       </>
                     )}
