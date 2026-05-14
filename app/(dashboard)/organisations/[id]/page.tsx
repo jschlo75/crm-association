@@ -4,7 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import {
-  Building2, Mail, Phone, Users, MessageSquare,
+  Building2, Mail, Phone, Globe, Users, MessageSquare,
   Pencil, Plus, Trash2, ChevronsUp, GitBranch
 } from "lucide-react";
 import {
@@ -116,6 +116,19 @@ export default async function OrganisationDetailPage({ params }: { params: Promi
               <div className="flex items-center gap-2 text-gray-600">
                 <Phone size={14} className="text-gray-400 flex-shrink-0" />
                 <span>{organisation.telephone}</span>
+              </div>
+            )}
+            {organisation.siteWeb && (
+              <div className="flex items-center gap-2 text-gray-600">
+                <Globe size={14} className="text-gray-400 flex-shrink-0" />
+                <a
+                  href={organisation.siteWeb}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="hover:text-blue-600 truncate"
+                >
+                  {organisation.siteWeb.replace(/^https?:\/\//, "")}
+                </a>
               </div>
             )}
             {(organisation.adresse || organisation.ville) && (

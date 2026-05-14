@@ -22,11 +22,11 @@ export const TYPE_INTERACTION_LABELS: Record<string, string> = {
 };
 
 export const TYPE_ORGANISATION_LABELS: Record<string, string> = {
-  ENTREPRISE: "Entreprise",
+  ENSEIGNEMENT: "Enseignement",
   ASSOCIATION: "Association",
-  COLLECTIVITE: "Collectivité",
-  PARTICULIER: "Particulier",
-  AUTRE: "Autre",
+  FEDERATION: "Fédération",
+  JARDIN_PRIVE: "Jardin privé",
+  ORGANISME_PUBLIC: "Organisme public",
 };
 
 export const TYPE_INTERACTION_ICONS: Record<string, string> = {

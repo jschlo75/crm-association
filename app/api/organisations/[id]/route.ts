@@ -6,9 +6,10 @@ import { z } from "zod";
 
 const organisationSchema = z.object({
   nom: z.string().min(1),
-  type: z.enum(["ENTREPRISE", "ASSOCIATION", "COLLECTIVITE", "PARTICULIER", "AUTRE"]),
+  type: z.enum(["ENSEIGNEMENT", "ASSOCIATION", "FEDERATION", "JARDIN_PRIVE", "ORGANISME_PUBLIC"]),
   email: z.string().email().optional().or(z.literal("")),
   telephone: z.string().optional(),
+  siteWeb: z.string().optional(),
   adresse: z.string().optional(),
   codePostal: z.string().optional(),
   ville: z.string().optional(),
@@ -48,13 +49,13 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
   const parsed = organisationSchema.safeParse(body);
   if (!parsed.success) return NextResponse.json({ error: parsed.error }, { status: 400 });
 
-  const { email, parentId, ...rest } = parsed.data;
+  const { email, siteWeb, parentId, ...rest } = parsed.data;
   if (parentId && parentId === id) {
     return NextResponse.json({ error: "Une organisation ne peut pas être sa propre parente" }, { status: 400 });
   }
   const organisation = await prisma.organisation.update({
     where: { id },
-    data: { ...rest, email: email || null, parentId: parentId || null },
+    data: { ...rest, email: email || null, siteWeb: siteWeb || null, parentId: parentId || null },
   });
 
   return NextResponse.json(organisation);

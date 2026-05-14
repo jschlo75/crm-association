@@ -6,9 +6,10 @@ import { z } from "zod";
 
 const organisationSchema = z.object({
   nom: z.string().min(1),
-  type: z.enum(["ENTREPRISE", "ASSOCIATION", "COLLECTIVITE", "PARTICULIER", "AUTRE"]),
+  type: z.enum(["ENSEIGNEMENT", "ASSOCIATION", "FEDERATION", "JARDIN_PRIVE", "ORGANISME_PUBLIC"]),
   email: z.string().email().optional().or(z.literal("")),
   telephone: z.string().optional(),
+  siteWeb: z.string().optional(),
   adresse: z.string().optional(),
   codePostal: z.string().optional(),
   ville: z.string().optional(),
@@ -43,11 +44,12 @@ export async function POST(req: NextRequest) {
   const parsed = organisationSchema.safeParse(body);
   if (!parsed.success) return NextResponse.json({ error: parsed.error }, { status: 400 });
 
-  const { email, parentId, ...rest } = parsed.data;
+  const { email, siteWeb, parentId, ...rest } = parsed.data;
   const organisation = await prisma.organisation.create({
     data: {
       ...rest,
       email: email || null,
+      siteWeb: siteWeb || null,
       parentId: parentId || null,
     },
   });

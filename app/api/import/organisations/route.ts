@@ -6,7 +6,7 @@ import { z } from "zod";
 
 const rowSchema = z.object({
   nom: z.string().min(1),
-  type: z.enum(["ENTREPRISE", "ASSOCIATION", "COLLECTIVITE", "PARTICULIER", "AUTRE"]).optional(),
+  type: z.enum(["ENSEIGNEMENT", "ASSOCIATION", "FEDERATION", "JARDIN_PRIVE", "ORGANISME_PUBLIC"]).optional(),
   email: z.string().email().optional().or(z.literal("")).or(z.null()),
   telephone: z.string().optional().or(z.null()),
   adresse: z.string().optional().or(z.null()),

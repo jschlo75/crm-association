@@ -83,7 +83,7 @@ async function downloadTemplate(type: ImportType) {
     const ws = XLSX.utils.aoa_to_sheet([
       ["Nom", "Type", "Email", "Téléphone", "Adresse", "Code postal", "Ville", "Pays", "Notes"],
       ["Association Exemple", "ASSOCIATION", "contact@exemple.fr", "01 23 45 67 89", "12 rue des Roses", "75001", "Paris", "France", ""],
-      ["Mairie de Lyon", "COLLECTIVITE", "mairie@lyon.fr", "04 72 10 30 30", "Place de la Comédie", "69001", "Lyon", "France", ""],
+      ["École nationale d'horticulture", "ENSEIGNEMENT", "contact@enh.fr", "01 30 83 40 00", "4 rue Hardy", "78009", "Versailles", "France", ""],
     ]);
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, "Organisations");

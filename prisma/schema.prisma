@@ -13,11 +13,11 @@ enum Role {
 }
 
 enum TypeCompte {
-  ENTREPRISE
+  ENSEIGNEMENT
   ASSOCIATION
-  COLLECTIVITE
-  PARTICULIER
-  AUTRE
+  FEDERATION
+  JARDIN_PRIVE
+  ORGANISME_PUBLIC
 }
 
 enum TypeInteraction {
@@ -57,9 +57,10 @@ model Organisation {
   @@map("Compte")
   id                String         @id @default(cuid())
   nom               String
-  type              TypeCompte     @default(AUTRE)
+  type              TypeCompte     @default(ASSOCIATION)
   email             String?
   telephone         String?
+  siteWeb           String?
   adresse           String?
   codePostal        String?
   ville             String?

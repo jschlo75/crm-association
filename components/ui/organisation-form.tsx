@@ -8,6 +8,7 @@ type OrganisationFormData = {
   type: string;
   email: string;
   telephone: string;
+  siteWeb: string;
   adresse: string;
   codePostal: string;
   ville: string;
@@ -23,11 +24,11 @@ type Props = {
 type OrganisationOption = { id: string; nom: string };
 
 const TYPES = [
-  { value: "ENTREPRISE", label: "Entreprise" },
+  { value: "ENSEIGNEMENT", label: "Enseignement" },
   { value: "ASSOCIATION", label: "Association" },
-  { value: "COLLECTIVITE", label: "Collectivité" },
-  { value: "PARTICULIER", label: "Particulier" },
-  { value: "AUTRE", label: "Autre" },
+  { value: "FEDERATION", label: "Fédération" },
+  { value: "JARDIN_PRIVE", label: "Jardin privé" },
+  { value: "ORGANISME_PUBLIC", label: "Organisme public" },
 ];
 
 export function OrganisationForm({ defaultValues }: Props) {
@@ -60,6 +61,7 @@ export function OrganisationForm({ defaultValues }: Props) {
       type: getValue("type"),
       email: getValue("email"),
       telephone: getValue("telephone"),
+      siteWeb: getValue("siteWeb"),
       adresse: getValue("adresse"),
       codePostal: getValue("codePostal"),
       ville: getValue("ville"),
@@ -134,6 +136,16 @@ export function OrganisationForm({ defaultValues }: Props) {
           <div>
             <label className={labelClass}>Téléphone</label>
             <input name="telephone" defaultValue={defaultValues?.telephone} className={inputClass} />
+          </div>
+          <div className="sm:col-span-2">
+            <label className={labelClass}>Site web</label>
+            <input
+              name="siteWeb"
+              type="url"
+              defaultValue={defaultValues?.siteWeb}
+              className={inputClass}
+              placeholder="https://www.exemple.fr"
+            />
           </div>
         </div>
       </div>
