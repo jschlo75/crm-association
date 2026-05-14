@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import { LOGO_B64 } from "@/lib/logo-base64";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -38,7 +39,7 @@ export default function LoginPage() {
         <div className="text-center mb-8">
           <div className="flex justify-center mb-4">
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/logo.png" alt="SNHF" style={{ width: "120px", height: "auto" }} />
+            <img src={LOGO_B64} alt="SNHF" style={{ width: "120px", height: "auto" }} />
           </div>
           <p className="text-gray-500 mt-1 text-xs font-medium">Société Nationale d'Horticulture de France</p>
           <p className="text-gray-400 mt-3 text-sm">Connectez-vous à votre espace CRM</p>

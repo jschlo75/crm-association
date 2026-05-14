@@ -9,6 +9,7 @@ import {
   LayoutDashboard, Building2, Users, MessageSquare, Mail,
   CalendarDays, FileUp, UserCog, LogOut, UserCircle, Menu, X,
 } from "lucide-react";
+import { LOGO_B64 } from "@/lib/logo-base64";
 
 const navItems = [
   { href: "/dashboard",    label: "Tableau de bord",  icon: LayoutDashboard },
@@ -98,22 +99,23 @@ export function Sidebar({ role, userName }: { role: string; userName: string }) 
       >
         {/* En-tête */}
         <div className="px-4 pt-4 pb-3 border-b border-blue-800">
-          <div className="flex items-start justify-between">
-            <div className="flex-1">
-              <div className="bg-white rounded-lg p-2 inline-block mb-2">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src="/logo.png" alt="SNHF" style={{ width: "120px", height: "auto", display: "block" }} />
-              </div>
-              <p className="text-blue-300 text-xs leading-snug">Société Nationale d&apos;Horticulture de France</p>
-            </div>
-            {/* Bouton fermer (mobile) */}
+          <div className="flex justify-end lg:hidden">
             <button
               onClick={close}
-              className="lg:hidden text-blue-300 hover:text-white p-1 rounded ml-2 mt-1"
+              className="text-blue-300 hover:text-white p-1 rounded"
               aria-label="Fermer le menu"
             >
               <X size={18} />
             </button>
+          </div>
+          <div className="flex flex-col items-center gap-2 mt-1">
+            <div className="bg-white rounded-lg p-2">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={LOGO_B64} alt="SNHF" style={{ width: "140px", height: "auto", display: "block" }} />
+            </div>
+            <p className="text-blue-300 text-xs text-center leading-snug">
+              Société Nationale d&apos;Horticulture de France
+            </p>
           </div>
         </div>
 
