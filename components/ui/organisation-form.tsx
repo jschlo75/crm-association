@@ -112,7 +112,7 @@ export function OrganisationForm({ defaultValues }: Props) {
           </div>
           <div>
             <label className={labelClass}>Type *</label>
-            <select name="type" required defaultValue={defaultValues?.type || "AUTRE"} className={inputClass}>
+            <select name="type" required defaultValue={defaultValues?.type || "ASSOCIATION"} className={inputClass}>
               {TYPES.map((t) => <option key={t.value} value={t.value}>{t.label}</option>)}
             </select>
           </div>
