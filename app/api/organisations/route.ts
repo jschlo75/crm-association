@@ -25,9 +25,18 @@ export async function GET(req: NextRequest) {
 
   const { searchParams } = new URL(req.url);
   const q = searchParams.get("q") || "";
+  const type = searchParams.get("type") || "";
+  const membreSnhf = searchParams.get("membreSnhf");
+  const organisationId = searchParams.get("organisationId") || "";
+
+  const where: Record<string, unknown> = {};
+  if (q) where.nom = { contains: q, mode: "insensitive" };
+  if (type) where.type = type;
+  if (membreSnhf === "true") where.membreSnhf = true;
+  if (organisationId) where.id = organisationId;
 
   const organisations = await prisma.organisation.findMany({
-    where: q ? { nom: { contains: q, mode: "insensitive" } } : undefined,
+    where: Object.keys(where).length ? where : undefined,
     orderBy: { nom: "asc" },
     include: { _count: { select: { contacts: true, interactions: true } } },
   });
