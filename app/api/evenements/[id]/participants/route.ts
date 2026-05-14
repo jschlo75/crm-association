@@ -18,7 +18,7 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
       contactId,
       statut: statut || "CIBLE",
     },
-    include: { contact: { include: { compte: true } } },
+    include: { contact: { include: { organisation: true } } },
   });
   return NextResponse.json(participant, { status: 201 });
 }

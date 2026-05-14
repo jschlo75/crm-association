@@ -12,7 +12,7 @@ export async function GET(_req: Request, { params }: { params: Promise<{ id: str
     where: { id },
     include: {
       participants: {
-        include: { contact: { include: { compte: true } } },
+        include: { contact: { include: { organisation: true } } },
         orderBy: { contact: { nom: "asc" } },
       },
     },

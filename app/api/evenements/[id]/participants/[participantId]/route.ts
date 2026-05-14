@@ -17,7 +17,7 @@ export async function PUT(
   const participant = await prisma.evenementParticipant.update({
     where: { id: participantId },
     data: { statut },
-    include: { contact: { include: { compte: true } } },
+    include: { contact: { include: { organisation: true } } },
   });
   return NextResponse.json(participant);
 }
