@@ -16,7 +16,7 @@ const navItems = [
   { href: "/organisations", label: "Organisations",   icon: Building2,        roles: ["ADMIN", "MEMBRE", "RESTREINT"] },
   { href: "/contacts",     label: "Contacts",         icon: Users,            roles: ["ADMIN", "MEMBRE", "RESTREINT"] },
   { href: "/interactions", label: "Interactions",     icon: MessageSquare,    roles: ["ADMIN", "MEMBRE"] },
-  { href: "/evenements",   label: "Événements",       icon: CalendarDays,     roles: ["ADMIN", "MEMBRE"] },
+  { href: "/evenements",   label: "Événements",       icon: CalendarDays,     roles: ["ADMIN", "MEMBRE", "RESTREINT"] },
   { href: "/campagnes",    label: "Campagnes email",  icon: Mail,             roles: ["ADMIN", "MEMBRE", "RESTREINT"] },
 ];
 

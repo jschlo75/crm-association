@@ -3,9 +3,8 @@ import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { CalendarDays, MapPin, Target, Pencil, Trash2 } from "lucide-react";
+import { CalendarDays, MapPin, Target, Pencil } from "lucide-react";
 import { formatDateTime } from "@/lib/utils";
-import { ParticipantManager } from "@/components/ui/participant-manager";
 import { DeleteEvenementButton } from "./delete-button";
 
 export default async function EvenementDetailPage({ params }: { params: Promise<{ id: string }> }) {
@@ -13,28 +12,16 @@ export default async function EvenementDetailPage({ params }: { params: Promise<
   const role = (session?.user as { role: string })?.role;
   const { id } = await params;
 
-  const [evenement, allContacts] = await Promise.all([
-    prisma.evenement.findUnique({
-      where: { id },
-      include: {
-        participants: {
-          include: { contact: { include: { organisation: true } } },
-          orderBy: { contact: { nom: "asc" } },
-        },
-      },
-    }),
-    prisma.contact.findMany({
-      orderBy: [{ nom: "asc" }, { prenom: "asc" }],
-      include: { organisation: true },
-    }),
-  ]);
+  const evenement = await prisma.evenement.findUnique({
+    where: { id },
+  });
 
   if (!evenement) notFound();
 
   const isPast = new Date(evenement.date) < new Date();
 
   return (
-    <div className="space-y-6 max-w-4xl">
+    <div className="space-y-6 max-w-2xl">
       {/* En-tête */}
       <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
         <div className="flex items-start gap-4">
@@ -43,7 +30,7 @@ export default async function EvenementDetailPage({ params }: { params: Promise<
           </div>
           <div>
             <h1 className="text-2xl font-bold text-gray-900">{evenement.titre}</h1>
-            <div className="flex items-center gap-4 mt-1 text-sm text-gray-500">
+            <div className="flex flex-wrap items-center gap-4 mt-1 text-sm text-gray-500">
               <span className="flex items-center gap-1.5">
                 <CalendarDays size={14} />
                 {formatDateTime(evenement.date)}
@@ -81,30 +68,6 @@ export default async function EvenementDetailPage({ params }: { params: Promise<
           <p className="text-sm text-gray-700 whitespace-pre-wrap">{evenement.objectifs}</p>
         </div>
       )}
-
-      {/* Participants */}
-      <ParticipantManager
-        evenementId={id}
-        initialParticipants={evenement.participants.map((p) => ({
-          id: p.id,
-          statut: p.statut as "CIBLE" | "INVITE" | "A_ACCEPTE" | "A_PARTICIPE" | "A_REFUSE",
-          contact: {
-            id: p.contact.id,
-            prenom: p.contact.prenom,
-            nom: p.contact.nom,
-            poste: p.contact.poste,
-            organisation: p.contact.organisation ? { id: p.contact.organisation.id, nom: p.contact.organisation.nom } : null,
-          },
-        }))}
-        allContacts={allContacts.map((c) => ({
-          id: c.id,
-          prenom: c.prenom,
-          nom: c.nom,
-          poste: c.poste,
-          organisation: c.organisation ? { id: c.organisation.id, nom: c.organisation.nom } : null,
-        }))}
-        isAdmin={role === "ADMIN"}
-      />
     </div>
   );
 }
