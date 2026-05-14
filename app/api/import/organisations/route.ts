@@ -4,9 +4,29 @@ import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { z } from "zod";
 
+// Accepte les libellés affichés ET les clés internes (insensible à la casse)
+const TYPE_MAP: Record<string, string> = {
+  enseignement:      "ENSEIGNEMENT",
+  association:       "ASSOCIATION",
+  "fédération":      "FEDERATION",
+  "federation":      "FEDERATION",
+  "jardin privé":    "JARDIN_PRIVE",
+  "jardin prive":    "JARDIN_PRIVE",
+  "organisme public":"ORGANISME_PUBLIC",
+};
+
+function normalizeType(val: unknown): unknown {
+  if (typeof val !== "string" || val.trim() === "") return undefined;
+  const lower = val.trim().toLowerCase();
+  // Libellé reconnu → clé interne
+  if (TYPE_MAP[lower]) return TYPE_MAP[lower];
+  // Déjà une clé interne valide → passe tel quel pour Zod
+  return val.trim().toUpperCase();
+}
+
 const rowSchema = z.object({
   nom: z.string().min(1),
-  type: z.enum(["ENSEIGNEMENT", "ASSOCIATION", "FEDERATION", "JARDIN_PRIVE", "ORGANISME_PUBLIC"]).optional(),
+  type: z.preprocess(normalizeType, z.enum(["ENSEIGNEMENT", "ASSOCIATION", "FEDERATION", "JARDIN_PRIVE", "ORGANISME_PUBLIC"]).optional()),
   email: z.string().email().optional().or(z.literal("")).or(z.null()),
   telephone: z.string().optional().or(z.null()),
   siteWeb: z.string().optional().or(z.null()),
