@@ -3,16 +3,15 @@ import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { formatDate, TYPE_INTERACTION_LABELS, TYPE_INTERACTION_ICONS, TYPE_ORGANISATION_LABELS } from "@/lib/utils";
 import Link from "next/link";
-import { Building2, Users, MessageSquare, Plus } from "lucide-react";
+import { Building2, Users, Plus } from "lucide-react";
 
 export default async function DashboardPage() {
   const session = await getServerSession(authOptions);
   const userId = (session?.user as { id: string })?.id;
 
-  const [nbComptes, nbContacts, nbInteractions, dernieresInteractions] = await Promise.all([
+  const [nbComptes, nbContacts, dernieresInteractions] = await Promise.all([
     prisma.organisation.count(),
     prisma.contact.count(),
-    prisma.interaction.count(),
     prisma.interaction.findMany({
       take: 8,
       orderBy: { date: "desc" },
@@ -23,7 +22,6 @@ export default async function DashboardPage() {
   const stats = [
     { label: "Organisations", value: nbComptes, icon: Building2, href: "/organisations", color: "bg-blue-600" },
     { label: "Contacts", value: nbContacts, icon: Users, href: "/contacts", color: "bg-emerald-600" },
-    { label: "Interactions", value: nbInteractions, icon: MessageSquare, href: "/interactions", color: "bg-purple-600" },
   ];
 
   return (
