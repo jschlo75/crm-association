@@ -1,5 +1,20 @@
 import type { Config } from "tailwindcss";
 
+// Palette basée sur le vert du logo SNHF (#67aa40)
+const snhfGreen = {
+  50:  "#f2faf0",
+  100: "#e4f4d8",
+  200: "#c5e8a8",
+  300: "#a3d478",
+  400: "#82bf50",
+  500: "#67aa40",
+  600: "#508f2c",
+  700: "#3d7022",
+  800: "#2c5018",
+  900: "#1c3410",
+  950: "#0e1d08",
+};
+
 const config: Config = {
   content: [
     "./pages/**/*.{js,ts,jsx,tsx,mdx}",
@@ -9,14 +24,9 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        primary: {
-          50: "#eff6ff",
-          100: "#dbeafe",
-          500: "#3b82f6",
-          600: "#2563eb",
-          700: "#1d4ed8",
-          900: "#1e3a8a",
-        },
+        // Remplace le bleu par le vert SNHF pour toute l'application
+        blue: snhfGreen,
+        primary: snhfGreen,
       },
     },
   },
