@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { signOut } from "next-auth/react";
 import { cn } from "@/lib/utils";
+import Image from "next/image";
 import {
   LayoutDashboard, Building2, Users, MessageSquare, Mail,
   CalendarDays, FileUp, UserCog, LogOut, UserCircle, Menu, X,
@@ -97,10 +98,22 @@ export function Sidebar({ role, userName }: { role: string; userName: string }) 
         )}
       >
         {/* En-tête */}
-        <div className="px-5 py-4 border-b border-blue-800 flex items-center justify-between">
-          <div>
-            <h1 className="text-base font-bold leading-tight">SNHF</h1>
-            <p className="text-blue-300 text-xs mt-0.5 leading-tight">Sté Nationale d&apos;Horticulture de France</p>
+        <div className="px-4 py-4 border-b border-blue-800 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="bg-white rounded-lg p-1.5 flex-shrink-0">
+              <Image
+                src="/logo.svg"
+                alt="SNHF"
+                width={44}
+                height={52}
+                className="block"
+              />
+            </div>
+            <div>
+              <p className="text-white text-xs font-semibold leading-tight">Sté Nationale</p>
+              <p className="text-blue-300 text-xs leading-tight">d&apos;Horticulture</p>
+              <p className="text-blue-300 text-xs leading-tight">de France</p>
+            </div>
           </div>
           {/* Bouton fermer (mobile) */}
           <button
