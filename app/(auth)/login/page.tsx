@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -36,10 +37,15 @@ export default function LoginPage() {
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-green-900 to-blue-800">
       <div className="bg-white rounded-2xl shadow-xl w-full max-w-sm p-8">
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-14 h-14 rounded-full bg-green-100 mb-4">
-            <span className="text-2xl">🌿</span>
+          <div className="flex justify-center mb-4">
+            <Image
+              src="/logo.png"
+              alt="SNHF"
+              width={90}
+              height={107}
+              className="block"
+            />
           </div>
-          <h1 className="text-xl font-bold text-gray-900">SNHF</h1>
           <p className="text-gray-500 mt-1 text-xs font-medium">Société Nationale d'Horticulture de France</p>
           <p className="text-gray-400 mt-3 text-sm">Connectez-vous à votre espace CRM</p>
         </div>
