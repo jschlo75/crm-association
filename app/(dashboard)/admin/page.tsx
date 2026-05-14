@@ -65,7 +65,7 @@ export default function AdminPage() {
   }
 
   async function toggleRole(user: User) {
-    const cycle: Record<string, string> = { MEMBRE: "RESTREINT", RESTREINT: "ADMIN", ADMIN: "MEMBRE" };
+    const cycle: Record<User["role"], User["role"]> = { MEMBRE: "RESTREINT", RESTREINT: "ADMIN", ADMIN: "MEMBRE" };
     const newRole = cycle[user.role] ?? "MEMBRE";
     const res = await fetch(`/api/admin/users/${user.id}`, {
       method: "PUT",
