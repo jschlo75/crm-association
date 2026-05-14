@@ -99,7 +99,7 @@ export function ContactForm({ defaultValues, defaultCompteId }: Props) {
 
       <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 space-y-4">
         <h2 className="font-semibold text-gray-900">Informations personnelles</h2>
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
             <label className={labelClass}>Prénom *</label>
             <input name="prenom" required defaultValue={defaultValues?.prenom} className={inputClass} />
@@ -164,8 +164,8 @@ export function ContactForm({ defaultValues, defaultCompteId }: Props) {
 
       <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 space-y-4">
         <h2 className="font-semibold text-gray-900">Adresse postale</h2>
-        <div className="grid grid-cols-2 gap-4">
-          <div className="col-span-2">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="sm:col-span-2">
             <label className={labelClass}>Adresse</label>
             <input name="adresse" defaultValue={defaultValues?.adresse} className={inputClass} />
           </div>

@@ -36,7 +36,7 @@ export default async function CompteDetailPage({ params }: { params: Promise<{ i
   return (
     <div className="space-y-6 max-w-4xl">
       {/* En-tête */}
-      <div className="flex items-start justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
         <div className="flex items-center gap-4">
           <div className="w-14 h-14 rounded-xl bg-blue-100 flex items-center justify-center">
             <Building2 size={28} className="text-blue-600" />
@@ -101,9 +101,9 @@ export default async function CompteDetailPage({ params }: { params: Promise<{ i
         </div>
       )}
 
-      <div className="grid grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
         {/* Informations */}
-        <div className="col-span-1 bg-white rounded-xl shadow-sm border border-gray-200 p-6 space-y-4">
+        <div className="lg:col-span-1 bg-white rounded-xl shadow-sm border border-gray-200 p-6 space-y-4">
           <h2 className="font-semibold text-gray-900">Informations</h2>
           <div className="space-y-3 text-sm">
             {compte.email && (
@@ -136,7 +136,7 @@ export default async function CompteDetailPage({ params }: { params: Promise<{ i
         </div>
 
         {/* Contacts */}
-        <div className="col-span-2 bg-white rounded-xl shadow-sm border border-gray-200">
+        <div className="lg:col-span-2 bg-white rounded-xl shadow-sm border border-gray-200">
           <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
             <h2 className="font-semibold text-gray-900 flex items-center gap-2">
               <Users size={16} className="text-gray-400" />

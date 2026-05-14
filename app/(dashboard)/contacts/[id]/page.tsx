@@ -67,9 +67,9 @@ export default async function ContactDetailPage({ params }: { params: Promise<{ 
         )}
       </div>
 
-      <div className="grid grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
         {/* Informations */}
-        <div className="col-span-1 bg-white rounded-xl shadow-sm border border-gray-200 p-6 space-y-3">
+        <div className="lg:col-span-1 bg-white rounded-xl shadow-sm border border-gray-200 p-6 space-y-3">
           <h2 className="font-semibold text-gray-900">Coordonnées</h2>
           <div className="space-y-3 text-sm">
             {contact.email && (
@@ -108,7 +108,7 @@ export default async function ContactDetailPage({ params }: { params: Promise<{ 
         </div>
 
         {/* Interactions */}
-        <div className="col-span-2 bg-white rounded-xl shadow-sm border border-gray-200">
+        <div className="lg:col-span-2 bg-white rounded-xl shadow-sm border border-gray-200">
           <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
             <h2 className="font-semibold text-gray-900 flex items-center gap-2">
               <MessageSquare size={16} className="text-gray-400" />

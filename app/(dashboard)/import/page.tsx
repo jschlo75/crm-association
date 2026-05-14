@@ -209,7 +209,7 @@ export default function ImportPage() {
   return (
     <div className="max-w-4xl space-y-6">
       {/* En-tête */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <h1 className="text-2xl font-bold text-gray-900">Importer depuis Excel</h1>
         {step !== "choose" && (
           <button
@@ -223,7 +223,7 @@ export default function ImportPage() {
       </div>
 
       {/* Fil d'Ariane */}
-      <div className="flex items-center gap-2 text-sm text-gray-400">
+      <div className="flex flex-wrap items-center gap-2 text-sm text-gray-400">
         {(["choose", "upload", "mapping", "preview", "result"] as Step[]).map((s, i, arr) => {
           const labels: Record<Step, string> = {
             choose: "Type", upload: "Fichier", mapping: "Colonnes",
@@ -248,7 +248,7 @@ export default function ImportPage() {
       {/* ── Étape 1 : Choisir le type ── */}
       {step === "choose" && (
         <div className="space-y-4">
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {(["comptes", "contacts"] as ImportType[]).map((t) => (
               <button
                 key={t}
@@ -350,7 +350,8 @@ export default function ImportPage() {
               </div>
             </div>
 
-            <table className="w-full text-sm">
+            <div className="overflow-x-auto">
+            <table className="w-full text-sm min-w-[480px]">
               <thead>
                 <tr className="text-left text-xs font-medium text-gray-500 uppercase tracking-wide border-b border-gray-200">
                   <th className="pb-2 pr-4">Colonne du fichier</th>
@@ -385,6 +386,7 @@ export default function ImportPage() {
                 ))}
               </tbody>
             </table>
+            </div>
           </div>
 
           {/* Champs obligatoires manquants */}
@@ -483,7 +485,7 @@ export default function ImportPage() {
           <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 space-y-4">
             <h2 className="font-semibold text-gray-900">Import terminé</h2>
 
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="bg-green-50 border border-green-200 rounded-xl p-4 flex items-center gap-3">
                 <CheckCircle size={24} className="text-green-500" />
                 <div>

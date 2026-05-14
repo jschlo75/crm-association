@@ -98,7 +98,7 @@ export default function AdminPage() {
 
   return (
     <div className="space-y-6 max-w-4xl">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <h1 className="text-2xl font-bold text-gray-900">Administration — Utilisateurs</h1>
         <button
           onClick={() => setShowForm(!showForm)}
@@ -116,7 +116,7 @@ export default function AdminPage() {
             {formError && (
               <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm">{formError}</div>
             )}
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <label className={labelClass}>Nom complet *</label>
                 <input name="nom" required className={inputClass} />
@@ -157,11 +157,11 @@ export default function AdminPage() {
         </div>
       )}
 
-      <div className="bg-white rounded-xl shadow-sm border border-gray-200">
+      <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-x-auto">
         {loading ? (
           <div className="p-8 text-center text-gray-400 text-sm">Chargement...</div>
         ) : (
-          <table className="w-full text-sm">
+          <table className="w-full text-sm min-w-[600px]">
             <thead className="border-b border-gray-200">
               <tr className="text-left text-xs font-medium text-gray-500 uppercase tracking-wide">
                 <th className="px-6 py-3">Utilisateur</th>

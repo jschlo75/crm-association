@@ -11,10 +11,11 @@ export default async function DashboardLayout({ children }: { children: React.Re
   const userName = (session.user as { name?: string }).name || session.user?.email || "";
 
   return (
-    <div className="flex min-h-screen">
+    <div className="flex min-h-screen bg-gray-50">
       <Sidebar role={role} userName={userName} />
-      <div className="flex-1 ml-64">
-        <main className="p-6">{children}</main>
+      {/* Sur mobile : pas de marge gauche + padding top pour le bouton hamburger */}
+      <div className="flex-1 lg:ml-64">
+        <main className="p-4 pt-14 lg:p-6 lg:pt-6">{children}</main>
       </div>
     </div>
   );

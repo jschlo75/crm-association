@@ -69,8 +69,8 @@ export function EvenementForm({ defaultValues }: { defaultValues?: EvenementForm
 
       <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 space-y-4">
         <h2 className="font-semibold text-gray-900">Informations</h2>
-        <div className="grid grid-cols-2 gap-4">
-          <div className="col-span-2">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="sm:col-span-2">
             <label className={labelClass}>Titre *</label>
             <input name="titre" required defaultValue={defaultValues?.titre} className={inputClass} placeholder="Ex : Journée portes ouvertes" />
           </div>

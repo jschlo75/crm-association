@@ -36,7 +36,7 @@ export default async function EvenementDetailPage({ params }: { params: Promise<
   return (
     <div className="space-y-6 max-w-4xl">
       {/* En-tête */}
-      <div className="flex items-start justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
         <div className="flex items-start gap-4">
           <div className={`w-14 h-14 rounded-xl flex items-center justify-center flex-shrink-0 ${isPast ? "bg-gray-100" : "bg-blue-100"}`}>
             <CalendarDays size={28} className={isPast ? "text-gray-400" : "text-blue-600"} />

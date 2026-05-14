@@ -107,7 +107,7 @@ export function ParticipantManager({
   return (
     <div className="space-y-4">
       {/* Compteurs par statut */}
-      <div className="grid grid-cols-5 gap-2">
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-2">
         {STATUTS.map((s) => (
           <div key={s} className={`rounded-lg px-3 py-2 text-center ${STATUT_PARTICIPANT_COLORS[s]}`}>
             <div className="text-xl font-bold">{stats[s]}</div>
@@ -179,6 +179,7 @@ export function ParticipantManager({
             Aucun participant. Cliquez sur &quot;Ajouter&quot; pour commencer.
           </p>
         ) : (
+          <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead className="bg-gray-50 border-b border-gray-100">
               <tr>
@@ -239,6 +240,7 @@ export function ParticipantManager({
               ))}
             </tbody>
           </table>
+          </div>
         )}
       </div>
     </div>

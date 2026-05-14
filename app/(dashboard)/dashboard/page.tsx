@@ -42,7 +42,7 @@ export default async function DashboardPage() {
       </div>
 
       {/* Statistiques */}
-      <div className="grid grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         {stats.map(({ label, value, icon: Icon, href, color }) => (
           <Link
             key={label}
@@ -54,7 +54,7 @@ export default async function DashboardPage() {
                 <p className="text-sm text-gray-500 font-medium">{label}</p>
                 <p className="text-3xl font-bold text-gray-900 mt-1">{value}</p>
               </div>
-              <div className={`${color} p-3 rounded-xl`}>
+              <div className={`${color} p-3 rounded-xl flex-shrink-0`}>
                 <Icon size={24} className="text-white" />
               </div>
             </div>
