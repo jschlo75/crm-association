@@ -102,7 +102,7 @@ export function Sidebar({ role, userName }: { role: string; userName: string }) 
           <div className="flex items-center gap-3">
             <div className="bg-white rounded-lg p-1.5 flex-shrink-0">
               <Image
-                src="/logo.svg"
+                src="/logo.png"
                 alt="SNHF"
                 width={44}
                 height={52}
