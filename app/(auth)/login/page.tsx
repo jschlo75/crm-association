@@ -3,7 +3,6 @@
 import { useState } from "react";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import Image from "next/image";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -38,13 +37,8 @@ export default function LoginPage() {
       <div className="bg-white rounded-2xl shadow-xl w-full max-w-sm p-8">
         <div className="text-center mb-8">
           <div className="flex justify-center mb-4">
-            <Image
-              src="/logo.png"
-              alt="SNHF"
-              width={90}
-              height={107}
-              className="block"
-            />
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/logo.png" alt="SNHF" width={90} />
           </div>
           <p className="text-gray-500 mt-1 text-xs font-medium">Société Nationale d'Horticulture de France</p>
           <p className="text-gray-400 mt-3 text-sm">Connectez-vous à votre espace CRM</p>

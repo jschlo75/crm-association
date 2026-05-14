@@ -5,7 +5,6 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { signOut } from "next-auth/react";
 import { cn } from "@/lib/utils";
-import Image from "next/image";
 import {
   LayoutDashboard, Building2, Users, MessageSquare, Mail,
   CalendarDays, FileUp, UserCog, LogOut, UserCircle, Menu, X,
@@ -101,13 +100,8 @@ export function Sidebar({ role, userName }: { role: string; userName: string }) 
         <div className="px-4 py-4 border-b border-blue-800 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="bg-white rounded-lg p-1.5 flex-shrink-0">
-              <Image
-                src="/logo.png"
-                alt="SNHF"
-                width={44}
-                height={52}
-                className="block"
-              />
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src="/logo.png" alt="SNHF" width={44} />
             </div>
             <div>
               <p className="text-blue-300 text-xs leading-snug">Société Nationale</p>
