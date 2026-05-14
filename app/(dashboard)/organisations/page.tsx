@@ -31,32 +31,38 @@ export default function OrganisationsPage() {
 
   const [organisations, setOrganisations] = useState<Organisation[]>([]);
   const [search, setSearch] = useState("");
-  const [filterType, setFilterType] = useState("");
+  const [filterTypes, setFilterTypes] = useState<string[]>([]);
   const [filterMembre, setFilterMembre] = useState(false);
   const [loading, setLoading] = useState(true);
   const [showFilters, setShowFilters] = useState(false);
 
-  const activeFilterCount = (filterType ? 1 : 0) + (filterMembre ? 1 : 0);
+  const activeFilterCount = filterTypes.length + (filterMembre ? 1 : 0);
 
   const fetchOrganisations = useCallback(() => {
     setLoading(true);
     const params = new URLSearchParams();
     if (search) params.set("q", search);
-    if (filterType) params.set("type", filterType);
+    filterTypes.forEach((t) => params.append("type", t));
     if (filterMembre) params.set("membreSnhf", "true");
 
     fetch(`/api/organisations?${params.toString()}`)
       .then((r) => r.json())
       .then((data) => { setOrganisations(data); setLoading(false); });
-  }, [search, filterType, filterMembre]);
+  }, [search, filterTypes, filterMembre]);
 
   useEffect(() => {
     const timer = setTimeout(fetchOrganisations, 300);
     return () => clearTimeout(timer);
   }, [fetchOrganisations]);
 
+  function toggleType(value: string) {
+    setFilterTypes((prev) =>
+      prev.includes(value) ? prev.filter((t) => t !== value) : [...prev, value]
+    );
+  }
+
   function resetFilters() {
-    setFilterType("");
+    setFilterTypes([]);
     setFilterMembre(false);
   }
 
@@ -129,9 +135,9 @@ export default function OrganisationsPage() {
                 {TYPES.map((t) => (
                   <button
                     key={t.value}
-                    onClick={() => setFilterType(filterType === t.value ? "" : t.value)}
+                    onClick={() => toggleType(t.value)}
                     className={`px-3 py-1 rounded-full text-xs font-medium border transition-colors ${
-                      filterType === t.value
+                      filterTypes.includes(t.value)
                         ? "bg-blue-600 text-white border-blue-600"
                         : "bg-white text-gray-600 border-gray-300 hover:border-blue-400 hover:text-blue-600"
                     }`}
@@ -165,14 +171,14 @@ export default function OrganisationsPage() {
       {activeFilterCount > 0 && !showFilters && (
         <div className="flex items-center gap-2 flex-wrap">
           <span className="text-xs text-gray-400">Filtres actifs :</span>
-          {filterType && (
-            <span className="flex items-center gap-1 text-xs bg-blue-50 text-blue-700 border border-blue-200 px-2 py-0.5 rounded-full">
-              {TYPE_ORGANISATION_LABELS[filterType]}
-              <button onClick={() => setFilterType("")} className="hover:text-red-500">
+          {filterTypes.map((t) => (
+            <span key={t} className="flex items-center gap-1 text-xs bg-blue-50 text-blue-700 border border-blue-200 px-2 py-0.5 rounded-full">
+              {TYPE_ORGANISATION_LABELS[t]}
+              <button onClick={() => toggleType(t)} className="hover:text-red-500">
                 <X size={10} />
               </button>
             </span>
-          )}
+          ))}
           {filterMembre && (
             <span className="flex items-center gap-1 text-xs bg-blue-50 text-blue-700 border border-blue-200 px-2 py-0.5 rounded-full">
               Membres SNHF

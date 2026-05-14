@@ -25,13 +25,14 @@ export async function GET(req: NextRequest) {
 
   const { searchParams } = new URL(req.url);
   const q = searchParams.get("q") || "";
-  const type = searchParams.get("type") || "";
+  const types = searchParams.getAll("type").filter(Boolean);
   const membreSnhf = searchParams.get("membreSnhf");
   const organisationId = searchParams.get("organisationId") || "";
 
   const where: Record<string, unknown> = {};
   if (q) where.nom = { contains: q, mode: "insensitive" };
-  if (type) where.type = type;
+  if (types.length === 1) where.type = types[0];
+  else if (types.length > 1) where.type = { in: types };
   if (membreSnhf === "true") where.membreSnhf = true;
   if (organisationId) where.id = organisationId;
 
