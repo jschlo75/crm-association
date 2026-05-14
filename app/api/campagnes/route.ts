@@ -29,7 +29,7 @@ export async function GET(req: NextRequest) {
 export async function POST(req: NextRequest) {
   const session = await getServerSession(authOptions);
   const role = (session?.user as { role: string })?.role;
-  if (!session || role !== "ADMIN")
+  if (!session || (role !== "ADMIN" && role !== "RESTREINT"))
     return NextResponse.json({ error: "Non autorisé" }, { status: 403 });
 
   const userId = (session.user as { id: string }).id;

@@ -10,7 +10,7 @@ type User = {
   id: string;
   nom: string;
   email: string;
-  role: "ADMIN" | "MEMBRE";
+  role: "ADMIN" | "MEMBRE" | "RESTREINT";
   actif: boolean;
   createdAt: string;
 };
@@ -65,7 +65,8 @@ export default function AdminPage() {
   }
 
   async function toggleRole(user: User) {
-    const newRole = user.role === "ADMIN" ? "MEMBRE" : "ADMIN";
+    const cycle: Record<string, string> = { MEMBRE: "RESTREINT", RESTREINT: "ADMIN", ADMIN: "MEMBRE" };
+    const newRole = cycle[user.role] ?? "MEMBRE";
     const res = await fetch(`/api/admin/users/${user.id}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
@@ -133,6 +134,7 @@ export default function AdminPage() {
                 <label className={labelClass}>Rôle *</label>
                 <select name="role" className={inputClass}>
                   <option value="MEMBRE">Membre</option>
+                  <option value="RESTREINT">Restreint</option>
                   <option value="ADMIN">Administrateur</option>
                 </select>
               </div>
@@ -189,10 +191,14 @@ export default function AdminPage() {
                     </td>
                     <td className="px-6 py-4">
                       <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium ${
-                        user.role === "ADMIN" ? "bg-purple-100 text-purple-700" : "bg-gray-100 text-gray-600"
+                        user.role === "ADMIN"
+                          ? "bg-purple-100 text-purple-700"
+                          : user.role === "RESTREINT"
+                          ? "bg-amber-100 text-amber-700"
+                          : "bg-gray-100 text-gray-600"
                       }`}>
                         {user.role === "ADMIN" ? <Shield size={11} /> : <User size={11} />}
-                        {user.role === "ADMIN" ? "Admin" : "Membre"}
+                        {user.role === "ADMIN" ? "Admin" : user.role === "RESTREINT" ? "Restreint" : "Membre"}
                       </span>
                     </td>
                     <td className="px-6 py-4">
@@ -210,7 +216,7 @@ export default function AdminPage() {
                             onClick={() => toggleRole(user)}
                             className="text-xs text-blue-600 hover:underline"
                           >
-                            {user.role === "ADMIN" ? "→ Membre" : "→ Admin"}
+                            {user.role === "ADMIN" ? "→ Membre" : user.role === "RESTREINT" ? "→ Admin" : "→ Restreint"}
                           </button>
                           <button
                             onClick={() => toggleActif(user)}

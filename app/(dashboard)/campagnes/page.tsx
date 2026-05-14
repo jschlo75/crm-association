@@ -37,7 +37,7 @@ export default function CampagnesPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold text-gray-900">Campagnes email</h1>
-        {role === "ADMIN" && (
+        {(role === "ADMIN" || role === "RESTREINT") && (
           <Link
             href="/campagnes/nouvelle"
             className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors"
@@ -54,7 +54,7 @@ export default function CampagnesPage() {
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-12 text-center">
           <Mail size={40} className="text-gray-300 mx-auto mb-3" />
           <p className="text-gray-500 font-medium">Aucune campagne pour le moment</p>
-          {role === "ADMIN" && (
+          {(role === "ADMIN" || role === "RESTREINT") && (
             <Link href="/campagnes/nouvelle" className="text-blue-600 hover:underline text-sm mt-2 inline-block">
               Créer la première campagne
             </Link>

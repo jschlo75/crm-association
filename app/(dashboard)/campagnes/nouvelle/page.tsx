@@ -22,7 +22,7 @@ function NouvelleCampagneForm() {
   const [contenu, setContenu] = useState("");
 
   useEffect(() => {
-    if (role !== "ADMIN") { router.push("/campagnes"); return; }
+    if (role !== "ADMIN" && role !== "RESTREINT") { router.push("/campagnes"); return; }
     fetch("/api/organisations").then((r) => r.json()).then(setOrganisations);
   }, [role]);
 

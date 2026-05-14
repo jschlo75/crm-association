@@ -119,7 +119,7 @@ export default function CampagneDetailPage({ params }: { params: Promise<{ id: s
           </div>
         </div>
 
-        {role === "ADMIN" && (
+        {(role === "ADMIN" || role === "RESTREINT") && (
           <div className="flex items-center gap-2">
             {!isEnvoyee && (
               <>

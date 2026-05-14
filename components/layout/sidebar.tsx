@@ -12,12 +12,12 @@ import {
 import { LOGO_B64 } from "@/lib/logo-base64";
 
 const navItems = [
-  { href: "/dashboard",    label: "Tableau de bord",  icon: LayoutDashboard },
-  { href: "/organisations", label: "Organisations",      icon: Building2 },
-  { href: "/contacts",     label: "Contacts",          icon: Users },
-  { href: "/interactions", label: "Interactions",      icon: MessageSquare },
-  { href: "/evenements",   label: "Événements",        icon: CalendarDays },
-  { href: "/campagnes",    label: "Campagnes email",   icon: Mail },
+  { href: "/dashboard",    label: "Tableau de bord",  icon: LayoutDashboard, roles: ["ADMIN", "MEMBRE", "RESTREINT"] },
+  { href: "/organisations", label: "Organisations",   icon: Building2,        roles: ["ADMIN", "MEMBRE", "RESTREINT"] },
+  { href: "/contacts",     label: "Contacts",         icon: Users,            roles: ["ADMIN", "MEMBRE", "RESTREINT"] },
+  { href: "/interactions", label: "Interactions",     icon: MessageSquare,    roles: ["ADMIN", "MEMBRE"] },
+  { href: "/evenements",   label: "Événements",       icon: CalendarDays,     roles: ["ADMIN", "MEMBRE"] },
+  { href: "/campagnes",    label: "Campagnes email",  icon: Mail,             roles: ["ADMIN", "MEMBRE", "RESTREINT"] },
 ];
 
 const adminNavItems = [
@@ -121,7 +121,7 @@ export function Sidebar({ role, userName }: { role: string; userName: string }) 
 
         {/* Navigation */}
         <nav className="flex-1 p-4 space-y-1 overflow-y-auto scrollbar-hide">
-          {navItems.map(({ href, label, icon }) => (
+          {navItems.filter(({ roles }) => roles.includes(role)).map(({ href, label, icon }) => (
             <NavLink key={href} href={href} label={label} icon={icon} onClick={close} />
           ))}
 

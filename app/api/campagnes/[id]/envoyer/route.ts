@@ -6,7 +6,7 @@ import { prisma } from "@/lib/prisma";
 export async function POST(_: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const session = await getServerSession(authOptions);
   const role = (session?.user as { role: string })?.role;
-  if (!session || role !== "ADMIN")
+  if (!session || (role !== "ADMIN" && role !== "RESTREINT"))
     return NextResponse.json({ error: "Non autorisé" }, { status: 403 });
 
   const { id } = await params;
