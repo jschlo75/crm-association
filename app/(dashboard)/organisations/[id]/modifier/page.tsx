@@ -23,6 +23,7 @@ export default async function ModifierOrganisationPage({ params }: { params: Pro
           type: organisation.type ?? "",
           email: organisation.email || "",
           telephone: organisation.telephone || "",
+          membreSnhf: organisation.membreSnhf,
           siteWeb: organisation.siteWeb || "",
           adresse: organisation.adresse || "",
           codePostal: organisation.codePostal || "",

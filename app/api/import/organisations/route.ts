@@ -29,6 +29,11 @@ const rowSchema = z.object({
   type: z.preprocess(normalizeType, z.enum(["ENSEIGNEMENT", "ASSOCIATION", "FEDERATION", "JARDIN_PRIVE", "ORGANISME_PUBLIC"]).optional()),
   email: z.string().email().optional().or(z.literal("")).or(z.null()),
   telephone: z.string().optional().or(z.null()),
+  membreSnhf: z.preprocess((v) => {
+    if (typeof v === "boolean") return v;
+    if (typeof v === "string") return ["oui", "yes", "true", "1", "x"].includes(v.toLowerCase().trim());
+    return false;
+  }, z.boolean()).optional(),
   siteWeb: z.string().optional().or(z.null()),
   adresse: z.string().optional().or(z.null()),
   codePostal: z.string().optional().or(z.null()),
@@ -57,7 +62,7 @@ export async function POST(req: NextRequest) {
       continue;
     }
 
-    const { email, ...rest } = parsed.data;
+    const { email, membreSnhf, ...rest } = parsed.data;
 
     try {
       const existing = await prisma.organisation.findFirst({
@@ -70,6 +75,7 @@ export async function POST(req: NextRequest) {
           data: {
             ...rest,
             type: rest.type ?? existing.type ?? null,
+            membreSnhf: membreSnhf ?? existing.membreSnhf,
             email: email || existing.email,
             pays: rest.pays || existing.pays,
           },
@@ -80,6 +86,7 @@ export async function POST(req: NextRequest) {
           data: {
             ...rest,
             type: rest.type ?? null,
+            membreSnhf: membreSnhf ?? false,
             email: email || null,
             pays: rest.pays || "France",
           },

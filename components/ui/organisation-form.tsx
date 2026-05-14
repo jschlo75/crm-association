@@ -8,6 +8,7 @@ type OrganisationFormData = {
   type: string;
   email: string;
   telephone: string;
+  membreSnhf: boolean;
   siteWeb: string;
   adresse: string;
   codePostal: string;
@@ -38,6 +39,7 @@ export function OrganisationForm({ defaultValues }: Props) {
   const [error, setError] = useState("");
   const [organisations, setOrganisations] = useState<OrganisationOption[]>([]);
   const [parentId, setParentId] = useState(defaultValues?.parentId || "");
+  const [membreSnhf, setMembreSnhf] = useState(defaultValues?.membreSnhf ?? false);
 
   useEffect(() => {
     fetch("/api/organisations")
@@ -61,6 +63,7 @@ export function OrganisationForm({ defaultValues }: Props) {
       type: getValue("type"),
       email: getValue("email"),
       telephone: getValue("telephone"),
+      membreSnhf,
       siteWeb: getValue("siteWeb"),
       adresse: getValue("adresse"),
       codePostal: getValue("codePostal"),
@@ -137,6 +140,17 @@ export function OrganisationForm({ defaultValues }: Props) {
           <div>
             <label className={labelClass}>Téléphone</label>
             <input name="telephone" defaultValue={defaultValues?.telephone} className={inputClass} />
+          </div>
+          <div className="sm:col-span-2">
+            <label className="flex items-center gap-3 cursor-pointer select-none">
+              <input
+                type="checkbox"
+                checked={membreSnhf}
+                onChange={(e) => setMembreSnhf(e.target.checked)}
+                className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500 cursor-pointer"
+              />
+              <span className="text-sm font-medium text-gray-700">Membre SNHF</span>
+            </label>
           </div>
           <div className="sm:col-span-2">
             <label className={labelClass}>Site web</label>

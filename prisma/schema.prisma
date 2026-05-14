@@ -58,6 +58,7 @@ model Organisation {
   id                String         @id @default(cuid())
   nom               String
   type              TypeCompte?
+  membreSnhf        Boolean        @default(false)
   email             String?
   telephone         String?
   siteWeb           String?

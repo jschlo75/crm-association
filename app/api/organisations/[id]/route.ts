@@ -9,6 +9,7 @@ const organisationSchema = z.object({
   type: z.enum(["ENSEIGNEMENT", "ASSOCIATION", "FEDERATION", "JARDIN_PRIVE", "ORGANISME_PUBLIC"]).optional().nullable(),
   email: z.string().email().optional().or(z.literal("")),
   telephone: z.string().optional(),
+  membreSnhf: z.boolean().optional(),
   siteWeb: z.string().optional(),
   adresse: z.string().optional(),
   codePostal: z.string().optional(),

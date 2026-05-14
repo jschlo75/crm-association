@@ -21,6 +21,7 @@ const ORGANISATION_FIELDS: FieldDef[] = [
   { key: "email",      label: "Email",        required: false },
   { key: "telephone",  label: "Téléphone",    required: false },
   { key: "siteWeb",    label: "Site web",     required: false },
+  { key: "membreSnhf", label: "Membre SNHF",  required: false },
   { key: "adresse",    label: "Adresse",      required: false },
   { key: "codePostal", label: "Code postal",  required: false },
   { key: "ville",      label: "Ville",        required: false },
@@ -56,6 +57,7 @@ const SYNONYMS: Record<string, string[]> = {
   pays:       ["pays", "country", "nation"],
   notes:      ["notes", "commentaires", "remarques", "observations", "note", "comment", "comments"],
   siteWeb:    ["site web", "siteweb", "site", "website", "url", "www", "web", "site internet"],
+  membreSnhf: ["membre snhf", "membre", "snhf", "adhérent", "adherent"],
   poste:      ["poste", "fonction", "titre", "title", "job", "position", "rôle", "role"],
   organisation: ["organisation", "compte", "société", "societe", "company", "organization", "entreprise", "établissement", "etablissement"],
 };

@@ -4,7 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import {
-  Building2, Mail, Phone, Globe, Users, MessageSquare,
+  Building2, Mail, Phone, Globe, BadgeCheck, Users, MessageSquare,
   Pencil, Plus, Trash2, ChevronsUp, GitBranch
 } from "lucide-react";
 import {
@@ -142,6 +142,12 @@ export default async function OrganisationDetailPage({ params }: { params: Promi
               />
             )}
           </div>
+          {organisation.membreSnhf && (
+            <div className="flex items-center gap-2 text-sm">
+              <BadgeCheck size={14} className="text-blue-500 flex-shrink-0" />
+              <span className="font-medium text-blue-700">Membre SNHF</span>
+            </div>
+          )}
           {organisation.notes && (
             <div className="pt-3 border-t border-gray-100">
               <p className="text-xs font-medium text-gray-500 mb-1">Notes</p>
