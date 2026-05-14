@@ -113,7 +113,7 @@ export function Sidebar({ role, userName }: { role: string; userName: string }) 
         </div>
 
         {/* Navigation */}
-        <nav className="flex-1 p-4 space-y-1 overflow-y-auto">
+        <nav className="flex-1 p-4 space-y-1 overflow-y-auto scrollbar-hide">
           {navItems.map(({ href, label, icon }) => (
             <NavLink key={href} href={href} label={label} icon={icon} onClick={close} />
           ))}
