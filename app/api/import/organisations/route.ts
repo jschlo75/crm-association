@@ -9,6 +9,7 @@ const rowSchema = z.object({
   type: z.enum(["ENSEIGNEMENT", "ASSOCIATION", "FEDERATION", "JARDIN_PRIVE", "ORGANISME_PUBLIC"]).optional(),
   email: z.string().email().optional().or(z.literal("")).or(z.null()),
   telephone: z.string().optional().or(z.null()),
+  siteWeb: z.string().optional().or(z.null()),
   adresse: z.string().optional().or(z.null()),
   codePostal: z.string().optional().or(z.null()),
   ville: z.string().optional().or(z.null()),

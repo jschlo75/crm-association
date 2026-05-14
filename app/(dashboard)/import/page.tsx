@@ -20,6 +20,7 @@ const ORGANISATION_FIELDS: FieldDef[] = [
   { key: "type",       label: "Type",         required: false },
   { key: "email",      label: "Email",        required: false },
   { key: "telephone",  label: "Téléphone",    required: false },
+  { key: "siteWeb",    label: "Site web",     required: false },
   { key: "adresse",    label: "Adresse",      required: false },
   { key: "codePostal", label: "Code postal",  required: false },
   { key: "ville",      label: "Ville",        required: false },
@@ -54,6 +55,7 @@ const SYNONYMS: Record<string, string[]> = {
   ville:      ["ville", "city", "commune", "localité", "localite"],
   pays:       ["pays", "country", "nation"],
   notes:      ["notes", "commentaires", "remarques", "observations", "note", "comment", "comments"],
+  siteWeb:    ["site web", "siteweb", "site", "website", "url", "www", "web", "site internet"],
   poste:      ["poste", "fonction", "titre", "title", "job", "position", "rôle", "role"],
   organisation: ["organisation", "compte", "société", "societe", "company", "organization", "entreprise", "établissement", "etablissement"],
 };
@@ -81,9 +83,9 @@ async function downloadTemplate(type: ImportType) {
 
   if (type === "organisations") {
     const ws = XLSX.utils.aoa_to_sheet([
-      ["Nom", "Type", "Email", "Téléphone", "Adresse", "Code postal", "Ville", "Pays", "Notes"],
-      ["Association Exemple", "ASSOCIATION", "contact@exemple.fr", "01 23 45 67 89", "12 rue des Roses", "75001", "Paris", "France", ""],
-      ["École nationale d'horticulture", "ENSEIGNEMENT", "contact@enh.fr", "01 30 83 40 00", "4 rue Hardy", "78009", "Versailles", "France", ""],
+      ["Nom", "Type", "Email", "Téléphone", "Site web", "Adresse", "Code postal", "Ville", "Pays", "Notes"],
+      ["Association Exemple", "ASSOCIATION", "contact@exemple.fr", "01 23 45 67 89", "https://www.exemple.fr", "12 rue des Roses", "75001", "Paris", "France", ""],
+      ["École nationale d'horticulture", "ENSEIGNEMENT", "contact@enh.fr", "01 30 83 40 00", "https://www.enh.fr", "4 rue Hardy", "78009", "Versailles", "France", ""],
     ]);
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, "Organisations");
