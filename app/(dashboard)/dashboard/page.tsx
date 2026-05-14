@@ -2,7 +2,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import Link from "next/link";
-import { Building2, Users, Newspaper, ExternalLink, AlertCircle } from "lucide-react";
+import { Building2, Users, Newspaper, ExternalLink, AlertCircle, CalendarDays } from "lucide-react";
 
 /* ── API WordPress SNHF ─────────────────────────────────────── */
 type ArticleSnhf = {
@@ -69,15 +69,17 @@ export default async function DashboardPage() {
   const session = await getServerSession(authOptions);
   void session;
 
-  const [nbComptes, nbContacts, actualites] = await Promise.all([
+  const [nbComptes, nbContacts, nbEvenementsAVenir, actualites] = await Promise.all([
     prisma.organisation.count(),
     prisma.contact.count(),
+    prisma.evenement.count({ where: { date: { gte: new Date() } } }),
     fetchActualitesSnhf(),
   ]);
 
   const stats = [
-    { label: "Organisations", value: nbComptes, icon: Building2, href: "/organisations", color: "bg-blue-600" },
-    { label: "Contacts",      value: nbContacts, icon: Users,    href: "/contacts",      color: "bg-emerald-600" },
+    { label: "Organisations",      value: nbComptes,          icon: Building2,    href: "/organisations", color: "bg-blue-600" },
+    { label: "Contacts",           value: nbContacts,         icon: Users,        href: "/contacts",      color: "bg-emerald-600" },
+    { label: "Événements à venir", value: nbEvenementsAVenir, icon: CalendarDays, href: "/evenements",    color: "bg-purple-600" },
   ];
 
   return (
@@ -86,7 +88,7 @@ export default async function DashboardPage() {
       <h1 className="text-2xl font-bold text-gray-900">Groupe arboriculture fruitière familiale</h1>
 
       {/* Statistiques */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-lg">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         {stats.map(({ label, value, icon: Icon, href, color }) => (
           <Link
             key={label}
