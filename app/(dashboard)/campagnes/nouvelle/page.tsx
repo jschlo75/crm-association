@@ -33,7 +33,7 @@ function NouvelleCampagneForm() {
     fetch(url)
       .then((r) => r.json())
       .then((data: Contact[]) => setContacts(data));
-  }, [filtreCompteId]);
+  }, [filtreOrganisationId]);
 
   const destinataires = contacts.filter((c) => c.email);
 
