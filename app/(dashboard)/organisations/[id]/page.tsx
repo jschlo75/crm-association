@@ -44,9 +44,11 @@ export default async function OrganisationDetailPage({ params }: { params: Promi
           <div>
             <h1 className="text-2xl font-bold text-gray-900">{organisation.nom}</h1>
             <div className="flex items-center gap-2 flex-wrap">
-              <span className="text-sm bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full">
-                {TYPE_ORGANISATION_LABELS[organisation.type]}
-              </span>
+              {organisation.type && (
+                <span className="text-sm bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full">
+                  {TYPE_ORGANISATION_LABELS[organisation.type]}
+                </span>
+              )}
               {organisation.parent && (
                 <Link
                   href={`/organisations/${organisation.parent.id}`}
@@ -92,7 +94,7 @@ export default async function OrganisationDetailPage({ params }: { params: Promi
                   </div>
                   <div>
                     <div className="text-sm font-medium text-gray-900">{sc.nom}</div>
-                    <div className="text-xs text-gray-400">{TYPE_ORGANISATION_LABELS[sc.type]}</div>
+                    {sc.type && <div className="text-xs text-gray-400">{TYPE_ORGANISATION_LABELS[sc.type]}</div>}
                   </div>
                 </Link>
               </li>

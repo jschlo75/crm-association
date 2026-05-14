@@ -80,9 +80,11 @@ export default function OrganisationsPage() {
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2">
                       <span className="font-medium text-gray-900">{org.nom}</span>
-                      <span className="text-xs bg-gray-100 text-gray-500 px-2 py-0.5 rounded-full">
-                        {TYPE_ORGANISATION_LABELS[org.type]}
-                      </span>
+                      {org.type && (
+                        <span className="text-xs bg-gray-100 text-gray-500 px-2 py-0.5 rounded-full">
+                          {TYPE_ORGANISATION_LABELS[org.type]}
+                        </span>
+                      )}
                     </div>
                     <div className="text-sm text-gray-500 mt-0.5 flex items-center gap-3">
                       {org.ville && <span>{org.ville}</span>}

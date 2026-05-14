@@ -20,7 +20,7 @@ export default async function ModifierOrganisationPage({ params }: { params: Pro
         defaultValues={{
           id: organisation.id,
           nom: organisation.nom,
-          type: organisation.type,
+          type: organisation.type ?? "",
           email: organisation.email || "",
           telephone: organisation.telephone || "",
           siteWeb: organisation.siteWeb || "",

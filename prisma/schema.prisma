@@ -57,7 +57,7 @@ model Organisation {
   @@map("Compte")
   id                String         @id @default(cuid())
   nom               String
-  type              TypeCompte     @default(ASSOCIATION)
+  type              TypeCompte?
   email             String?
   telephone         String?
   siteWeb           String?

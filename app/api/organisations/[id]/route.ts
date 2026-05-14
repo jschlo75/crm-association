@@ -6,7 +6,7 @@ import { z } from "zod";
 
 const organisationSchema = z.object({
   nom: z.string().min(1),
-  type: z.enum(["ENSEIGNEMENT", "ASSOCIATION", "FEDERATION", "JARDIN_PRIVE", "ORGANISME_PUBLIC"]),
+  type: z.enum(["ENSEIGNEMENT", "ASSOCIATION", "FEDERATION", "JARDIN_PRIVE", "ORGANISME_PUBLIC"]).optional().nullable(),
   email: z.string().email().optional().or(z.literal("")),
   telephone: z.string().optional(),
   siteWeb: z.string().optional(),

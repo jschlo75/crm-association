@@ -69,7 +69,7 @@ export async function POST(req: NextRequest) {
           where: { id: existing.id },
           data: {
             ...rest,
-            type: rest.type ?? existing.type,
+            type: rest.type ?? existing.type ?? null,
             email: email || existing.email,
             pays: rest.pays || existing.pays,
           },
@@ -79,7 +79,7 @@ export async function POST(req: NextRequest) {
         await prisma.organisation.create({
           data: {
             ...rest,
-            type: rest.type ?? "ASSOCIATION",
+            type: rest.type ?? null,
             email: email || null,
             pays: rest.pays || "France",
           },
