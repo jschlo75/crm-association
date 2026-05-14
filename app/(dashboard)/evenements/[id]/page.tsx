@@ -71,12 +71,12 @@ export default async function EvenementDetailPage({ params }: { params: Promise<
         )}
       </div>
 
-      {/* Objectifs */}
+      {/* Descriptif */}
       {evenement.objectifs && (
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
           <h2 className="font-semibold text-gray-900 flex items-center gap-2 mb-3">
             <Target size={16} className="text-gray-400" />
-            Objectifs
+            Descriptif
           </h2>
           <p className="text-sm text-gray-700 whitespace-pre-wrap">{evenement.objectifs}</p>
         </div>

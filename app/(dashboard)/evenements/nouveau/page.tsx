@@ -6,7 +6,7 @@ import { EvenementForm } from "@/components/ui/evenement-form";
 export default async function NouvelEvenementPage() {
   const session = await getServerSession(authOptions);
   const role = (session?.user as { role: string })?.role;
-  if (role !== "ADMIN") redirect("/evenements");
+  if (!role) redirect("/login");
 
   return (
     <div className="max-w-2xl space-y-6">

@@ -17,7 +17,7 @@ export async function GET() {
 export async function POST(req: Request) {
   const session = await getServerSession(authOptions);
   const role = (session?.user as { role: string })?.role;
-  if (role !== "ADMIN") return NextResponse.json({ error: "Non autorisé" }, { status: 403 });
+  if (!session) return NextResponse.json({ error: "Non autorisé" }, { status: 401 });
 
   const { titre, date, lieu, objectifs } = await req.json();
   if (!titre || !date) return NextResponse.json({ error: "Titre et date obligatoires" }, { status: 400 });

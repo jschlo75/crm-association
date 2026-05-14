@@ -86,13 +86,13 @@ export function EvenementForm({ defaultValues }: { defaultValues?: EvenementForm
       </div>
 
       <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 space-y-4">
-        <h2 className="font-semibold text-gray-900">Objectifs</h2>
+        <h2 className="font-semibold text-gray-900">Descriptif</h2>
         <textarea
           name="objectifs"
           rows={5}
           defaultValue={defaultValues?.objectifs}
           className={inputClass}
-          placeholder="Décrire les objectifs de l'événement..."
+          placeholder="Décrivez l'événement (objectifs, programme, informations pratiques...)..."
         />
       </div>
 
