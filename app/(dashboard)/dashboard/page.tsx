@@ -4,47 +4,60 @@ import { prisma } from "@/lib/prisma";
 import Link from "next/link";
 import { Building2, Users, Newspaper, ExternalLink, AlertCircle } from "lucide-react";
 
-/* ── Parsing RSS SNHF ───────────────────────────────────────── */
+/* ── API WordPress SNHF ─────────────────────────────────────── */
 type ArticleSnhf = {
   titre: string;
   lien: string;
   date: string;
   extrait: string;
+  image: string | null;
 };
-
-function extraire(xml: string, balise: string): string {
-  const re = new RegExp(`<${balise}[^>]*>(?:<!\\[CDATA\\[)?(.*?)(?:\\]\\]>)?</${balise}>`, "s");
-  return (xml.match(re)?.[1] ?? "").trim();
-}
 
 async function fetchActualitesSnhf(): Promise<ArticleSnhf[]> {
   try {
-    const res = await fetch("https://www.snhf.org/category/actualites/feed/", {
-      next: { revalidate: 3600 }, // cache 1 heure
-    });
+    const res = await fetch(
+      "https://www.snhf.org/wp-json/wp/v2/posts?per_page=6&_embed=1",
+      { next: { revalidate: 3600 } } // cache 1 heure
+    );
     if (!res.ok) return [];
-    const xml = await res.text();
 
-    // Extraire chaque <item>
-    const items = [...xml.matchAll(/<item>([\s\S]*?)<\/item>/g)].map((m) => m[1]);
+    const posts = await res.json();
+    if (!Array.isArray(posts)) return [];
 
-    return items.slice(0, 6).map((item) => {
-      const titre = extraire(item, "title");
-      const lien = extraire(item, "link") || extraire(item, "guid");
-      const pubDate = extraire(item, "pubDate");
-      const description = extraire(item, "description")
-        .replace(/<[^>]+>/g, "") // strip HTML
-        .replace(/\s+/g, " ")
-        .trim()
-        .slice(0, 180);
-
+    return posts.map((post: Record<string, unknown>) => {
+      const titre = (post.title as { rendered: string })?.rendered ?? "";
+      const lien = (post.link as string) ?? "";
+      const pubDate = (post.date as string) ?? "";
       const date = pubDate
         ? new Date(pubDate).toLocaleDateString("fr-FR", {
             day: "numeric", month: "long", year: "numeric",
           })
         : "";
 
-      return { titre, lien, date, extrait: description };
+      // Extrait : strip HTML
+      const excerptRaw = (post.excerpt as { rendered: string })?.rendered ?? "";
+      const extrait = excerptRaw
+        .replace(/<[^>]+>/g, "")
+        .replace(/\s+/g, " ")
+        .trim()
+        .slice(0, 180);
+
+      // Image vignette via _embedded
+      let image: string | null = null;
+      try {
+        const embedded = post._embedded as Record<string, unknown>;
+        const media = embedded?.["wp:featuredmedia"] as Record<string, unknown>[];
+        const sizes = (media?.[0]?.media_details as Record<string, unknown>)?.sizes as Record<string, { source_url: string }>;
+        image =
+          sizes?.medium?.source_url ||
+          sizes?.thumbnail?.source_url ||
+          (media?.[0]?.source_url as string) ||
+          null;
+      } catch {
+        image = null;
+      }
+
+      return { titre, lien, date, extrait, image };
     });
   } catch {
     return [];
@@ -54,7 +67,7 @@ async function fetchActualitesSnhf(): Promise<ArticleSnhf[]> {
 /* ── Page ───────────────────────────────────────────────────── */
 export default async function DashboardPage() {
   const session = await getServerSession(authOptions);
-  void session; // session disponible si besoin futur
+  void session;
 
   const [nbComptes, nbContacts, actualites] = await Promise.all([
     prisma.organisation.count(),
@@ -126,13 +139,27 @@ export default async function DashboardPage() {
                   rel="noopener noreferrer"
                   className="flex items-start gap-4 px-6 py-4 hover:bg-gray-50 transition-colors group"
                 >
-                  <div className="flex-shrink-0 w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center mt-0.5">
-                    <Newspaper size={14} className="text-blue-500" />
+                  {/* Vignette */}
+                  <div className="flex-shrink-0 w-20 h-16 rounded-lg overflow-hidden bg-gray-100">
+                    {article.image ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img
+                        src={article.image}
+                        alt={article.titre}
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center">
+                        <Newspaper size={22} className="text-gray-300" />
+                      </div>
+                    )}
                   </div>
+
+                  {/* Texte */}
                   <div className="flex-1 min-w-0">
-                    <p className="font-medium text-gray-900 group-hover:text-blue-700 transition-colors line-clamp-2 leading-snug">
-                      {article.titre}
-                    </p>
+                    <p className="font-medium text-gray-900 group-hover:text-blue-700 transition-colors line-clamp-2 leading-snug"
+                       dangerouslySetInnerHTML={{ __html: article.titre }}
+                    />
                     {article.extrait && (
                       <p className="text-sm text-gray-500 mt-1 line-clamp-2">{article.extrait}</p>
                     )}
@@ -140,6 +167,7 @@ export default async function DashboardPage() {
                       <p className="text-xs text-gray-400 mt-1">{article.date}</p>
                     )}
                   </div>
+
                   <ExternalLink size={14} className="text-gray-300 group-hover:text-blue-400 flex-shrink-0 mt-1 transition-colors" />
                 </a>
               </li>
