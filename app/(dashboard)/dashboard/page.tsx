@@ -10,7 +10,7 @@ export default async function DashboardPage() {
   const userId = (session?.user as { id: string })?.id;
 
   const [nbComptes, nbContacts, nbInteractions, dernieresInteractions] = await Promise.all([
-    prisma.compte.count(),
+    prisma.organisation.count(),
     prisma.contact.count(),
     prisma.interaction.count(),
     prisma.interaction.findMany({
