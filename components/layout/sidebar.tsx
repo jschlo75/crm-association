@@ -110,9 +110,9 @@ export function Sidebar({ role, userName }: { role: string; userName: string }) 
               />
             </div>
             <div>
-              <p className="text-white text-xs font-semibold leading-tight">Sté Nationale</p>
-              <p className="text-blue-300 text-xs leading-tight">d&apos;Horticulture</p>
-              <p className="text-blue-300 text-xs leading-tight">de France</p>
+              <p className="text-blue-300 text-xs leading-snug">Société Nationale</p>
+              <p className="text-blue-300 text-xs leading-snug">d&apos;Horticulture</p>
+              <p className="text-blue-300 text-xs leading-snug">de France</p>
             </div>
           </div>
           {/* Bouton fermer (mobile) */}
