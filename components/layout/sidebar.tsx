@@ -97,26 +97,24 @@ export function Sidebar({ role, userName }: { role: string; userName: string }) 
         )}
       >
         {/* En-tête */}
-        <div className="px-4 py-4 border-b border-blue-800 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="bg-white rounded-lg p-1.5 flex-shrink-0">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src="/logo.png" alt="SNHF" width={44} />
+        <div className="px-4 pt-4 pb-3 border-b border-blue-800">
+          <div className="flex items-start justify-between">
+            <div className="flex-1">
+              <div className="bg-white rounded-lg p-2 inline-block mb-2">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src="/logo.png" alt="SNHF" style={{ width: "120px", height: "auto", display: "block" }} />
+              </div>
+              <p className="text-blue-300 text-xs leading-snug">Société Nationale d&apos;Horticulture de France</p>
             </div>
-            <div>
-              <p className="text-blue-300 text-xs leading-snug">Société Nationale</p>
-              <p className="text-blue-300 text-xs leading-snug">d&apos;Horticulture</p>
-              <p className="text-blue-300 text-xs leading-snug">de France</p>
-            </div>
+            {/* Bouton fermer (mobile) */}
+            <button
+              onClick={close}
+              className="lg:hidden text-blue-300 hover:text-white p-1 rounded ml-2 mt-1"
+              aria-label="Fermer le menu"
+            >
+              <X size={18} />
+            </button>
           </div>
-          {/* Bouton fermer (mobile) */}
-          <button
-            onClick={close}
-            className="lg:hidden text-blue-300 hover:text-white p-1 rounded"
-            aria-label="Fermer le menu"
-          >
-            <X size={18} />
-          </button>
         </div>
 
         {/* Navigation */}
