@@ -108,7 +108,7 @@ export default function ImportPage() {
   const role = (session?.user as { role: string })?.role;
 
   const [step, setStep] = useState<Step>("choose");
-  const [importType, setImportType] = useState<ImportType>("comptes");
+  const [importType, setImportType] = useState<ImportType>("organisations");
   const [fileName, setFileName] = useState("");
   const [headers, setHeaders] = useState<string[]>([]);
   const [rawRows, setRawRows] = useState<Record<string, string>[]>([]);
@@ -249,7 +249,7 @@ export default function ImportPage() {
       {step === "choose" && (
         <div className="space-y-4">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            {(["comptes", "contacts"] as ImportType[]).map((t) => (
+            {(["organisations", "contacts"] as ImportType[]).map((t) => (
               <button
                 key={t}
                 onClick={() => { setImportType(t); setStep("upload"); }}
