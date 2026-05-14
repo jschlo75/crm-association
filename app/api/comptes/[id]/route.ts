@@ -14,6 +14,7 @@ const compteSchema = z.object({
   ville: z.string().optional(),
   pays: z.string().optional(),
   notes: z.string().optional(),
+  parentId: z.string().optional().or(z.literal("")),
 });
 
 export async function GET(_: NextRequest, { params }: { params: Promise<{ id: string }> }) {
@@ -47,10 +48,14 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
   const parsed = compteSchema.safeParse(body);
   if (!parsed.success) return NextResponse.json({ error: parsed.error }, { status: 400 });
 
-  const data = parsed.data;
+  const { email, parentId, ...rest } = parsed.data;
+  // Empêcher un compte d'être son propre parent
+  if (parentId && parentId === id) {
+    return NextResponse.json({ error: "Un compte ne peut pas être son propre parent" }, { status: 400 });
+  }
   const compte = await prisma.compte.update({
     where: { id },
-    data: { ...data, email: data.email || null },
+    data: { ...rest, email: email || null, parentId: parentId || null },
   });
 
   return NextResponse.json(compte);

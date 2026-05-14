@@ -14,6 +14,7 @@ const compteSchema = z.object({
   ville: z.string().optional(),
   pays: z.string().optional(),
   notes: z.string().optional(),
+  parentId: z.string().optional().or(z.literal("")),
 });
 
 export async function GET(req: NextRequest) {
@@ -42,11 +43,12 @@ export async function POST(req: NextRequest) {
   const parsed = compteSchema.safeParse(body);
   if (!parsed.success) return NextResponse.json({ error: parsed.error }, { status: 400 });
 
-  const data = parsed.data;
+  const { email, parentId, ...rest } = parsed.data;
   const compte = await prisma.compte.create({
     data: {
-      ...data,
-      email: data.email || null,
+      ...rest,
+      email: email || null,
+      parentId: parentId || null,
     },
   });
 

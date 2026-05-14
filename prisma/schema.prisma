@@ -64,6 +64,9 @@ model Compte {
   ville        String?
   pays         String        @default("France")
   notes        String?
+  parentId     String?
+  parent       Compte?       @relation("CompteHierarchie", fields: [parentId], references: [id], onDelete: SetNull)
+  sousComptes  Compte[]      @relation("CompteHierarchie")
   createdAt    DateTime      @default(now())
   updatedAt    DateTime      @updatedAt
   contacts     Contact[]

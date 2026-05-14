@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 type CompteFormData = {
   nom: string;
@@ -13,11 +13,14 @@ type CompteFormData = {
   ville: string;
   pays: string;
   notes: string;
+  parentId: string;
 };
 
 type Props = {
   defaultValues?: Partial<CompteFormData> & { id?: string };
 };
+
+type CompteOption = { id: string; nom: string };
 
 const TYPES = [
   { value: "ENTREPRISE", label: "Entreprise" },
@@ -32,6 +35,17 @@ export function CompteForm({ defaultValues }: Props) {
   const isEdit = !!defaultValues?.id;
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [comptes, setComptes] = useState<CompteOption[]>([]);
+  const [parentId, setParentId] = useState(defaultValues?.parentId || "");
+
+  useEffect(() => {
+    fetch("/api/comptes")
+      .then((r) => r.json())
+      .then((data: CompteOption[]) => {
+        // Exclure le compte lui-même de la liste des parents possibles
+        setComptes(data.filter((c) => c.id !== defaultValues?.id));
+      });
+  }, [defaultValues?.id]);
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -52,6 +66,7 @@ export function CompteForm({ defaultValues }: Props) {
       ville: getValue("ville"),
       pays: getValue("pays") || "France",
       notes: getValue("notes"),
+      parentId,
     };
 
     const url = isEdit ? `/api/comptes/${defaultValues!.id}` : "/api/comptes";
@@ -68,7 +83,8 @@ export function CompteForm({ defaultValues }: Props) {
       router.push(`/comptes/${compte.id}`);
       router.refresh();
     } else {
-      setError("Une erreur est survenue. Vérifiez les champs.");
+      const d = await res.json();
+      setError(d.error || "Une erreur est survenue. Vérifiez les champs.");
       setLoading(false);
     }
   }
@@ -97,6 +113,19 @@ export function CompteForm({ defaultValues }: Props) {
             <label className={labelClass}>Type *</label>
             <select name="type" required defaultValue={defaultValues?.type || "AUTRE"} className={inputClass}>
               {TYPES.map((t) => <option key={t.value} value={t.value}>{t.label}</option>)}
+            </select>
+          </div>
+          <div>
+            <label className={labelClass}>Compte parent</label>
+            <select
+              value={parentId}
+              onChange={(e) => setParentId(e.target.value)}
+              className={inputClass}
+            >
+              <option value="">— Aucun (compte racine) —</option>
+              {comptes.map((c) => (
+                <option key={c.id} value={c.id}>{c.nom}</option>
+              ))}
             </select>
           </div>
           <div>

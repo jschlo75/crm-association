@@ -5,7 +5,7 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import {
   Building2, Mail, Phone, Users, MessageSquare,
-  Pencil, Plus, Trash2
+  Pencil, Plus, Trash2, ChevronsUp, GitBranch
 } from "lucide-react";
 import {
   formatDate, TYPE_COMPTE_LABELS, TYPE_INTERACTION_LABELS, TYPE_INTERACTION_ICONS
@@ -21,6 +21,8 @@ export default async function CompteDetailPage({ params }: { params: Promise<{ i
   const compte = await prisma.compte.findUnique({
     where: { id },
     include: {
+      parent: true,
+      sousComptes: { orderBy: { nom: "asc" } },
       contacts: { orderBy: { nom: "asc" } },
       interactions: {
         orderBy: { date: "desc" },
@@ -41,9 +43,20 @@ export default async function CompteDetailPage({ params }: { params: Promise<{ i
           </div>
           <div>
             <h1 className="text-2xl font-bold text-gray-900">{compte.nom}</h1>
-            <span className="text-sm bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full">
-              {TYPE_COMPTE_LABELS[compte.type]}
-            </span>
+            <div className="flex items-center gap-2 flex-wrap">
+              <span className="text-sm bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full">
+                {TYPE_COMPTE_LABELS[compte.type]}
+              </span>
+              {compte.parent && (
+                <Link
+                  href={`/comptes/${compte.parent.id}`}
+                  className="flex items-center gap-1 text-xs text-blue-600 hover:underline bg-blue-50 px-2 py-0.5 rounded-full"
+                >
+                  <ChevronsUp size={11} />
+                  {compte.parent.nom}
+                </Link>
+              )}
+            </div>
           </div>
         </div>
         {role === "ADMIN" && (
@@ -59,6 +72,34 @@ export default async function CompteDetailPage({ params }: { params: Promise<{ i
           </div>
         )}
       </div>
+
+      {/* Sous-comptes */}
+      {compte.sousComptes.length > 0 && (
+        <div className="bg-white rounded-xl shadow-sm border border-gray-200">
+          <div className="flex items-center gap-2 px-6 py-4 border-b border-gray-100">
+            <GitBranch size={16} className="text-gray-400" />
+            <h2 className="font-semibold text-gray-900">Sous-comptes ({compte.sousComptes.length})</h2>
+          </div>
+          <ul className="divide-y divide-gray-100">
+            {compte.sousComptes.map((sc) => (
+              <li key={sc.id}>
+                <Link
+                  href={`/comptes/${sc.id}`}
+                  className="flex items-center gap-3 px-6 py-3 hover:bg-gray-50 transition-colors"
+                >
+                  <div className="w-7 h-7 rounded-lg bg-blue-50 flex items-center justify-center flex-shrink-0">
+                    <Building2 size={14} className="text-blue-500" />
+                  </div>
+                  <div>
+                    <div className="text-sm font-medium text-gray-900">{sc.nom}</div>
+                    <div className="text-xs text-gray-400">{TYPE_COMPTE_LABELS[sc.type]}</div>
+                  </div>
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
 
       <div className="grid grid-cols-3 gap-4">
         {/* Informations */}

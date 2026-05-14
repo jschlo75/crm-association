@@ -28,6 +28,7 @@ export default async function ModifierComptePage({ params }: { params: Promise<{
           ville: compte.ville || "",
           pays: compte.pays,
           notes: compte.notes || "",
+          parentId: compte.parentId || "",
         }}
       />
     </div>
