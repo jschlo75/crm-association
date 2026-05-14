@@ -34,10 +34,12 @@ async function fetchActualitesSnhf(): Promise<ArticleSnhf[]> {
           })
         : "";
 
-      // Extrait : strip HTML
+      // Extrait : strip HTML + shortcodes WordPress ([vc_row], [vc_column...], etc.)
       const excerptRaw = (post.excerpt as { rendered: string })?.rendered ?? "";
       const extrait = excerptRaw
-        .replace(/<[^>]+>/g, "")
+        .replace(/\[[\w_]+[^\]]*\]/g, "")   // shortcodes WordPress [xxx ...]
+        .replace(/<[^>]+>/g, "")             // balises HTML
+        .replace(/&[a-z]+;|&#\d+;/gi, " ")  // entités HTML résiduelles
         .replace(/\s+/g, " ")
         .trim()
         .slice(0, 180);
