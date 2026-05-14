@@ -161,8 +161,8 @@ export function ParticipantManager({
                           <span className="text-sm font-medium text-gray-900">{c.prenom} {c.nom}</span>
                           {c.poste && <span className="text-xs text-gray-500 ml-2">{c.poste}</span>}
                         </div>
-                        {c.compte && (
-                          <span className="text-xs text-gray-400">{c.compte.nom}</span>
+                        {c.organisation && (
+                          <span className="text-xs text-gray-400">{c.organisation.nom}</span>
                         )}
                       </button>
                     </li>

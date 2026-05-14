@@ -12,7 +12,7 @@ type Contact = {
   poste: string | null;
   email: string | null;
   ville: string | null;
-  compte: { id: string; nom: string } | null;
+  organisation: { id: string; nom: string } | null;
   _count: { interactions: number };
 };
 
@@ -87,8 +87,8 @@ export default function ContactsPage() {
                       )}
                     </div>
                     <div className="text-sm text-gray-500 mt-0.5 flex items-center gap-3">
-                      {contact.compte && (
-                        <span className="text-blue-600">{contact.compte.nom}</span>
+                      {contact.organisation && (
+                        <span className="text-blue-600">{contact.organisation.nom}</span>
                       )}
                       {contact.email && <span>{contact.email}</span>}
                       <span>{contact._count.interactions} interaction{contact._count.interactions > 1 ? "s" : ""}</span>
