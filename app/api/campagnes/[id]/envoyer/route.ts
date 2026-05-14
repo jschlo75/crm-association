@@ -22,7 +22,7 @@ export async function POST(_: NextRequest, { params }: { params: Promise<{ id: s
     return NextResponse.json({ error: "Aucun destinataire." }, { status: 400 });
 
   const apiKey = process.env.RESEND_API_KEY;
-  const fromEmail = process.env.EMAIL_FROM || "noreply@snhf.fr";
+  const fromEmail = process.env.EMAIL_FROM || "noreply@artdelespalier.org";
   let nbEnvoyes = 0;
   const erreurs: string[] = [];
 
