@@ -1,46 +1,79 @@
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { formatDate, TYPE_INTERACTION_LABELS, TYPE_INTERACTION_ICONS, TYPE_ORGANISATION_LABELS } from "@/lib/utils";
 import Link from "next/link";
-import { Building2, Users, Plus } from "lucide-react";
+import { Building2, Users, Newspaper, ExternalLink, AlertCircle } from "lucide-react";
 
+/* ── Parsing RSS SNHF ───────────────────────────────────────── */
+type ArticleSnhf = {
+  titre: string;
+  lien: string;
+  date: string;
+  extrait: string;
+};
+
+function extraire(xml: string, balise: string): string {
+  const re = new RegExp(`<${balise}[^>]*>(?:<!\\[CDATA\\[)?(.*?)(?:\\]\\]>)?</${balise}>`, "s");
+  return (xml.match(re)?.[1] ?? "").trim();
+}
+
+async function fetchActualitesSnhf(): Promise<ArticleSnhf[]> {
+  try {
+    const res = await fetch("https://www.snhf.org/category/actualites/feed/", {
+      next: { revalidate: 3600 }, // cache 1 heure
+    });
+    if (!res.ok) return [];
+    const xml = await res.text();
+
+    // Extraire chaque <item>
+    const items = [...xml.matchAll(/<item>([\s\S]*?)<\/item>/g)].map((m) => m[1]);
+
+    return items.slice(0, 6).map((item) => {
+      const titre = extraire(item, "title");
+      const lien = extraire(item, "link") || extraire(item, "guid");
+      const pubDate = extraire(item, "pubDate");
+      const description = extraire(item, "description")
+        .replace(/<[^>]+>/g, "") // strip HTML
+        .replace(/\s+/g, " ")
+        .trim()
+        .slice(0, 180);
+
+      const date = pubDate
+        ? new Date(pubDate).toLocaleDateString("fr-FR", {
+            day: "numeric", month: "long", year: "numeric",
+          })
+        : "";
+
+      return { titre, lien, date, extrait: description };
+    });
+  } catch {
+    return [];
+  }
+}
+
+/* ── Page ───────────────────────────────────────────────────── */
 export default async function DashboardPage() {
   const session = await getServerSession(authOptions);
-  const userId = (session?.user as { id: string })?.id;
+  void session; // session disponible si besoin futur
 
-  const [nbComptes, nbContacts, dernieresInteractions] = await Promise.all([
+  const [nbComptes, nbContacts, actualites] = await Promise.all([
     prisma.organisation.count(),
     prisma.contact.count(),
-    prisma.interaction.findMany({
-      take: 8,
-      orderBy: { date: "desc" },
-      include: { organisation: true, contact: true, user: true },
-    }),
+    fetchActualitesSnhf(),
   ]);
 
   const stats = [
     { label: "Organisations", value: nbComptes, icon: Building2, href: "/organisations", color: "bg-blue-600" },
-    { label: "Contacts", value: nbContacts, icon: Users, href: "/contacts", color: "bg-emerald-600" },
+    { label: "Contacts",      value: nbContacts, icon: Users,    href: "/contacts",      color: "bg-emerald-600" },
   ];
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-gray-900">Groupe arboriculture fruitière familiale</h1>
-        <div className="flex gap-2">
-          <Link
-            href="/interactions/nouvelle"
-            className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors"
-          >
-            <Plus size={16} />
-            Nouvelle interaction
-          </Link>
-        </div>
-      </div>
+      {/* Titre */}
+      <h1 className="text-2xl font-bold text-gray-900">Groupe arboriculture fruitière familiale</h1>
 
       {/* Statistiques */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-lg">
         {stats.map(({ label, value, icon: Icon, href, color }) => (
           <Link
             key={label}
@@ -60,58 +93,55 @@ export default async function DashboardPage() {
         ))}
       </div>
 
-      {/* Dernières interactions */}
+      {/* Actualités SNHF */}
       <div className="bg-white rounded-xl shadow-sm border border-gray-200">
-        <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200">
-          <h2 className="font-semibold text-gray-900">Dernières interactions</h2>
-          <Link href="/interactions" className="text-sm text-blue-600 hover:underline">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
+          <h2 className="font-semibold text-gray-900 flex items-center gap-2">
+            <Newspaper size={17} className="text-blue-600" />
+            Actualités SNHF
+          </h2>
+          <a
+            href="https://www.snhf.org/category/actualites/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-1 text-sm text-blue-600 hover:underline"
+          >
             Voir tout
-          </Link>
+            <ExternalLink size={13} />
+          </a>
         </div>
 
-        {dernieresInteractions.length === 0 ? (
-          <div className="px-6 py-10 text-center text-gray-500 text-sm">
-            Aucune interaction pour le moment.{" "}
-            <Link href="/interactions/nouvelle" className="text-blue-600 hover:underline">
-              Ajouter la première
-            </Link>
+        {actualites.length === 0 ? (
+          <div className="px-6 py-10 text-center text-gray-400 text-sm flex flex-col items-center gap-2">
+            <AlertCircle size={20} className="text-gray-300" />
+            Impossible de charger les actualités pour le moment.
           </div>
         ) : (
           <ul className="divide-y divide-gray-100">
-            {dernieresInteractions.map((interaction) => (
-              <li key={interaction.id} className="px-6 py-4 flex items-start gap-4">
-                <span className="text-xl mt-0.5">
-                  {TYPE_INTERACTION_ICONS[interaction.type]}
-                </span>
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2">
-                    <span className="font-medium text-gray-900 truncate">{interaction.sujet}</span>
-                    <span className="text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full whitespace-nowrap">
-                      {TYPE_INTERACTION_LABELS[interaction.type]}
-                    </span>
+            {actualites.map((article, i) => (
+              <li key={i}>
+                <a
+                  href={article.lien}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-start gap-4 px-6 py-4 hover:bg-gray-50 transition-colors group"
+                >
+                  <div className="flex-shrink-0 w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center mt-0.5">
+                    <Newspaper size={14} className="text-blue-500" />
                   </div>
-                  <div className="text-sm text-gray-500 mt-0.5 flex items-center gap-2">
-                    <span>{formatDate(interaction.date)}</span>
-                    {interaction.contact && (
-                      <>
-                        <span>·</span>
-                        <Link href={`/contacts/${interaction.contact.id}`} className="hover:text-blue-600">
-                          {interaction.contact.prenom} {interaction.contact.nom}
-                        </Link>
-                      </>
+                  <div className="flex-1 min-w-0">
+                    <p className="font-medium text-gray-900 group-hover:text-blue-700 transition-colors line-clamp-2 leading-snug">
+                      {article.titre}
+                    </p>
+                    {article.extrait && (
+                      <p className="text-sm text-gray-500 mt-1 line-clamp-2">{article.extrait}</p>
                     )}
-                    {interaction.organisation && (
-                      <>
-                        <span>·</span>
-                        <Link href={`/organisations/${interaction.organisation.id}`} className="hover:text-blue-600">
-                          {interaction.organisation.nom}
-                        </Link>
-                      </>
+                    {article.date && (
+                      <p className="text-xs text-gray-400 mt-1">{article.date}</p>
                     )}
-                    <span>·</span>
-                    <span>par {interaction.user.nom}</span>
                   </div>
-                </div>
+                  <ExternalLink size={14} className="text-gray-300 group-hover:text-blue-400 flex-shrink-0 mt-1 transition-colors" />
+                </a>
               </li>
             ))}
           </ul>
