@@ -71,11 +71,11 @@ export default async function DashboardPage() {
   const session = await getServerSession(authOptions);
   void session;
 
-  const [nbComptes, nbContacts, nbEvenementsAVenir, actualites] = await Promise.all([
+  const [nbComptes, nbContacts, nbEvenementsAVenir] = await Promise.all([
     prisma.organisation.count(),
     prisma.contact.count(),
     prisma.evenement.count({ where: { date: { gte: new Date() } } }),
-    fetchActualitesSnhf(),
+    // fetchActualitesSnhf(), // ← décommenter pour réactiver les actualités SNHF
   ]);
 
   const stats = [
@@ -110,7 +110,7 @@ export default async function DashboardPage() {
         ))}
       </div>
 
-      {/* Actualités SNHF */}
+      {/* ── Actualités SNHF (désactivé — décommenter pour réactiver) ──
       <div className="bg-white rounded-xl shadow-sm border border-gray-200">
         <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
           <h2 className="font-semibold text-gray-900 flex items-center gap-2">
@@ -143,27 +143,18 @@ export default async function DashboardPage() {
                   rel="noopener noreferrer"
                   className="flex items-start gap-4 px-6 py-4 hover:bg-gray-50 transition-colors group"
                 >
-                  {/* Vignette */}
                   <div className="flex-shrink-0 w-20 h-16 rounded-lg overflow-hidden bg-gray-100">
                     {article.image ? (
-                      // eslint-disable-next-line @next/next/no-img-element
-                      <img
-                        src={article.image}
-                        alt={article.titre}
-                        className="w-full h-full object-cover"
-                      />
+                      <img src={article.image} alt={article.titre} className="w-full h-full object-cover" />
                     ) : (
                       <div className="w-full h-full flex items-center justify-center">
                         <Newspaper size={22} className="text-gray-300" />
                       </div>
                     )}
                   </div>
-
-                  {/* Texte */}
                   <div className="flex-1 min-w-0">
                     <p className="font-medium text-gray-900 group-hover:text-blue-700 transition-colors line-clamp-2 leading-snug"
-                       dangerouslySetInnerHTML={{ __html: article.titre }}
-                    />
+                       dangerouslySetInnerHTML={{ __html: article.titre }} />
                     {article.extrait && (
                       <p className="text-sm text-gray-500 mt-1 line-clamp-2">{article.extrait}</p>
                     )}
@@ -171,7 +162,6 @@ export default async function DashboardPage() {
                       <p className="text-xs text-gray-400 mt-1">{article.date}</p>
                     )}
                   </div>
-
                   <ExternalLink size={14} className="text-gray-300 group-hover:text-blue-400 flex-shrink-0 mt-1 transition-colors" />
                 </a>
               </li>
@@ -179,6 +169,7 @@ export default async function DashboardPage() {
           </ul>
         )}
       </div>
+      ── fin Actualités SNHF ── */}
     </div>
   );
 }
