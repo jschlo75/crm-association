@@ -39,16 +39,20 @@ export async function POST(_: NextRequest, { params }: { params: Promise<{ id: s
     return NextResponse.json({ error: "Aucun destinataire." }, { status: 400 });
 
   const apiKey = process.env.RESEND_API_KEY;
-  const fromEmail = process.env.EMAIL_FROM || "noreply@artdelespalier.org";
-  const fromName = process.env.EMAIL_FROM_NAME || "Groupe arboriculture fruitière familiale";
+  const fromEmail = process.env.EMAIL_FROM || "contact@artdelespalier.org";
+  const fromName = process.env.EMAIL_FROM_NAME || "Groupe arboriculture fruitiere familiale";
   const replyTo = process.env.EMAIL_REPLY_TO || fromEmail;
   let nbEnvoyes = 0;
   const erreurs: string[] = [];
 
   const textContent = htmlToText(campagne.contenu);
+  const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
   if (apiKey) {
-    for (const dest of campagne.destinataires) {
+    for (let i = 0; i < campagne.destinataires.length; i++) {
+      const dest = campagne.destinataires[i];
+      // Pause toutes les 10 emails pour éviter le burst (détection spam)
+      if (i > 0 && i % 10 === 0) await sleep(2000);
       try {
         const res = await fetch("https://api.resend.com/emails", {
           method: "POST",
@@ -64,8 +68,7 @@ export async function POST(_: NextRequest, { params }: { params: Promise<{ id: s
             html: campagne.contenu,
             text: textContent,
             headers: {
-              // Aide les filtres anti-spam à reconnaître l'email comme légitime
-              "List-Unsubscribe": `<mailto:${replyTo}?subject=Désabonnement>`,
+              "List-Unsubscribe": `<mailto:${replyTo}?subject=Desabonnement>`,
               "List-Unsubscribe-Post": "List-Unsubscribe=One-Click",
               "X-Entity-Ref-ID": campagne.id,
             },

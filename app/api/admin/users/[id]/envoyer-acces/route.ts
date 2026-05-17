@@ -4,6 +4,17 @@ import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import bcrypt from "bcryptjs";
 
+function htmlToText(html: string): string {
+  return html
+    .replace(/<br\s*\/?>/gi, "\n")
+    .replace(/<\/p>/gi, "\n\n")
+    .replace(/<\/div>/gi, "\n")
+    .replace(/<[^>]+>/g, "")
+    .replace(/&amp;/g, "&").replace(/&lt;/g, "<").replace(/&gt;/g, ">")
+    .replace(/&nbsp;/g, " ").replace(/&quot;/g, '"')
+    .replace(/\n{3,}/g, "\n\n").trim();
+}
+
 /** Génère un mot de passe aléatoire lisible (12 caractères) */
 function genererMotDePasse(): string {
   const chars = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789";
@@ -26,38 +37,67 @@ export async function POST(_: NextRequest, { params }: { params: Promise<{ id: s
   await prisma.user.update({ where: { id }, data: { password: hash } });
 
   const apiKey = process.env.RESEND_API_KEY;
-  const fromEmail = process.env.EMAIL_FROM || "noreply@artdelespalier.org";
-  const fromName = process.env.EMAIL_FROM_NAME || "Groupe arboriculture fruitière familiale";
+  const fromEmail = process.env.EMAIL_FROM || "contact@artdelespalier.org";
+  const fromName = process.env.EMAIL_FROM_NAME || "Groupe arboriculture fruitiere familiale";
+  const replyTo = process.env.EMAIL_REPLY_TO || fromEmail;
 
   if (!apiKey) {
     return NextResponse.json({ error: "RESEND_API_KEY non configurée" }, { status: 500 });
   }
 
-  const htmlBody = `
-<div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; color: #333;">
-  <p>Bonjour,</p>
+  const portalUrl = process.env.NEXTAUTH_URL || "https://crm-association.vercel.app";
 
-  <p>Vous allez recevoir un eMail de Michel Schlosser, à propos du portail de contacts
-  du groupe de réflexion sur l'arboriculture fruitière</p>
+  const htmlBody = `<!DOCTYPE html>
+<html lang="fr">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"></head>
+<body style="margin:0;padding:0;background:#f4f4f4;font-family:Arial,Helvetica,sans-serif;">
+<table width="100%" cellpadding="0" cellspacing="0" style="background:#f4f4f4;padding:24px 0;">
+  <tr><td align="center">
+    <table width="560" cellpadding="0" cellspacing="0" style="background:#ffffff;border-radius:8px;overflow:hidden;border:1px solid #e0e0e0;">
+      <tr><td style="background:#67aa40;padding:20px 32px;">
+        <p style="margin:0;color:#ffffff;font-size:16px;font-weight:bold;">Groupe arboriculture fruitiere familiale</p>
+      </td></tr>
+      <tr><td style="padding:32px;">
+        <p style="margin:0 0 16px;color:#333;font-size:15px;">Bonjour ${user.nom},</p>
+        <p style="margin:0 0 16px;color:#333;font-size:15px;">
+          Michel Schlosser vous invite à accéder au portail de contacts du groupe de réflexion sur l'arboriculture fruitière.
+        </p>
+        <p style="margin:0 0 8px;color:#555;font-size:14px;font-weight:bold;">Vos identifiants de connexion :</p>
+        <table cellpadding="0" cellspacing="0" style="background:#f8f8f8;border-left:4px solid #67aa40;border-radius:4px;padding:16px;margin:0 0 24px;width:100%;">
+          <tr><td style="padding:4px 16px;">
+            <p style="margin:0 0 8px;font-size:14px;color:#333;"><strong>Adresse du portail :</strong><br>
+              <a href="${portalUrl}/login" style="color:#67aa40;">${portalUrl}/login</a>
+            </p>
+            <p style="margin:0 0 8px;font-size:14px;color:#333;"><strong>Identifiant :</strong> ${user.email}</p>
+            <p style="margin:0;font-size:14px;color:#333;"><strong>Mot de passe :</strong> ${motDePasse}</p>
+          </td></tr>
+        </table>
+        <p style="margin:0 0 24px;color:#888;font-size:13px;">
+          Pour des raisons de sécurité, nous vous recommandons de modifier votre mot de passe après votre première connexion, depuis la rubrique <em>Mon profil</em>.
+        </p>
+        <p style="margin:0;color:#aaa;font-size:12px;border-top:1px solid #eee;padding-top:16px;">
+          Cet email vous a été envoyé car votre adresse a été enregistrée dans notre portail.<br>
+          Pour toute question, répondez directement à cet email.
+        </p>
+      </td></tr>
+    </table>
+  </td></tr>
+</table>
+</body>
+</html>`;
 
-  <p>Voici l'accès à ce portail :</p>
+  const textBody = `Bonjour ${user.nom},
 
-  <div style="background: #f5f5f5; border-left: 4px solid #67aa40; padding: 16px 20px; margin: 24px 0; border-radius: 4px;">
-    <p style="margin: 0 0 8px 0;">
-      <strong>Lien :</strong>
-      <a href="https://crm-association.vercel.app/login" style="color: #67aa40;">
-        https://crm-association.vercel.app/login
-      </a>
-    </p>
-    <p style="margin: 0 0 8px 0;"><strong>Utilisateur :</strong> ${user.email}</p>
-    <p style="margin: 0;"><strong>Mot de passe :</strong> ${motDePasse}</p>
-  </div>
+Michel Schlosser vous invite à accéder au portail de contacts du groupe de réflexion sur l'arboriculture fruitière.
 
-  <p style="color: #888; font-size: 13px;">
-    Pour des raisons de sécurité, nous vous recommandons de modifier votre mot de passe
-    après votre première connexion, depuis la rubrique "Mon profil".
-  </p>
-</div>`;
+Vos identifiants de connexion :
+  Adresse : ${portalUrl}/login
+  Identifiant : ${user.email}
+  Mot de passe : ${motDePasse}
+
+Pour des raisons de sécurité, modifiez votre mot de passe après votre première connexion (rubrique "Mon profil").
+
+Pour toute question, répondez directement à cet email.`;
 
   const res = await fetch("https://api.resend.com/emails", {
     method: "POST",
@@ -68,8 +108,13 @@ export async function POST(_: NextRequest, { params }: { params: Promise<{ id: s
     body: JSON.stringify({
       from: `${fromName} <${fromEmail}>`,
       to: [user.email],
-      subject: "Accès au portail de contacts du groupe de réflexion sur l'arboriculture fruitière",
+      reply_to: replyTo,
+      subject: "Acces au portail de contacts - arboriculture fruitiere",
       html: htmlBody,
+      text: textBody,
+      headers: {
+        "X-Entity-Ref-ID": user.id,
+      },
     }),
   });
 
