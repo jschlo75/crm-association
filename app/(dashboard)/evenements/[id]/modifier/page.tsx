@@ -23,6 +23,7 @@ export default async function ModifierEvenementPage({ params }: { params: Promis
           titre: evenement.titre,
           date: format(new Date(evenement.date), "yyyy-MM-dd'T'HH:mm"),
           lieu: evenement.lieu ?? "",
+          lien: evenement.lien ?? "",
           objectifs: evenement.objectifs ?? "",
         }}
       />

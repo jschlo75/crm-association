@@ -9,6 +9,7 @@ type EvenementFormData = {
   titre: string;
   date: string;
   lieu?: string;
+  lien?: string;
   objectifs?: string;
 };
 
@@ -34,6 +35,7 @@ export function EvenementForm({ defaultValues }: { defaultValues?: EvenementForm
       titre: getValue("titre"),
       date: getValue("date"),
       lieu: getValue("lieu"),
+      lien: getValue("lien"),
       objectifs: getValue("objectifs"),
     };
 
@@ -81,6 +83,16 @@ export function EvenementForm({ defaultValues }: { defaultValues?: EvenementForm
           <div>
             <label className={labelClass}>Lieu</label>
             <input name="lieu" defaultValue={defaultValues?.lieu} className={inputClass} placeholder="Ex : Paris 8e" />
+          </div>
+          <div className="sm:col-span-2">
+            <label className={labelClass}>Lien de connexion</label>
+            <input
+              name="lien"
+              type="url"
+              defaultValue={defaultValues?.lien}
+              className={inputClass}
+              placeholder="https://zoom.us/j/... ou https://teams.microsoft.com/..."
+            />
           </div>
         </div>
       </div>
