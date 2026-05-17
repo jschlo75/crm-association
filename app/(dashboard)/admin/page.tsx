@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { Plus, Trash2, Shield, User, ShieldCheck } from "lucide-react";
+import { Plus, Trash2, Shield, User, ShieldCheck, Mail } from "lucide-react";
 import { formatDate } from "@/lib/utils";
 import Link from "next/link";
 
@@ -93,6 +93,17 @@ export default function AdminPage() {
     if (!confirm("Supprimer cet utilisateur définitivement ?")) return;
     const res = await fetch(`/api/admin/users/${id}`, { method: "DELETE" });
     if (res.ok) setUsers((prev) => prev.filter((u) => u.id !== id));
+  }
+
+  async function envoyerAcces(user: User) {
+    if (!confirm(`Envoyer les accès à ${user.nom} (${user.email}) ?\n\nCela génère un nouveau mot de passe et l'envoie par email.`)) return;
+    const res = await fetch(`/api/admin/users/${user.id}/envoyer-acces`, { method: "POST" });
+    if (res.ok) {
+      alert(`✓ Email envoyé à ${user.email}`);
+    } else {
+      const data = await res.json();
+      alert(`Erreur : ${data.error || "Échec de l'envoi"}`);
+    }
   }
 
   const inputClass = "w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm";
@@ -222,6 +233,13 @@ export default function AdminPage() {
                     <td className="px-6 py-4">
                       {!isSelf && (
                         <div className="flex items-center gap-2">
+                          <button
+                            onClick={() => envoyerAcces(user)}
+                            title="Envoyer les accès par email"
+                            className="text-blue-400 hover:text-blue-600 transition-colors"
+                          >
+                            <Mail size={14} />
+                          </button>
                           <button
                             onClick={() => toggleRole(user)}
                             className="text-xs text-blue-600 hover:underline"
