@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useSession } from "next-auth/react";
-import { Users, Plus, Search, ChevronRight } from "lucide-react";
+import { Users, Plus, Search, ChevronRight, Download } from "lucide-react";
 
 type Contact = {
   id: string;
@@ -38,13 +38,23 @@ export default function ContactsPage() {
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold text-gray-900">Contacts</h1>
         {role === "ADMIN" && (
-          <Link
-            href="/contacts/nouveau"
-            className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors"
-          >
-            <Plus size={16} />
-            Nouveau contact
-          </Link>
+          <div className="flex items-center gap-2">
+            <a
+              href="/api/export/contacts"
+              download
+              className="flex items-center gap-2 bg-white border border-gray-300 text-gray-700 px-4 py-2 rounded-lg text-sm font-medium hover:bg-gray-50 transition-colors"
+            >
+              <Download size={16} />
+              Exporter Excel
+            </a>
+            <Link
+              href="/contacts/nouveau"
+              className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors"
+            >
+              <Plus size={16} />
+              Nouveau contact
+            </Link>
+          </div>
         )}
       </div>
 
