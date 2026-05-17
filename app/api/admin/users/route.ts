@@ -9,7 +9,7 @@ const createUserSchema = z.object({
   nom: z.string().min(1),
   email: z.string().email(),
   password: z.string().min(8),
-  role: z.enum(["ADMIN", "MEMBRE"]),
+  role: z.enum(["ADMIN", "MEMBRE", "RESTREINT"]),
 });
 
 async function requireAdmin(req: NextRequest) {
@@ -47,7 +47,7 @@ export async function POST(req: NextRequest) {
 
   const user = await prisma.user.create({
     data: { ...rest, password: hashedPassword },
-    select: { id: true, nom: true, email: true, role: true, actif: true },
+    select: { id: true, nom: true, email: true, role: true, actif: true, createdAt: true },
   });
 
   return NextResponse.json(user, { status: 201 });

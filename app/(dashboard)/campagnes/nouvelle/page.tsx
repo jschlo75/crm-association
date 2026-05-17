@@ -5,8 +5,8 @@ import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { Users, Eye, EyeOff } from "lucide-react";
 
-type Compte = { id: string; nom: string };
-type Contact = { id: string; prenom: string; nom: string; email: string | null; compte: { nom: string } | null };
+type Organisation = { id: string; nom: string };
+type Contact = { id: string; prenom: string; nom: string; email: string | null; organisation: { nom: string } | null };
 
 function NouvelleCampagneForm() {
   const router = useRouter();
@@ -15,25 +15,25 @@ function NouvelleCampagneForm() {
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [comptes, setComptes] = useState<Compte[]>([]);
+  const [organisations, setOrganisations] = useState<Organisation[]>([]);
   const [contacts, setContacts] = useState<Contact[]>([]);
-  const [filtreCompteId, setFiltreCompteId] = useState("");
+  const [filtreOrganisationId, setFiltreOrganisationId] = useState("");
   const [showPreview, setShowPreview] = useState(false);
   const [contenu, setContenu] = useState("");
 
   useEffect(() => {
-    if (role !== "ADMIN") { router.push("/campagnes"); return; }
-    fetch("/api/comptes").then((r) => r.json()).then(setComptes);
+    if (role !== "ADMIN" && role !== "RESTREINT") { router.push("/campagnes"); return; }
+    fetch("/api/organisations").then((r) => r.json()).then(setOrganisations);
   }, [role]);
 
   useEffect(() => {
-    const url = filtreCompteId
-      ? `/api/contacts?compteId=${filtreCompteId}`
+    const url = filtreOrganisationId
+      ? `/api/contacts?organisationId=${filtreOrganisationId}`
       : "/api/contacts";
     fetch(url)
       .then((r) => r.json())
       .then((data: Contact[]) => setContacts(data));
-  }, [filtreCompteId]);
+  }, [filtreOrganisationId]);
 
   const destinataires = contacts.filter((c) => c.email);
 
@@ -57,7 +57,7 @@ function NouvelleCampagneForm() {
         nom: getValue("nom"),
         sujet: getValue("sujet"),
         contenu,
-        filtreCompteId,
+        filtreOrganisationId,
       }),
     });
 
@@ -99,15 +99,15 @@ function NouvelleCampagneForm() {
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 space-y-4">
           <h2 className="font-semibold text-gray-900">Destinataires</h2>
           <div>
-            <label className={labelClass}>Filtrer par compte (optionnel)</label>
+            <label className={labelClass}>Filtrer par organisation (optionnel)</label>
             <select
-              value={filtreCompteId}
-              onChange={(e) => setFiltreCompteId(e.target.value)}
+              value={filtreOrganisationId}
+              onChange={(e) => setFiltreOrganisationId(e.target.value)}
               className={inputClass}
             >
               <option value="">Tous les contacts</option>
-              {comptes.map((c) => (
-                <option key={c.id} value={c.id}>{c.nom}</option>
+              {organisations.map((o) => (
+                <option key={o.id} value={o.id}>{o.nom}</option>
               ))}
             </select>
           </div>
@@ -134,7 +134,7 @@ function NouvelleCampagneForm() {
                     <span className="w-1.5 h-1.5 rounded-full bg-blue-400 flex-shrink-0" />
                     <span>{c.prenom} {c.nom}</span>
                     <span className="text-gray-400">— {c.email}</span>
-                    {c.compte && <span className="text-gray-400 text-xs">({c.compte.nom})</span>}
+                    {c.organisation && <span className="text-gray-400 text-xs">({c.organisation.nom})</span>}
                   </li>
                 ))}
               </ul>

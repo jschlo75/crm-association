@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useSession } from "next-auth/react";
-import { Users, Plus, Search, ChevronRight } from "lucide-react";
+import { Users, Plus, Search, ChevronRight, Download } from "lucide-react";
 
 type Contact = {
   id: string;
@@ -12,7 +12,7 @@ type Contact = {
   poste: string | null;
   email: string | null;
   ville: string | null;
-  compte: { id: string; nom: string } | null;
+  organisation: { id: string; nom: string } | null;
   _count: { interactions: number };
 };
 
@@ -38,13 +38,23 @@ export default function ContactsPage() {
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold text-gray-900">Contacts</h1>
         {role === "ADMIN" && (
-          <Link
-            href="/contacts/nouveau"
-            className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors"
-          >
-            <Plus size={16} />
-            Nouveau contact
-          </Link>
+          <div className="flex items-center gap-2">
+            <a
+              href="/api/export/contacts"
+              download
+              className="flex items-center gap-2 bg-white border border-gray-300 text-gray-700 px-4 py-2 rounded-lg text-sm font-medium hover:bg-gray-50 transition-colors"
+            >
+              <Download size={16} />
+              Exporter Excel
+            </a>
+            <Link
+              href="/contacts/nouveau"
+              className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors"
+            >
+              <Plus size={16} />
+              Nouveau contact
+            </Link>
+          </div>
         )}
       </div>
 
@@ -87,8 +97,8 @@ export default function ContactsPage() {
                       )}
                     </div>
                     <div className="text-sm text-gray-500 mt-0.5 flex items-center gap-3">
-                      {contact.compte && (
-                        <span className="text-blue-600">{contact.compte.nom}</span>
+                      {contact.organisation && (
+                        <span className="text-blue-600">{contact.organisation.nom}</span>
                       )}
                       {contact.email && <span>{contact.email}</span>}
                       <span>{contact._count.interactions} interaction{contact._count.interactions > 1 ? "s" : ""}</span>

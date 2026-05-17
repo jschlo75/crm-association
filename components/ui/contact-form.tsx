@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
+import { format } from "date-fns";
 
 type ContactFormData = {
   prenom: string;
@@ -14,25 +15,30 @@ type ContactFormData = {
   ville: string;
   pays: string;
   notes: string;
-  compteId: string;
+  organisationId: string;
+  isMembre: boolean;
+  dateAdhesion: string;
 };
 
 type Props = {
   defaultValues?: Partial<ContactFormData> & { id?: string };
-  defaultCompteId?: string;
+  defaultOrganisationId?: string;
 };
 
-type Compte = { id: string; nom: string };
+type Organisation = { id: string; nom: string };
 
-export function ContactForm({ defaultValues, defaultCompteId }: Props) {
+export function ContactForm({ defaultValues, defaultOrganisationId }: Props) {
   const router = useRouter();
   const isEdit = !!defaultValues?.id;
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [comptes, setComptes] = useState<Compte[]>([]);
+  const [organisations, setOrganisations] = useState<Organisation[]>([]);
+  // Controlled fields
+  const [organisationId, setOrganisationId] = useState(defaultValues?.organisationId || defaultOrganisationId || "");
+  const [isMembre, setIsMembre] = useState(defaultValues?.isMembre ?? false);
 
   useEffect(() => {
-    fetch("/api/comptes").then((r) => r.json()).then(setComptes);
+    fetch("/api/organisations").then((r) => r.json()).then(setOrganisations);
   }, []);
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
@@ -55,7 +61,9 @@ export function ContactForm({ defaultValues, defaultCompteId }: Props) {
       ville: getValue("ville"),
       pays: getValue("pays") || "France",
       notes: getValue("notes"),
-      compteId: getValue("compteId"),
+      organisationId,
+      isMembre,
+      dateAdhesion: isMembre ? getValue("dateAdhesion") : "",
     };
 
     const url = isEdit ? `/api/contacts/${defaultValues!.id}` : "/api/contacts";
@@ -91,7 +99,7 @@ export function ContactForm({ defaultValues, defaultCompteId }: Props) {
 
       <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 space-y-4">
         <h2 className="font-semibold text-gray-900">Informations personnelles</h2>
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
             <label className={labelClass}>Prénom *</label>
             <input name="prenom" required defaultValue={defaultValues?.prenom} className={inputClass} />
@@ -105,15 +113,16 @@ export function ContactForm({ defaultValues, defaultCompteId }: Props) {
             <input name="poste" defaultValue={defaultValues?.poste} className={inputClass} />
           </div>
           <div>
-            <label className={labelClass}>Compte associé</label>
+            <label className={labelClass}>Organisation associée</label>
             <select
-              name="compteId"
-              defaultValue={defaultValues?.compteId || defaultCompteId || ""}
+              name="organisationId"
+              value={organisationId}
+              onChange={(e) => setOrganisationId(e.target.value)}
               className={inputClass}
             >
-              <option value="">— Aucun —</option>
-              {comptes.map((c) => (
-                <option key={c.id} value={c.id}>{c.nom}</option>
+              <option value="">— Aucune —</option>
+              {organisations.map((o) => (
+                <option key={o.id} value={o.id}>{o.nom}</option>
               ))}
             </select>
           </div>
@@ -128,10 +137,35 @@ export function ContactForm({ defaultValues, defaultCompteId }: Props) {
         </div>
       </div>
 
+      {/* Adhésion */}
+      <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 space-y-4">
+        <h2 className="font-semibold text-gray-900">Adhésion SNHF</h2>
+        <label className="flex items-center gap-3 cursor-pointer">
+          <input
+            type="checkbox"
+            checked={isMembre}
+            onChange={(e) => setIsMembre(e.target.checked)}
+            className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+          />
+          <span className="text-sm font-medium text-gray-700">Membre de l'association</span>
+        </label>
+        {isMembre && (
+          <div className="ml-7">
+            <label className={labelClass}>Date d'adhésion</label>
+            <input
+              name="dateAdhesion"
+              type="date"
+              defaultValue={defaultValues?.dateAdhesion}
+              className="w-48 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+            />
+          </div>
+        )}
+      </div>
+
       <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 space-y-4">
         <h2 className="font-semibold text-gray-900">Adresse postale</h2>
-        <div className="grid grid-cols-2 gap-4">
-          <div className="col-span-2">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="sm:col-span-2">
             <label className={labelClass}>Adresse</label>
             <input name="adresse" defaultValue={defaultValues?.adresse} className={inputClass} />
           </div>

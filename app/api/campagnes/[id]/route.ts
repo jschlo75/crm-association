@@ -10,10 +10,10 @@ const updateSchema = z.object({
   contenu: z.string().min(1),
 });
 
-async function requireAdmin() {
+async function requireCampagneAccess() {
   const session = await getServerSession(authOptions);
   const role = (session?.user as { role: string })?.role;
-  if (!session || role !== "ADMIN") return null;
+  if (!session || (role !== "ADMIN" && role !== "RESTREINT")) return null;
   return session;
 }
 
@@ -35,7 +35,7 @@ export async function GET(_: NextRequest, { params }: { params: Promise<{ id: st
 }
 
 export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
-  const session = await requireAdmin();
+  const session = await requireCampagneAccess();
   if (!session) return NextResponse.json({ error: "Non autorisé" }, { status: 403 });
 
   const { id } = await params;
@@ -57,7 +57,7 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
 }
 
 export async function DELETE(_: NextRequest, { params }: { params: Promise<{ id: string }> }) {
-  const session = await requireAdmin();
+  const session = await requireCampagneAccess();
   if (!session) return NextResponse.json({ error: "Non autorisé" }, { status: 403 });
 
   const { id } = await params;

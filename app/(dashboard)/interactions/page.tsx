@@ -12,7 +12,7 @@ type Interaction = {
   type: string;
   sujet: string;
   description: string | null;
-  compte: { id: string; nom: string } | null;
+  organisation: { id: string; nom: string } | null;
   contact: { id: string; prenom: string; nom: string } | null;
   user: { id: string; nom: string };
 };
@@ -118,11 +118,11 @@ export default function InteractionsPage() {
                           </Link>
                         </>
                       )}
-                      {i.compte && (
+                      {i.organisation && (
                         <>
                           <span>·</span>
-                          <Link href={`/comptes/${i.compte.id}`} className="hover:text-blue-600">
-                            {i.compte.nom}
+                          <Link href={`/organisations/${i.organisation.id}`} className="hover:text-blue-600">
+                            {i.organisation.nom}
                           </Link>
                         </>
                       )}

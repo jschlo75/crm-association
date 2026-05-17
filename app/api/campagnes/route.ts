@@ -8,7 +8,7 @@ const campagneSchema = z.object({
   nom: z.string().min(1),
   sujet: z.string().min(1),
   contenu: z.string().min(1),
-  filtreCompteId: z.string().optional().or(z.literal("")),
+  filtreOrganisationId: z.string().optional().or(z.literal("")),
 });
 
 export async function GET(req: NextRequest) {
@@ -29,7 +29,7 @@ export async function GET(req: NextRequest) {
 export async function POST(req: NextRequest) {
   const session = await getServerSession(authOptions);
   const role = (session?.user as { role: string })?.role;
-  if (!session || role !== "ADMIN")
+  if (!session || (role !== "ADMIN" && role !== "RESTREINT"))
     return NextResponse.json({ error: "Non autorisé" }, { status: 403 });
 
   const userId = (session.user as { id: string }).id;
@@ -37,13 +37,13 @@ export async function POST(req: NextRequest) {
   const parsed = campagneSchema.safeParse(body);
   if (!parsed.success) return NextResponse.json({ error: parsed.error }, { status: 400 });
 
-  const { filtreCompteId, ...rest } = parsed.data;
+  const { filtreOrganisationId, ...rest } = parsed.data;
 
   // Récupérer les destinataires (contacts avec email)
   const contacts = await prisma.contact.findMany({
     where: {
       email: { not: null },
-      ...(filtreCompteId ? { compteId: filtreCompteId } : {}),
+      ...(filtreOrganisationId ? { organisationId: filtreOrganisationId } : {}),
     },
     select: { id: true, prenom: true, nom: true, email: true },
   });
@@ -51,7 +51,7 @@ export async function POST(req: NextRequest) {
   const campagne = await prisma.campagne.create({
     data: {
       ...rest,
-      filtreCompteId: filtreCompteId || null,
+      filtreOrganisationId: filtreOrganisationId || null,
       userId,
       nbDestinataires: contacts.length,
       destinataires: {

@@ -3,14 +3,15 @@
 import { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { Plus, Trash2, Shield, User } from "lucide-react";
+import { Plus, Trash2, Shield, User, ShieldCheck, Mail } from "lucide-react";
 import { formatDate } from "@/lib/utils";
+import Link from "next/link";
 
 type User = {
   id: string;
   nom: string;
   email: string;
-  role: "ADMIN" | "MEMBRE";
+  role: "ADMIN" | "MEMBRE" | "RESTREINT";
   actif: boolean;
   createdAt: string;
 };
@@ -65,7 +66,8 @@ export default function AdminPage() {
   }
 
   async function toggleRole(user: User) {
-    const newRole = user.role === "ADMIN" ? "MEMBRE" : "ADMIN";
+    const cycle: Record<User["role"], User["role"]> = { MEMBRE: "RESTREINT", RESTREINT: "ADMIN", ADMIN: "MEMBRE" };
+    const newRole = cycle[user.role] ?? "MEMBRE";
     const res = await fetch(`/api/admin/users/${user.id}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
@@ -93,20 +95,40 @@ export default function AdminPage() {
     if (res.ok) setUsers((prev) => prev.filter((u) => u.id !== id));
   }
 
+  async function envoyerAcces(user: User) {
+    if (!confirm(`Envoyer les accès à ${user.nom} (${user.email}) ?\n\nCela génère un nouveau mot de passe et l'envoie par email.`)) return;
+    const res = await fetch(`/api/admin/users/${user.id}/envoyer-acces`, { method: "POST" });
+    if (res.ok) {
+      alert(`✓ Email envoyé à ${user.email}`);
+    } else {
+      const data = await res.json();
+      alert(`Erreur : ${data.error || "Échec de l'envoi"}`);
+    }
+  }
+
   const inputClass = "w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm";
   const labelClass = "block text-sm font-medium text-gray-700 mb-1";
 
   return (
     <div className="space-y-6 max-w-4xl">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <h1 className="text-2xl font-bold text-gray-900">Administration — Utilisateurs</h1>
-        <button
-          onClick={() => setShowForm(!showForm)}
-          className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors"
-        >
-          <Plus size={16} />
-          Nouvel utilisateur
-        </button>
+        <div className="flex items-center gap-2">
+          <Link
+            href="/admin/connexions"
+            className="flex items-center gap-2 bg-white border border-gray-300 text-gray-700 px-4 py-2 rounded-lg text-sm font-medium hover:bg-gray-50 transition-colors"
+          >
+            <ShieldCheck size={16} />
+            Suivi des connexions
+          </Link>
+          <button
+            onClick={() => setShowForm(!showForm)}
+            className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors"
+          >
+            <Plus size={16} />
+            Nouvel utilisateur
+          </button>
+        </div>
       </div>
 
       {showForm && (
@@ -116,7 +138,7 @@ export default function AdminPage() {
             {formError && (
               <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm">{formError}</div>
             )}
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <label className={labelClass}>Nom complet *</label>
                 <input name="nom" required className={inputClass} />
@@ -133,6 +155,7 @@ export default function AdminPage() {
                 <label className={labelClass}>Rôle *</label>
                 <select name="role" className={inputClass}>
                   <option value="MEMBRE">Membre</option>
+                  <option value="RESTREINT">Restreint</option>
                   <option value="ADMIN">Administrateur</option>
                 </select>
               </div>
@@ -157,11 +180,11 @@ export default function AdminPage() {
         </div>
       )}
 
-      <div className="bg-white rounded-xl shadow-sm border border-gray-200">
+      <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-x-auto">
         {loading ? (
           <div className="p-8 text-center text-gray-400 text-sm">Chargement...</div>
         ) : (
-          <table className="w-full text-sm">
+          <table className="w-full text-sm min-w-[600px]">
             <thead className="border-b border-gray-200">
               <tr className="text-left text-xs font-medium text-gray-500 uppercase tracking-wide">
                 <th className="px-6 py-3">Utilisateur</th>
@@ -189,10 +212,14 @@ export default function AdminPage() {
                     </td>
                     <td className="px-6 py-4">
                       <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium ${
-                        user.role === "ADMIN" ? "bg-purple-100 text-purple-700" : "bg-gray-100 text-gray-600"
+                        user.role === "ADMIN"
+                          ? "bg-purple-100 text-purple-700"
+                          : user.role === "RESTREINT"
+                          ? "bg-amber-100 text-amber-700"
+                          : "bg-gray-100 text-gray-600"
                       }`}>
                         {user.role === "ADMIN" ? <Shield size={11} /> : <User size={11} />}
-                        {user.role === "ADMIN" ? "Admin" : "Membre"}
+                        {user.role === "ADMIN" ? "Admin" : user.role === "RESTREINT" ? "Restreint" : "Membre"}
                       </span>
                     </td>
                     <td className="px-6 py-4">
@@ -207,10 +234,17 @@ export default function AdminPage() {
                       {!isSelf && (
                         <div className="flex items-center gap-2">
                           <button
+                            onClick={() => envoyerAcces(user)}
+                            title="Envoyer les accès par email"
+                            className="text-blue-400 hover:text-blue-600 transition-colors"
+                          >
+                            <Mail size={14} />
+                          </button>
+                          <button
                             onClick={() => toggleRole(user)}
                             className="text-xs text-blue-600 hover:underline"
                           >
-                            {user.role === "ADMIN" ? "→ Membre" : "→ Admin"}
+                            {user.role === "ADMIN" ? "→ Membre" : user.role === "RESTREINT" ? "→ Admin" : "→ Restreint"}
                           </button>
                           <button
                             onClick={() => toggleActif(user)}

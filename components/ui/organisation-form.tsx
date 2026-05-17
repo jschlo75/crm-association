@@ -1,37 +1,53 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
-type CompteFormData = {
+type OrganisationFormData = {
   nom: string;
   type: string;
   email: string;
   telephone: string;
+  membreSnhf: boolean;
+  siteWeb: string;
   adresse: string;
   codePostal: string;
   ville: string;
   pays: string;
   notes: string;
+  parentId: string;
 };
 
 type Props = {
-  defaultValues?: Partial<CompteFormData> & { id?: string };
+  defaultValues?: Partial<OrganisationFormData> & { id?: string };
 };
 
+type OrganisationOption = { id: string; nom: string };
+
 const TYPES = [
-  { value: "ENTREPRISE", label: "Entreprise" },
+  { value: "ENSEIGNEMENT", label: "Enseignement" },
   { value: "ASSOCIATION", label: "Association" },
-  { value: "COLLECTIVITE", label: "Collectivité" },
-  { value: "PARTICULIER", label: "Particulier" },
-  { value: "AUTRE", label: "Autre" },
+  { value: "FEDERATION", label: "Fédération" },
+  { value: "JARDIN_PRIVE", label: "Jardin privé" },
+  { value: "ORGANISME_PUBLIC", label: "Organisme public" },
 ];
 
-export function CompteForm({ defaultValues }: Props) {
+export function OrganisationForm({ defaultValues }: Props) {
   const router = useRouter();
   const isEdit = !!defaultValues?.id;
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [organisations, setOrganisations] = useState<OrganisationOption[]>([]);
+  const [parentId, setParentId] = useState(defaultValues?.parentId || "");
+  const [membreSnhf, setMembreSnhf] = useState(defaultValues?.membreSnhf ?? false);
+
+  useEffect(() => {
+    fetch("/api/organisations")
+      .then((r) => r.json())
+      .then((data: OrganisationOption[]) => {
+        setOrganisations(data.filter((o) => o.id !== defaultValues?.id));
+      });
+  }, [defaultValues?.id]);
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -47,14 +63,17 @@ export function CompteForm({ defaultValues }: Props) {
       type: getValue("type"),
       email: getValue("email"),
       telephone: getValue("telephone"),
+      membreSnhf,
+      siteWeb: getValue("siteWeb"),
       adresse: getValue("adresse"),
       codePostal: getValue("codePostal"),
       ville: getValue("ville"),
       pays: getValue("pays") || "France",
       notes: getValue("notes"),
+      parentId,
     };
 
-    const url = isEdit ? `/api/comptes/${defaultValues!.id}` : "/api/comptes";
+    const url = isEdit ? `/api/organisations/${defaultValues!.id}` : "/api/organisations";
     const method = isEdit ? "PUT" : "POST";
 
     const res = await fetch(url, {
@@ -64,11 +83,12 @@ export function CompteForm({ defaultValues }: Props) {
     });
 
     if (res.ok) {
-      const compte = await res.json();
-      router.push(`/comptes/${compte.id}`);
+      const organisation = await res.json();
+      router.push(`/organisations/${organisation.id}`);
       router.refresh();
     } else {
-      setError("Une erreur est survenue. Vérifiez les champs.");
+      const d = await res.json();
+      setError(d.error || "Une erreur est survenue. Vérifiez les champs.");
       setLoading(false);
     }
   }
@@ -88,15 +108,29 @@ export function CompteForm({ defaultValues }: Props) {
       <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 space-y-4">
         <h2 className="font-semibold text-gray-900">Informations générales</h2>
 
-        <div className="grid grid-cols-2 gap-4">
-          <div className="col-span-2">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="sm:col-span-2">
             <label className={labelClass}>Nom *</label>
             <input name="nom" required defaultValue={defaultValues?.nom} className={inputClass} />
           </div>
           <div>
-            <label className={labelClass}>Type *</label>
-            <select name="type" required defaultValue={defaultValues?.type || "AUTRE"} className={inputClass}>
+            <label className={labelClass}>Type</label>
+            <select name="type" defaultValue={defaultValues?.type || ""} className={inputClass}>
+              <option value="">— Non défini —</option>
               {TYPES.map((t) => <option key={t.value} value={t.value}>{t.label}</option>)}
+            </select>
+          </div>
+          <div>
+            <label className={labelClass}>Organisation parente</label>
+            <select
+              value={parentId}
+              onChange={(e) => setParentId(e.target.value)}
+              className={inputClass}
+            >
+              <option value="">— Aucune (racine) —</option>
+              {organisations.map((o) => (
+                <option key={o.id} value={o.id}>{o.nom}</option>
+              ))}
             </select>
           </div>
           <div>
@@ -107,13 +141,34 @@ export function CompteForm({ defaultValues }: Props) {
             <label className={labelClass}>Téléphone</label>
             <input name="telephone" defaultValue={defaultValues?.telephone} className={inputClass} />
           </div>
+          <div className="sm:col-span-2">
+            <label className="flex items-center gap-3 cursor-pointer select-none">
+              <input
+                type="checkbox"
+                checked={membreSnhf}
+                onChange={(e) => setMembreSnhf(e.target.checked)}
+                className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500 cursor-pointer"
+              />
+              <span className="text-sm font-medium text-gray-700">Membre SNHF</span>
+            </label>
+          </div>
+          <div className="sm:col-span-2">
+            <label className={labelClass}>Site web</label>
+            <input
+              name="siteWeb"
+              type="url"
+              defaultValue={defaultValues?.siteWeb}
+              className={inputClass}
+              placeholder="https://www.exemple.fr"
+            />
+          </div>
         </div>
       </div>
 
       <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 space-y-4">
         <h2 className="font-semibold text-gray-900">Adresse postale</h2>
-        <div className="grid grid-cols-2 gap-4">
-          <div className="col-span-2">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="sm:col-span-2">
             <label className={labelClass}>Adresse</label>
             <input name="adresse" defaultValue={defaultValues?.adresse} className={inputClass} />
           </div>
@@ -149,7 +204,7 @@ export function CompteForm({ defaultValues }: Props) {
           disabled={loading}
           className="bg-blue-600 text-white px-6 py-2 rounded-lg font-medium hover:bg-blue-700 disabled:opacity-50 transition-colors text-sm"
         >
-          {loading ? "Enregistrement..." : isEdit ? "Mettre à jour" : "Créer le compte"}
+          {loading ? "Enregistrement..." : isEdit ? "Mettre à jour" : "Créer l'organisation"}
         </button>
         <button
           type="button"

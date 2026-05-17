@@ -10,14 +10,15 @@ datasource db {
 enum Role {
   ADMIN
   MEMBRE
+  RESTREINT
 }
 
 enum TypeCompte {
-  ENTREPRISE
+  ENSEIGNEMENT
   ASSOCIATION
-  COLLECTIVITE
-  PARTICULIER
-  AUTRE
+  FEDERATION
+  JARDIN_PRIVE
+  ORGANISME_PUBLIC
 }
 
 enum TypeInteraction {
@@ -31,8 +32,17 @@ enum StatutCampagne {
   ENVOYEE
 }
 
+enum StatutParticipant {
+  CIBLE
+  INVITE
+  A_ACCEPTE
+  A_PARTICIPE
+  A_REFUSE
+}
+
 model User {
   id           String        @id @default(cuid())
+  prenom       String?
   nom          String
   email        String        @unique
   password     String
@@ -42,42 +52,62 @@ model User {
   updatedAt    DateTime      @updatedAt
   interactions Interaction[]
   campagnes    Campagne[]
+  connexions   LoginLog[]
 }
 
-model Compte {
-  id           String        @id @default(cuid())
-  nom          String
-  type         TypeCompte    @default(AUTRE)
-  email        String?
-  telephone    String?
-  adresse      String?
-  codePostal   String?
-  ville        String?
-  pays         String        @default("France")
-  notes        String?
-  createdAt    DateTime      @default(now())
-  updatedAt    DateTime      @updatedAt
-  contacts     Contact[]
-  interactions Interaction[]
+model LoginLog {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  email     String
+  nom       String
+  role      String
+  createdAt DateTime @default(now())
+}
+
+model Organisation {
+  @@map("Compte")
+  id                String         @id @default(cuid())
+  nom               String
+  type              TypeCompte?
+  membreSnhf        Boolean        @default(false)
+  email             String?
+  telephone         String?
+  siteWeb           String?
+  adresse           String?
+  codePostal        String?
+  ville             String?
+  pays              String         @default("France")
+  notes             String?
+  parentId          String?
+  parent            Organisation?  @relation("OrganisationHierarchie", fields: [parentId], references: [id], onDelete: SetNull)
+  sousOrganisations Organisation[] @relation("OrganisationHierarchie")
+  createdAt         DateTime       @default(now())
+  updatedAt         DateTime       @updatedAt
+  contacts          Contact[]
+  interactions      Interaction[]
 }
 
 model Contact {
-  id           String        @id @default(cuid())
-  prenom       String
-  nom          String
-  poste        String?
-  email        String?
-  telephone    String?
-  adresse      String?
-  codePostal   String?
-  ville        String?
-  pays         String        @default("France")
-  notes        String?
-  compteId     String?
-  compte       Compte?       @relation(fields: [compteId], references: [id], onDelete: SetNull)
-  createdAt    DateTime      @default(now())
-  updatedAt    DateTime      @updatedAt
-  interactions Interaction[]
+  id                    String                 @id @default(cuid())
+  prenom                String
+  nom                   String
+  poste                 String?
+  email                 String?
+  telephone             String?
+  adresse               String?
+  codePostal            String?
+  ville                 String?
+  pays                  String                 @default("France")
+  notes                 String?
+  isMembre              Boolean                @default(false)
+  dateAdhesion          DateTime?
+  organisationId        String?                @map("compteId")
+  organisation          Organisation?          @relation(fields: [organisationId], references: [id], onDelete: SetNull)
+  createdAt             DateTime               @default(now())
+  updatedAt             DateTime               @updatedAt
+  interactions          Interaction[]
+  evenementParticipants EvenementParticipant[]
 }
 
 model Interaction {
@@ -86,8 +116,8 @@ model Interaction {
   type        TypeInteraction
   sujet       String
   description String?
-  compteId    String?
-  compte      Compte?         @relation(fields: [compteId], references: [id], onDelete: SetNull)
+  organisationId String?        @map("compteId")
+  organisation   Organisation?  @relation(fields: [organisationId], references: [id], onDelete: SetNull)
   contactId   String?
   contact     Contact?        @relation(fields: [contactId], references: [id], onDelete: SetNull)
   userId      String
@@ -104,12 +134,38 @@ model Campagne {
   statut          StatutCampagne @default(BROUILLON)
   dateEnvoi       DateTime?
   nbDestinataires Int            @default(0)
-  filtreCompteId  String?
+  filtreOrganisationId String?        @map("filtreCompteId")
   userId          String
   user            User           @relation(fields: [userId], references: [id])
   destinataires   CampagneDestinataire[]
   createdAt       DateTime       @default(now())
   updatedAt       DateTime       @updatedAt
+}
+
+model Evenement {
+  id           String                 @id @default(cuid())
+  titre        String
+  date         DateTime
+  lieu         String?
+  lien         String?
+  lienCr       String?
+  objectifs    String?
+  createdAt    DateTime               @default(now())
+  updatedAt    DateTime               @updatedAt
+  participants EvenementParticipant[]
+}
+
+model EvenementParticipant {
+  id          String            @id @default(cuid())
+  evenementId String
+  evenement   Evenement         @relation(fields: [evenementId], references: [id], onDelete: Cascade)
+  contactId   String
+  contact     Contact           @relation(fields: [contactId], references: [id], onDelete: Cascade)
+  statut      StatutParticipant @default(CIBLE)
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+
+  @@unique([evenementId, contactId])
 }
 
 model CampagneDestinataire {

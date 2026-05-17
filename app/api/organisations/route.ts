@@ -4,16 +4,19 @@ import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { z } from "zod";
 
-const compteSchema = z.object({
+const organisationSchema = z.object({
   nom: z.string().min(1),
-  type: z.enum(["ENTREPRISE", "ASSOCIATION", "COLLECTIVITE", "PARTICULIER", "AUTRE"]),
+  type: z.enum(["ENSEIGNEMENT", "ASSOCIATION", "FEDERATION", "JARDIN_PRIVE", "ORGANISME_PUBLIC"]).optional().nullable(),
   email: z.string().email().optional().or(z.literal("")),
   telephone: z.string().optional(),
+  membreSnhf: z.boolean().optional(),
+  siteWeb: z.string().optional(),
   adresse: z.string().optional(),
   codePostal: z.string().optional(),
   ville: z.string().optional(),
   pays: z.string().optional(),
   notes: z.string().optional(),
+  parentId: z.string().optional().or(z.literal("")),
 });
 
 export async function GET(req: NextRequest) {
@@ -22,14 +25,24 @@ export async function GET(req: NextRequest) {
 
   const { searchParams } = new URL(req.url);
   const q = searchParams.get("q") || "";
+  const types = searchParams.getAll("type").filter(Boolean);
+  const membreSnhf = searchParams.get("membreSnhf");
+  const organisationId = searchParams.get("organisationId") || "";
 
-  const comptes = await prisma.compte.findMany({
-    where: q ? { nom: { contains: q, mode: "insensitive" } } : undefined,
+  const where: Record<string, unknown> = {};
+  if (q) where.nom = { contains: q, mode: "insensitive" };
+  if (types.length === 1) where.type = types[0];
+  else if (types.length > 1) where.type = { in: types };
+  if (membreSnhf === "true") where.membreSnhf = true;
+  if (organisationId) where.id = organisationId;
+
+  const organisations = await prisma.organisation.findMany({
+    where: Object.keys(where).length ? where : undefined,
     orderBy: { nom: "asc" },
     include: { _count: { select: { contacts: true, interactions: true } } },
   });
 
-  return NextResponse.json(comptes);
+  return NextResponse.json(organisations);
 }
 
 export async function POST(req: NextRequest) {
@@ -39,16 +52,18 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Non autorisé" }, { status: 403 });
 
   const body = await req.json();
-  const parsed = compteSchema.safeParse(body);
+  const parsed = organisationSchema.safeParse(body);
   if (!parsed.success) return NextResponse.json({ error: parsed.error }, { status: 400 });
 
-  const data = parsed.data;
-  const compte = await prisma.compte.create({
+  const { email, siteWeb, parentId, ...rest } = parsed.data;
+  const organisation = await prisma.organisation.create({
     data: {
-      ...data,
-      email: data.email || null,
+      ...rest,
+      email: email || null,
+      siteWeb: siteWeb || null,
+      parentId: parentId || null,
     },
   });
 
-  return NextResponse.json(compte, { status: 201 });
+  return NextResponse.json(organisation, { status: 201 });
 }

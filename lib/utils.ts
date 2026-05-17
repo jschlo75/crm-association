@@ -21,16 +21,32 @@ export const TYPE_INTERACTION_LABELS: Record<string, string> = {
   REUNION: "Réunion",
 };
 
-export const TYPE_COMPTE_LABELS: Record<string, string> = {
-  ENTREPRISE: "Entreprise",
+export const TYPE_ORGANISATION_LABELS: Record<string, string> = {
+  ENSEIGNEMENT: "Enseignement",
   ASSOCIATION: "Association",
-  COLLECTIVITE: "Collectivité",
-  PARTICULIER: "Particulier",
-  AUTRE: "Autre",
+  FEDERATION: "Fédération",
+  JARDIN_PRIVE: "Jardin privé",
+  ORGANISME_PUBLIC: "Organisme public",
 };
 
 export const TYPE_INTERACTION_ICONS: Record<string, string> = {
   APPEL: "📞",
   EMAIL: "✉️",
   REUNION: "🤝",
+};
+
+export const STATUT_PARTICIPANT_LABELS: Record<string, string> = {
+  CIBLE:      "Ciblé",
+  INVITE:     "Invité",
+  A_ACCEPTE:  "A accepté",
+  A_PARTICIPE:"A participé",
+  A_REFUSE:   "A refusé",
+};
+
+export const STATUT_PARTICIPANT_COLORS: Record<string, string> = {
+  CIBLE:       "bg-gray-100 text-gray-600",
+  INVITE:      "bg-blue-100 text-blue-700",
+  A_ACCEPTE:   "bg-emerald-100 text-emerald-700",
+  A_PARTICIPE: "bg-green-100 text-green-800",
+  A_REFUSE:    "bg-red-100 text-red-700",
 };

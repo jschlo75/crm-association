@@ -25,13 +25,18 @@ export const authOptions: NextAuthOptions = {
         const valid = await bcrypt.compare(credentials.password, user.password);
         if (!valid) return null;
 
+        // Tracer la connexion
+        await prisma.loginLog.create({
+          data: { userId: user.id, email: user.email, nom: user.nom, role: user.role },
+        });
+
         return { id: user.id, name: user.nom, email: user.email, role: user.role };
       },
     }),
   ],
   callbacks: {
     async jwt({ token, user }) {
-      if (user) token.role = (user as { role: string }).role;
+      if (user) token.role = (user as unknown as { role: string }).role;
       return token;
     },
     async session({ session, token }) {

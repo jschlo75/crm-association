@@ -3,9 +3,10 @@ import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { Mail, Phone, MapPin, Building2, MessageSquare, Pencil, Plus } from "lucide-react";
-import { formatDate, TYPE_INTERACTION_LABELS, TYPE_INTERACTION_ICONS } from "@/lib/utils";
+import { Mail, Phone, Building2, MessageSquare, Pencil, Plus, BadgeCheck, CalendarDays } from "lucide-react";
+import { formatDate, TYPE_INTERACTION_LABELS, TYPE_INTERACTION_ICONS, TYPE_ORGANISATION_LABELS } from "@/lib/utils";
 import { DeleteContactButton } from "./delete-button";
+import { AddressMap } from "@/components/ui/address-map";
 
 export default async function ContactDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const session = await getServerSession(authOptions);
@@ -15,10 +16,10 @@ export default async function ContactDetailPage({ params }: { params: Promise<{ 
   const contact = await prisma.contact.findUnique({
     where: { id },
     include: {
-      compte: true,
+      organisation: true,
       interactions: {
         orderBy: { date: "desc" },
-        include: { compte: true, user: true },
+        include: { organisation: true, user: true },
       },
     },
   });
@@ -38,11 +39,17 @@ export default async function ContactDetailPage({ params }: { params: Promise<{ 
           <div>
             <h1 className="text-2xl font-bold text-gray-900">{contact.prenom} {contact.nom}</h1>
             {contact.poste && <p className="text-gray-500 text-sm">{contact.poste}</p>}
-            {contact.compte && (
-              <Link href={`/comptes/${contact.compte.id}`} className="text-sm text-blue-600 hover:underline flex items-center gap-1 mt-0.5">
+            {contact.organisation && (
+              <Link href={`/organisations/${contact.organisation.id}`} className="text-sm text-blue-600 hover:underline flex items-center gap-1 mt-0.5">
                 <Building2 size={13} />
-                {contact.compte.nom}
+                {contact.organisation.nom}
               </Link>
+            )}
+            {contact.isMembre && (
+              <span className="inline-flex items-center gap-1 mt-1 text-xs font-medium text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-full">
+                <BadgeCheck size={12} />
+                Membre SNHF
+              </span>
             )}
           </div>
         </div>
@@ -60,9 +67,9 @@ export default async function ContactDetailPage({ params }: { params: Promise<{ 
         )}
       </div>
 
-      <div className="grid grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
         {/* Informations */}
-        <div className="col-span-1 bg-white rounded-xl shadow-sm border border-gray-200 p-6 space-y-3">
+        <div className="lg:col-span-1 bg-white rounded-xl shadow-sm border border-gray-200 p-6 space-y-3">
           <h2 className="font-semibold text-gray-900">Coordonnées</h2>
           <div className="space-y-3 text-sm">
             {contact.email && (
@@ -78,17 +85,20 @@ export default async function ContactDetailPage({ params }: { params: Promise<{ 
               </div>
             )}
             {(contact.adresse || contact.ville) && (
-              <div className="flex items-start gap-2 text-gray-600">
-                <MapPin size={14} className="text-gray-400 flex-shrink-0 mt-0.5" />
-                <div>
-                  {contact.adresse && <div>{contact.adresse}</div>}
-                  {(contact.codePostal || contact.ville) && (
-                    <div>{contact.codePostal} {contact.ville}</div>
-                  )}
-                </div>
-              </div>
+              <AddressMap
+                adresse={contact.adresse}
+                codePostal={contact.codePostal}
+                ville={contact.ville}
+                pays={contact.pays}
+              />
             )}
           </div>
+          {contact.isMembre && contact.dateAdhesion && (
+            <div className="flex items-center gap-2 text-sm text-gray-600">
+              <CalendarDays size={14} className="text-gray-400 flex-shrink-0" />
+              <span>Adhésion : {formatDate(contact.dateAdhesion)}</span>
+            </div>
+          )}
           {contact.notes && (
             <div className="pt-3 border-t border-gray-100">
               <p className="text-xs font-medium text-gray-500 mb-1">Notes</p>
@@ -98,7 +108,7 @@ export default async function ContactDetailPage({ params }: { params: Promise<{ 
         </div>
 
         {/* Interactions */}
-        <div className="col-span-2 bg-white rounded-xl shadow-sm border border-gray-200">
+        <div className="lg:col-span-2 bg-white rounded-xl shadow-sm border border-gray-200">
           <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
             <h2 className="font-semibold text-gray-900 flex items-center gap-2">
               <MessageSquare size={16} className="text-gray-400" />
@@ -128,11 +138,11 @@ export default async function ContactDetailPage({ params }: { params: Promise<{ 
                     </div>
                     <div className="text-xs text-gray-500 mt-1 flex items-center gap-2">
                       <span>{formatDate(i.date)}</span>
-                      {i.compte && (
+                      {i.organisation && (
                         <>
                           <span>·</span>
-                          <Link href={`/comptes/${i.compte.id}`} className="hover:text-blue-600">
-                            {i.compte.nom}
+                          <Link href={`/organisations/${i.organisation.id}`} className="hover:text-blue-600">
+                            {i.organisation.nom}
                           </Link>
                         </>
                       )}

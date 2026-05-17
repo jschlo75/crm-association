@@ -10,16 +10,18 @@ import {
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
-type ImportType = "comptes" | "contacts";
+type ImportType = "organisations" | "contacts";
 type Step = "choose" | "upload" | "mapping" | "preview" | "result";
 
 type FieldDef = { key: string; label: string; required: boolean };
 
-const COMPTE_FIELDS: FieldDef[] = [
+const ORGANISATION_FIELDS: FieldDef[] = [
   { key: "nom",        label: "Nom",          required: true  },
   { key: "type",       label: "Type",         required: false },
   { key: "email",      label: "Email",        required: false },
   { key: "telephone",  label: "Téléphone",    required: false },
+  { key: "siteWeb",    label: "Site web",     required: false },
+  { key: "membreSnhf", label: "Membre SNHF",  required: false },
   { key: "adresse",    label: "Adresse",      required: false },
   { key: "codePostal", label: "Code postal",  required: false },
   { key: "ville",      label: "Ville",        required: false },
@@ -38,7 +40,7 @@ const CONTACT_FIELDS: FieldDef[] = [
   { key: "ville",      label: "Ville",        required: false },
   { key: "pays",       label: "Pays",         required: false },
   { key: "notes",      label: "Notes",        required: false },
-  { key: "compte",     label: "Compte (nom)", required: false },
+  { key: "organisation", label: "Organisation (nom)", required: false },
 ];
 
 // ─── Auto-détection des colonnes ──────────────────────────────────────────────
@@ -54,8 +56,10 @@ const SYNONYMS: Record<string, string[]> = {
   ville:      ["ville", "city", "commune", "localité", "localite"],
   pays:       ["pays", "country", "nation"],
   notes:      ["notes", "commentaires", "remarques", "observations", "note", "comment", "comments"],
+  siteWeb:    ["site web", "siteweb", "site", "website", "url", "www", "web", "site internet"],
+  membreSnhf: ["membre snhf", "membre", "snhf", "adhérent", "adherent"],
   poste:      ["poste", "fonction", "titre", "title", "job", "position", "rôle", "role"],
-  compte:     ["compte", "société", "societe", "company", "organisation", "organization", "entreprise", "établissement", "etablissement"],
+  organisation: ["organisation", "compte", "société", "societe", "company", "organization", "entreprise", "établissement", "etablissement"],
 };
 
 function autoDetect(headers: string[]): Record<string, string> {
@@ -79,18 +83,18 @@ function autoDetect(headers: string[]): Record<string, string> {
 async function downloadTemplate(type: ImportType) {
   const XLSX = await import("xlsx");
 
-  if (type === "comptes") {
+  if (type === "organisations") {
     const ws = XLSX.utils.aoa_to_sheet([
-      ["Nom", "Type", "Email", "Téléphone", "Adresse", "Code postal", "Ville", "Pays", "Notes"],
-      ["Association Exemple", "ASSOCIATION", "contact@exemple.fr", "01 23 45 67 89", "12 rue des Roses", "75001", "Paris", "France", ""],
-      ["Mairie de Lyon", "COLLECTIVITE", "mairie@lyon.fr", "04 72 10 30 30", "Place de la Comédie", "69001", "Lyon", "France", ""],
+      ["Nom", "Type", "Email", "Téléphone", "Site web", "Membre SNHF", "Adresse", "Code postal", "Ville", "Pays", "Notes"],
+      ["Association Exemple", "Association", "contact@exemple.fr", "01 23 45 67 89", "https://www.exemple.fr", "oui", "12 rue des Roses", "75001", "Paris", "France", ""],
+      ["École nationale d'horticulture", "Enseignement", "contact@enh.fr", "01 30 83 40 00", "https://www.enh.fr", "non", "4 rue Hardy", "78009", "Versailles", "France", ""],
     ]);
     const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, "Comptes");
-    XLSX.writeFile(wb, "template_comptes.xlsx");
+    XLSX.utils.book_append_sheet(wb, ws, "Organisations");
+    XLSX.writeFile(wb, "template_organisations.xlsx");
   } else {
     const ws = XLSX.utils.aoa_to_sheet([
-      ["Prénom", "Nom", "Poste", "Email", "Téléphone", "Adresse", "Code postal", "Ville", "Pays", "Notes", "Compte"],
+      ["Prénom", "Nom", "Poste", "Email", "Téléphone", "Adresse", "Code postal", "Ville", "Pays", "Notes", "Organisation"],
       ["Marie", "Dupont", "Présidente", "m.dupont@exemple.fr", "06 12 34 56 78", "", "", "Paris", "France", "", "Association Exemple"],
       ["Jean", "Martin", "Directeur", "j.martin@mairie.fr", "04 72 10 30 31", "", "", "Lyon", "France", "", "Mairie de Lyon"],
     ]);
@@ -108,7 +112,7 @@ export default function ImportPage() {
   const role = (session?.user as { role: string })?.role;
 
   const [step, setStep] = useState<Step>("choose");
-  const [importType, setImportType] = useState<ImportType>("comptes");
+  const [importType, setImportType] = useState<ImportType>("organisations");
   const [fileName, setFileName] = useState("");
   const [headers, setHeaders] = useState<string[]>([]);
   const [rawRows, setRawRows] = useState<Record<string, string>[]>([]);
@@ -118,15 +122,7 @@ export default function ImportPage() {
   const [dragOver, setDragOver] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
 
-  const fields = importType === "comptes" ? COMPTE_FIELDS : CONTACT_FIELDS;
-
-  if (role !== "ADMIN") {
-    return (
-      <div className="p-8 text-center text-gray-500">
-        Accès réservé aux administrateurs.
-      </div>
-    );
-  }
+  const fields = importType === "organisations" ? ORGANISATION_FIELDS : CONTACT_FIELDS;
 
   // ─── Parse du fichier ────────────────────────────────────────────────────────
 
@@ -206,10 +202,18 @@ export default function ImportPage() {
 
   // ─── Rendu ───────────────────────────────────────────────────────────────────
 
+  if (role !== "ADMIN") {
+    return (
+      <div className="p-8 text-center text-gray-500">
+        Accès réservé aux administrateurs.
+      </div>
+    );
+  }
+
   return (
     <div className="max-w-4xl space-y-6">
       {/* En-tête */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <h1 className="text-2xl font-bold text-gray-900">Importer depuis Excel</h1>
         {step !== "choose" && (
           <button
@@ -223,7 +227,7 @@ export default function ImportPage() {
       </div>
 
       {/* Fil d'Ariane */}
-      <div className="flex items-center gap-2 text-sm text-gray-400">
+      <div className="flex flex-wrap items-center gap-2 text-sm text-gray-400">
         {(["choose", "upload", "mapping", "preview", "result"] as Step[]).map((s, i, arr) => {
           const labels: Record<Step, string> = {
             choose: "Type", upload: "Fichier", mapping: "Colonnes",
@@ -248,8 +252,8 @@ export default function ImportPage() {
       {/* ── Étape 1 : Choisir le type ── */}
       {step === "choose" && (
         <div className="space-y-4">
-          <div className="grid grid-cols-2 gap-4">
-            {(["comptes", "contacts"] as ImportType[]).map((t) => (
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            {(["organisations", "contacts"] as ImportType[]).map((t) => (
               <button
                 key={t}
                 onClick={() => { setImportType(t); setStep("upload"); }}
@@ -260,9 +264,9 @@ export default function ImportPage() {
                 <FileSpreadsheet size={28} className="text-blue-500 mb-3" />
                 <div className="font-semibold text-gray-900 capitalize">{t}</div>
                 <div className="text-sm text-gray-500 mt-1">
-                  {t === "comptes"
+                  {t === "organisations"
                     ? "Importer des organisations, entreprises, associations…"
-                    : "Importer des interlocuteurs, avec rattachement optionnel à un compte"}
+                    : "Importer des interlocuteurs, avec rattachement optionnel à une organisation"}
                 </div>
               </button>
             ))}
@@ -276,7 +280,7 @@ export default function ImportPage() {
           <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 space-y-4">
             <div className="flex items-center justify-between">
               <h2 className="font-semibold text-gray-900">
-                Importer des {importType}
+                Importer des {importType === "organisations" ? "organisations" : "contacts"}
               </h2>
               <button
                 onClick={() => downloadTemplate(importType)}
@@ -350,7 +354,8 @@ export default function ImportPage() {
               </div>
             </div>
 
-            <table className="w-full text-sm">
+            <div className="overflow-x-auto">
+            <table className="w-full text-sm min-w-[480px]">
               <thead>
                 <tr className="text-left text-xs font-medium text-gray-500 uppercase tracking-wide border-b border-gray-200">
                   <th className="pb-2 pr-4">Colonne du fichier</th>
@@ -385,6 +390,7 @@ export default function ImportPage() {
                 ))}
               </tbody>
             </table>
+            </div>
           </div>
 
           {/* Champs obligatoires manquants */}
@@ -483,7 +489,7 @@ export default function ImportPage() {
           <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 space-y-4">
             <h2 className="font-semibold text-gray-900">Import terminé</h2>
 
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="bg-green-50 border border-green-200 rounded-xl p-4 flex items-center gap-3">
                 <CheckCircle size={24} className="text-green-500" />
                 <div>

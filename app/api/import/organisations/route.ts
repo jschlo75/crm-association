@@ -4,11 +4,37 @@ import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { z } from "zod";
 
+// Accepte les libellés affichés ET les clés internes (insensible à la casse)
+const TYPE_MAP: Record<string, string> = {
+  enseignement:      "ENSEIGNEMENT",
+  association:       "ASSOCIATION",
+  "fédération":      "FEDERATION",
+  "federation":      "FEDERATION",
+  "jardin privé":    "JARDIN_PRIVE",
+  "jardin prive":    "JARDIN_PRIVE",
+  "organisme public":"ORGANISME_PUBLIC",
+};
+
+function normalizeType(val: unknown): unknown {
+  if (typeof val !== "string" || val.trim() === "") return undefined;
+  const lower = val.trim().toLowerCase();
+  // Libellé reconnu → clé interne
+  if (TYPE_MAP[lower]) return TYPE_MAP[lower];
+  // Déjà une clé interne valide → passe tel quel pour Zod
+  return val.trim().toUpperCase();
+}
+
 const rowSchema = z.object({
   nom: z.string().min(1),
-  type: z.enum(["ENTREPRISE", "ASSOCIATION", "COLLECTIVITE", "PARTICULIER", "AUTRE"]).optional(),
+  type: z.preprocess(normalizeType, z.enum(["ENSEIGNEMENT", "ASSOCIATION", "FEDERATION", "JARDIN_PRIVE", "ORGANISME_PUBLIC"]).optional()),
   email: z.string().email().optional().or(z.literal("")).or(z.null()),
   telephone: z.string().optional().or(z.null()),
+  membreSnhf: z.preprocess((v) => {
+    if (typeof v === "boolean") return v;
+    if (typeof v === "string") return ["oui", "yes", "true", "1", "x"].includes(v.toLowerCase().trim());
+    return false;
+  }, z.boolean()).optional(),
+  siteWeb: z.string().optional().or(z.null()),
   adresse: z.string().optional().or(z.null()),
   codePostal: z.string().optional().or(z.null()),
   ville: z.string().optional().or(z.null()),
@@ -36,30 +62,31 @@ export async function POST(req: NextRequest) {
       continue;
     }
 
-    const { email, ...rest } = parsed.data;
+    const { email, membreSnhf, ...rest } = parsed.data;
 
     try {
-      // Upsert : si un compte avec le même nom existe déjà, on le met à jour
-      const existing = await prisma.compte.findFirst({
+      const existing = await prisma.organisation.findFirst({
         where: { nom: { equals: rest.nom, mode: "insensitive" } },
       });
 
       if (existing) {
-        await prisma.compte.update({
+        await prisma.organisation.update({
           where: { id: existing.id },
           data: {
             ...rest,
-            type: rest.type ?? existing.type,
+            type: rest.type ?? existing.type ?? null,
+            membreSnhf: membreSnhf ?? existing.membreSnhf,
             email: email || existing.email,
             pays: rest.pays || existing.pays,
           },
         });
         updated++;
       } else {
-        await prisma.compte.create({
+        await prisma.organisation.create({
           data: {
             ...rest,
-            type: rest.type ?? "AUTRE",
+            type: rest.type ?? null,
+            membreSnhf: membreSnhf ?? false,
             email: email || null,
             pays: rest.pays || "France",
           },
