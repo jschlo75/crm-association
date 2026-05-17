@@ -52,6 +52,17 @@ model User {
   updatedAt    DateTime      @updatedAt
   interactions Interaction[]
   campagnes    Campagne[]
+  connexions   LoginLog[]
+}
+
+model LoginLog {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  email     String
+  nom       String
+  role      String
+  createdAt DateTime @default(now())
 }
 
 model Organisation {

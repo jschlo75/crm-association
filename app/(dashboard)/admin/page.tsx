@@ -3,8 +3,9 @@
 import { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { Plus, Trash2, Shield, User } from "lucide-react";
+import { Plus, Trash2, Shield, User, ShieldCheck } from "lucide-react";
 import { formatDate } from "@/lib/utils";
+import Link from "next/link";
 
 type User = {
   id: string;
@@ -101,13 +102,22 @@ export default function AdminPage() {
     <div className="space-y-6 max-w-4xl">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <h1 className="text-2xl font-bold text-gray-900">Administration — Utilisateurs</h1>
-        <button
-          onClick={() => setShowForm(!showForm)}
-          className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors"
-        >
-          <Plus size={16} />
-          Nouvel utilisateur
-        </button>
+        <div className="flex items-center gap-2">
+          <Link
+            href="/admin/connexions"
+            className="flex items-center gap-2 bg-white border border-gray-300 text-gray-700 px-4 py-2 rounded-lg text-sm font-medium hover:bg-gray-50 transition-colors"
+          >
+            <ShieldCheck size={16} />
+            Suivi des connexions
+          </Link>
+          <button
+            onClick={() => setShowForm(!showForm)}
+            className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors"
+          >
+            <Plus size={16} />
+            Nouvel utilisateur
+          </button>
+        </div>
       </div>
 
       {showForm && (
