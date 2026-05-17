@@ -24,6 +24,7 @@ export default async function ModifierEvenementPage({ params }: { params: Promis
           date: format(new Date(evenement.date), "yyyy-MM-dd'T'HH:mm"),
           lieu: evenement.lieu ?? "",
           lien: evenement.lien ?? "",
+          lienCr: evenement.lienCr ?? "",
           objectifs: evenement.objectifs ?? "",
         }}
       />

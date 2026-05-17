@@ -137,6 +137,7 @@ model Evenement {
   date         DateTime
   lieu         String?
   lien         String?
+  lienCr       String?
   objectifs    String?
   createdAt    DateTime               @default(now())
   updatedAt    DateTime               @updatedAt

@@ -27,11 +27,11 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
   if (role !== "ADMIN") return NextResponse.json({ error: "Non autorisé" }, { status: 403 });
 
   const { id } = await params;
-  const { titre, date, lieu, lien, objectifs } = await req.json();
+  const { titre, date, lieu, lien, lienCr, objectifs } = await req.json();
 
   const evenement = await prisma.evenement.update({
     where: { id },
-    data: { titre, date: new Date(date), lieu: lieu || null, lien: lien || null, objectifs: objectifs || null },
+    data: { titre, date: new Date(date), lieu: lieu || null, lien: lien || null, lienCr: lienCr || null, objectifs: objectifs || null },
   });
   return NextResponse.json(evenement);
 }

@@ -3,7 +3,7 @@ import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { CalendarDays, MapPin, Target, Pencil, Link2 } from "lucide-react";
+import { CalendarDays, MapPin, Target, Pencil, Link2, FileText } from "lucide-react";
 import { formatDateTime } from "@/lib/utils";
 import { DeleteEvenementButton } from "./delete-button";
 
@@ -50,6 +50,17 @@ export default async function EvenementDetailPage({ params }: { params: Promise<
                 >
                   <Link2 size={14} />
                   Rejoindre la réunion
+                </a>
+              )}
+              {evenement.lienCr && (
+                <a
+                  href={evenement.lienCr}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-1.5 text-green-700 hover:underline"
+                >
+                  <FileText size={14} />
+                  CR de réunion
                 </a>
               )}
             </div>

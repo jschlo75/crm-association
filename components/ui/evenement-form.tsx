@@ -10,6 +10,7 @@ type EvenementFormData = {
   date: string;
   lieu?: string;
   lien?: string;
+  lienCr?: string;
   objectifs?: string;
 };
 
@@ -36,6 +37,7 @@ export function EvenementForm({ defaultValues }: { defaultValues?: EvenementForm
       date: getValue("date"),
       lieu: getValue("lieu"),
       lien: getValue("lien"),
+      lienCr: getValue("lienCr"),
       objectifs: getValue("objectifs"),
     };
 
@@ -92,6 +94,16 @@ export function EvenementForm({ defaultValues }: { defaultValues?: EvenementForm
               defaultValue={defaultValues?.lien}
               className={inputClass}
               placeholder="https://zoom.us/j/... ou https://teams.microsoft.com/..."
+            />
+          </div>
+          <div className="sm:col-span-2">
+            <label className={labelClass}>CR de réunion</label>
+            <input
+              name="lienCr"
+              type="url"
+              defaultValue={defaultValues?.lienCr}
+              className={inputClass}
+              placeholder="https://... (lien vers le compte rendu)"
             />
           </div>
         </div>
