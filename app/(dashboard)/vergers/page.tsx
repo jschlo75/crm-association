@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { Tractor, Plus, Search, MapPin, Trees } from "lucide-react";
+import { Tractor, Plus, Search, MapPin, Leaf } from "lucide-react";
 
 type Verger = {
   id: string;
@@ -66,7 +66,7 @@ export default function VergersPage() {
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-xl bg-green-100 flex items-center justify-center">
-            <Trees size={22} className="text-green-600" />
+            <Leaf size={22} className="text-green-600" />
           </div>
           <div>
             <h1 className="text-2xl font-bold text-gray-900">Vergers</h1>
@@ -98,7 +98,7 @@ export default function VergersPage() {
         <div className="text-center py-12 text-gray-400 text-sm">Chargement...</div>
       ) : vergers.length === 0 ? (
         <div className="text-center py-16 text-gray-400">
-          <Trees size={40} className="mx-auto mb-3 opacity-30" />
+          <Leaf size={40} className="mx-auto mb-3 opacity-30" />
           <p className="text-sm">Aucun verger enregistré.</p>
           <Link href="/vergers/nouveau" className="mt-3 inline-block text-sm text-blue-600 hover:underline">
             Créer le premier verger

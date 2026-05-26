@@ -3,7 +3,7 @@ import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { notFound, redirect } from "next/navigation";
 import Link from "next/link";
-import { Trees, MapPin, Pencil, Trash2, Building2, User, Hash, Leaf, GitBranch } from "lucide-react";
+import { Leaf, MapPin, Pencil, Trash2, Building2, User, Hash, GitBranch } from "lucide-react";
 import { AddressMap } from "@/components/ui/address-map";
 import { DeleteVergerButton } from "./delete-button";
 
@@ -28,7 +28,7 @@ export default async function VergerDetailPage({ params }: { params: Promise<{ i
       <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
         <div className="flex items-center gap-4">
           <div className="w-14 h-14 rounded-xl bg-green-100 flex items-center justify-center">
-            <Trees size={28} className="text-green-600" />
+            <Leaf size={28} className="text-green-600" />
           </div>
           <div>
             <h1 className="text-2xl font-bold text-gray-900">{verger.nom}</h1>
