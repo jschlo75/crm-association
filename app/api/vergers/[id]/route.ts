@@ -1,0 +1,73 @@
+import { NextRequest, NextResponse } from "next/server";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
+import { prisma } from "@/lib/prisma";
+import { z } from "zod";
+
+const vergerSchema = z.object({
+  nom: z.string().min(1),
+  adresse: z.string().optional(),
+  codePostal: z.string().optional(),
+  ville: z.string().optional(),
+  pays: z.string().optional(),
+  responsableType: z.enum(["ORGANISATION", "CONTACT"]).optional().nullable(),
+  responsableOrganisationId: z.string().optional().nullable(),
+  responsableContactId: z.string().optional().nullable(),
+  nbArbres: z.number().int().nonnegative().optional().nullable(),
+  especesVarietes: z.string().optional(),
+  formesEspalier: z.string().optional(),
+  notes: z.string().optional(),
+});
+
+export async function GET(_: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+  const session = await getServerSession(authOptions);
+  const role = (session?.user as { role: string })?.role;
+  if (!session || role !== "ADMIN")
+    return NextResponse.json({ error: "Non autorisé" }, { status: 403 });
+
+  const { id } = await params;
+  const verger = await prisma.verger.findUnique({
+    where: { id },
+    include: {
+      responsableOrganisation: { select: { id: true, nom: true } },
+      responsableContact: { select: { id: true, prenom: true, nom: true } },
+    },
+  });
+  if (!verger) return NextResponse.json({ error: "Introuvable" }, { status: 404 });
+  return NextResponse.json(verger);
+}
+
+export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+  const session = await getServerSession(authOptions);
+  const role = (session?.user as { role: string })?.role;
+  if (!session || role !== "ADMIN")
+    return NextResponse.json({ error: "Non autorisé" }, { status: 403 });
+
+  const { id } = await params;
+  const body = await req.json();
+  const parsed = vergerSchema.safeParse(body);
+  if (!parsed.success)
+    return NextResponse.json({ error: "Données invalides" }, { status: 400 });
+
+  const data = parsed.data;
+  if (data.responsableType === "ORGANISATION") data.responsableContactId = null;
+  if (data.responsableType === "CONTACT") data.responsableOrganisationId = null;
+  if (!data.responsableType) {
+    data.responsableOrganisationId = null;
+    data.responsableContactId = null;
+  }
+
+  const verger = await prisma.verger.update({ where: { id }, data });
+  return NextResponse.json(verger);
+}
+
+export async function DELETE(_: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+  const session = await getServerSession(authOptions);
+  const role = (session?.user as { role: string })?.role;
+  if (!session || role !== "ADMIN")
+    return NextResponse.json({ error: "Non autorisé" }, { status: 403 });
+
+  const { id } = await params;
+  await prisma.verger.delete({ where: { id } });
+  return NextResponse.json({ ok: true });
+}

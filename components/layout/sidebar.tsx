@@ -7,7 +7,7 @@ import { signOut } from "next-auth/react";
 import { cn } from "@/lib/utils";
 import {
   LayoutDashboard, Building2, Users, MessageSquare, Mail,
-  CalendarDays, FileUp, UserCog, LogOut, UserCircle, Menu, X,
+  CalendarDays, FileUp, UserCog, LogOut, UserCircle, Menu, X, Trees,
 } from "lucide-react";
 import { LOGO_B64 } from "@/lib/logo-base64";
 
@@ -21,8 +21,9 @@ const navItems = [
 ];
 
 const adminNavItems = [
-  { href: "/import", label: "Importer Excel",  icon: FileUp },
-  { href: "/admin",  label: "Administration",  icon: UserCog },
+  { href: "/vergers", label: "Vergers",          icon: Trees },
+  { href: "/import",  label: "Importer Excel",   icon: FileUp },
+  { href: "/admin",   label: "Administration",   icon: UserCog },
 ];
 
 function NavLink({
