@@ -2,7 +2,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import Link from "next/link";
-import { Building2, Users, Newspaper, ExternalLink, AlertCircle, CalendarDays } from "lucide-react";
+import { Building2, Users, Newspaper, ExternalLink, AlertCircle, CalendarDays, Leaf } from "lucide-react";
 
 /* ── API WordPress SNHF ─────────────────────────────────────── */
 type ArticleSnhf = {
@@ -69,18 +69,23 @@ async function fetchActualitesSnhf(): Promise<ArticleSnhf[]> {
 /* ── Page ───────────────────────────────────────────────────── */
 export default async function DashboardPage() {
   const session = await getServerSession(authOptions);
-  void session;
+  const role = (session?.user as { role?: string })?.role;
+  const isAdmin = role === "ADMIN";
 
-  const [nbComptes, nbContacts, nbEvenementsAVenir] = await Promise.all([
+  const [nbComptes, nbContacts, nbEvenementsAVenir, nbVergers] = await Promise.all([
     prisma.organisation.count(),
     prisma.contact.count(),
     prisma.evenement.count({ where: { date: { gte: new Date() } } }),
+    isAdmin ? prisma.verger.count() : Promise.resolve(null),
     // fetchActualitesSnhf(), // ← décommenter pour réactiver les actualités SNHF
   ]);
 
   const stats = [
     { label: "Organisations",      value: nbComptes,          icon: Building2,    href: "/organisations", color: "bg-blue-600" },
     { label: "Contacts",           value: nbContacts,         icon: Users,        href: "/contacts",      color: "bg-emerald-600" },
+    ...(isAdmin && nbVergers !== null
+      ? [{ label: "Vergers", value: nbVergers, icon: Leaf, href: "/vergers", color: "bg-green-600" }]
+      : []),
     { label: "Événements à venir", value: nbEvenementsAVenir, icon: CalendarDays, href: "/evenements",    color: "bg-purple-600" },
   ];
 
@@ -90,7 +95,7 @@ export default async function DashboardPage() {
       <h1 className="text-2xl font-bold text-gray-900">Groupe arboriculture fruitière familiale</h1>
 
       {/* Statistiques */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+      <div className={`grid grid-cols-1 gap-4 ${isAdmin ? "sm:grid-cols-4" : "sm:grid-cols-3"}`}>
         {stats.map(({ label, value, icon: Icon, href, color }) => (
           <Link
             key={label}

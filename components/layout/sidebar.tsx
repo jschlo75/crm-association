@@ -15,13 +15,13 @@ const navItems = [
   { href: "/dashboard",    label: "Tableau de bord",  icon: LayoutDashboard, roles: ["ADMIN", "MEMBRE", "RESTREINT"] },
   { href: "/organisations", label: "Organisations",   icon: Building2,        roles: ["ADMIN", "MEMBRE", "RESTREINT"] },
   { href: "/contacts",     label: "Contacts",         icon: Users,            roles: ["ADMIN", "MEMBRE", "RESTREINT"] },
+  { href: "/vergers",      label: "Vergers",          icon: Leaf,             roles: ["ADMIN"] },
   { href: "/interactions", label: "Interactions",     icon: MessageSquare,    roles: ["ADMIN", "MEMBRE"] },
   { href: "/evenements",   label: "Événements",       icon: CalendarDays,     roles: ["ADMIN", "MEMBRE", "RESTREINT"] },
   { href: "/campagnes",    label: "Campagnes email",  icon: Mail,             roles: ["ADMIN", "MEMBRE", "RESTREINT"] },
 ];
 
 const adminNavItems = [
-  { href: "/vergers", label: "Vergers",          icon: Leaf },
   { href: "/import",  label: "Importer Excel",   icon: FileUp },
   { href: "/admin",   label: "Administration",   icon: UserCog },
 ];
