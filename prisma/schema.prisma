@@ -63,6 +63,9 @@ model LoginLog {
   nom       String
   role      String
   createdAt DateTime @default(now())
+
+  @@index([userId])
+  @@index([createdAt])
 }
 
 model Organisation {
@@ -90,6 +93,8 @@ model Organisation {
 
   @@index([nom])
   @@index([type])
+  @@index([membreSnhf])
+  @@index([parentId])
 }
 
 model Contact {
@@ -115,8 +120,10 @@ model Contact {
   vergers               Verger[]
 
   @@index([nom])
+  @@index([prenom])
   @@index([email])
   @@index([organisationId])
+  @@index([isMembre])
 }
 
 model Verger {
@@ -137,6 +144,10 @@ model Verger {
   notes                     String?
   createdAt                 DateTime      @default(now())
   updatedAt                 DateTime      @updatedAt
+
+  @@index([nom])
+  @@index([responsableOrganisationId])
+  @@index([responsableContactId])
 }
 
 model Interaction {
@@ -153,6 +164,11 @@ model Interaction {
   user        User            @relation(fields: [userId], references: [id])
   createdAt   DateTime        @default(now())
   updatedAt   DateTime        @updatedAt
+
+  @@index([contactId])
+  @@index([organisationId])
+  @@index([userId])
+  @@index([date])
 }
 
 model Campagne {
@@ -182,6 +198,8 @@ model Evenement {
   createdAt    DateTime               @default(now())
   updatedAt    DateTime               @updatedAt
   participants EvenementParticipant[]
+
+  @@index([date])
 }
 
 model EvenementParticipant {
@@ -206,4 +224,7 @@ model CampagneDestinataire {
   nom         String
   envoye      Boolean  @default(false)
   erreur      String?
+
+  @@index([campagneId])
+  @@index([contactId])
 }
