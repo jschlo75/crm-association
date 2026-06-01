@@ -87,6 +87,9 @@ model Organisation {
   contacts          Contact[]
   interactions      Interaction[]
   vergers           Verger[]
+
+  @@index([nom])
+  @@index([type])
 }
 
 model Contact {
@@ -110,6 +113,10 @@ model Contact {
   interactions          Interaction[]
   evenementParticipants EvenementParticipant[]
   vergers               Verger[]
+
+  @@index([nom])
+  @@index([email])
+  @@index([organisationId])
 }
 
 model Verger {

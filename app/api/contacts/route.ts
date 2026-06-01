@@ -25,26 +25,33 @@ export async function GET(req: NextRequest) {
   if (!session) return NextResponse.json({ error: "Non autorisé" }, { status: 401 });
 
   const { searchParams } = new URL(req.url);
-  const q = searchParams.get("q") || "";
+  const q     = searchParams.get("q") || "";
+  const page  = Math.max(1, parseInt(searchParams.get("page") ?? "1"));
+  const limit = Math.min(100, Math.max(1, parseInt(searchParams.get("limit") ?? "50")));
 
-  const contacts = await prisma.contact.findMany({
-    where: q
-      ? {
-          OR: [
-            { nom: { contains: q, mode: "insensitive" } },
-            { prenom: { contains: q, mode: "insensitive" } },
-            { email: { contains: q, mode: "insensitive" } },
-          ],
-        }
-      : undefined,
-    orderBy: [{ nom: "asc" }, { prenom: "asc" }],
-    include: {
-      organisation: { select: { id: true, nom: true } },
-      _count: { select: { interactions: true } },
-    },
-  });
+  const where = q ? {
+    OR: [
+      { nom:    { contains: q, mode: "insensitive" as const } },
+      { prenom: { contains: q, mode: "insensitive" as const } },
+      { email:  { contains: q, mode: "insensitive" as const } },
+    ],
+  } : undefined;
 
-  return NextResponse.json(contacts);
+  const [total, contacts] = await Promise.all([
+    prisma.contact.count({ where }),
+    prisma.contact.findMany({
+      where,
+      orderBy: [{ nom: "asc" }, { prenom: "asc" }],
+      skip: (page - 1) * limit,
+      take: limit,
+      include: {
+        organisation: { select: { id: true, nom: true } },
+        _count: { select: { interactions: true } },
+      },
+    }),
+  ]);
+
+  return NextResponse.json({ data: contacts, total, page, pages: Math.ceil(total / limit) });
 }
 
 export async function POST(req: NextRequest) {
