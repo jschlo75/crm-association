@@ -6,17 +6,17 @@ import { z } from "zod";
 
 const vergerSchema = z.object({
   nom: z.string().min(1),
-  adresse: z.string().optional(),
-  codePostal: z.string().optional(),
-  ville: z.string().optional(),
-  pays: z.string().optional(),
+  adresse: z.string().optional().nullable(),
+  codePostal: z.string().optional().nullable(),
+  ville: z.string().optional().nullable(),
+  pays: z.string().optional().nullable(),
   responsableType: z.enum(["ORGANISATION", "CONTACT"]).optional().nullable(),
   responsableOrganisationId: z.string().optional().nullable(),
   responsableContactId: z.string().optional().nullable(),
   nbArbres: z.number().int().nonnegative().optional().nullable(),
-  especesVarietes: z.string().optional(),
-  formesEspalier: z.string().optional(),
-  notes: z.string().optional(),
+  especesVarietes: z.string().optional().nullable(),
+  formesEspalier: z.string().optional().nullable(),
+  notes: z.string().optional().nullable(),
 });
 
 export async function GET(_: NextRequest, { params }: { params: Promise<{ id: string }> }) {
