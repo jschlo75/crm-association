@@ -5,7 +5,7 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import {
   Building2, Mail, Phone, Globe, BadgeCheck, Users, MessageSquare,
-  Pencil, Plus, Trash2, ChevronsUp, GitBranch
+  Pencil, Plus, Trash2, ChevronsUp, GitBranch, Leaf
 } from "lucide-react";
 import {
   formatDate, TYPE_ORGANISATION_LABELS, TYPE_INTERACTION_LABELS, TYPE_INTERACTION_ICONS
@@ -28,6 +28,7 @@ export default async function OrganisationDetailPage({ params }: { params: Promi
         orderBy: { date: "desc" },
         include: { contact: true, user: true },
       },
+      vergers: { orderBy: { nom: "asc" } },
     },
   });
 
@@ -194,6 +195,52 @@ export default async function OrganisationDetailPage({ params }: { params: Promi
           )}
         </div>
       </div>
+
+      {/* Vergers (ADMIN uniquement) */}
+      {role === "ADMIN" && (
+        <div className="bg-white rounded-xl shadow-sm border border-gray-200">
+          <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
+            <h2 className="font-semibold text-gray-900 flex items-center gap-2">
+              <Leaf size={16} className="text-green-500" />
+              Vergers responsables ({organisation.vergers.length})
+            </h2>
+            <Link
+              href={`/vergers/nouveau`}
+              className="text-sm text-blue-600 hover:underline flex items-center gap-1"
+            >
+              <Plus size={14} />
+              Nouveau verger
+            </Link>
+          </div>
+          {organisation.vergers.length === 0 ? (
+            <p className="px-6 py-6 text-sm text-gray-400 text-center">Aucun verger rattaché à cette organisation.</p>
+          ) : (
+            <ul className="divide-y divide-gray-100">
+              {organisation.vergers.map((v) => (
+                <li key={v.id}>
+                  <Link href={`/vergers/${v.id}`} className="flex items-center gap-3 px-6 py-3 hover:bg-gray-50 transition-colors">
+                    <div className="w-7 h-7 rounded-lg bg-green-50 flex items-center justify-center flex-shrink-0">
+                      <Leaf size={14} className="text-green-500" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="text-sm font-medium text-gray-900">{v.nom}</div>
+                      <div className="text-xs text-gray-400 flex items-center gap-2">
+                        {v.ville && <span>{v.ville}</span>}
+                        {v.nbArbres != null && (
+                          <>
+                            {v.ville && <span>·</span>}
+                            <span>{v.nbArbres} arbres</span>
+                          </>
+                        )}
+                      </div>
+                    </div>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+      )}
 
       {/* Interactions */}
       <div className="bg-white rounded-xl shadow-sm border border-gray-200">
