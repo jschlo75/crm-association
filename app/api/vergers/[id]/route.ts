@@ -49,15 +49,23 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
   if (!parsed.success)
     return NextResponse.json({ error: "Données invalides" }, { status: 400 });
 
-  const data = parsed.data;
-  if (data.responsableType === "ORGANISATION") data.responsableContactId = null;
-  if (data.responsableType === "CONTACT") data.responsableOrganisationId = null;
-  if (!data.responsableType) {
-    data.responsableOrganisationId = null;
-    data.responsableContactId = null;
-  }
+  const d = parsed.data;
+  const prismaData = {
+    nom:                       d.nom,
+    adresse:                   d.adresse                   ?? null,
+    codePostal:                d.codePostal                ?? null,
+    ville:                     d.ville                     ?? null,
+    pays:                      d.pays                      ?? "France",
+    responsableType:           d.responsableType           ?? null,
+    responsableOrganisationId: d.responsableType === "ORGANISATION" ? (d.responsableOrganisationId ?? null) : null,
+    responsableContactId:      d.responsableType === "CONTACT"      ? (d.responsableContactId      ?? null) : null,
+    nbArbres:                  d.nbArbres                  ?? null,
+    especesVarietes:           d.especesVarietes           ?? null,
+    formesEspalier:            d.formesEspalier            ?? null,
+    notes:                     d.notes                     ?? null,
+  };
 
-  const verger = await prisma.verger.update({ where: { id }, data });
+  const verger = await prisma.verger.update({ where: { id }, data: prismaData });
   return NextResponse.json(verger);
 }
 

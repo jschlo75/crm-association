@@ -51,16 +51,22 @@ export async function POST(req: NextRequest) {
   if (!parsed.success)
     return NextResponse.json({ error: "Données invalides" }, { status: 400 });
 
-  const data = parsed.data;
+  const d = parsed.data;
+  const prismaData = {
+    nom:                       d.nom,
+    adresse:                   d.adresse                   ?? null,
+    codePostal:                d.codePostal                ?? null,
+    ville:                     d.ville                     ?? null,
+    pays:                      d.pays                      ?? "France",
+    responsableType:           d.responsableType           ?? null,
+    responsableOrganisationId: d.responsableType === "ORGANISATION" ? (d.responsableOrganisationId ?? null) : null,
+    responsableContactId:      d.responsableType === "CONTACT"      ? (d.responsableContactId      ?? null) : null,
+    nbArbres:                  d.nbArbres                  ?? null,
+    especesVarietes:           d.especesVarietes           ?? null,
+    formesEspalier:            d.formesEspalier            ?? null,
+    notes:                     d.notes                     ?? null,
+  };
 
-  // Nettoyer les relations selon le type de responsable
-  if (data.responsableType === "ORGANISATION") data.responsableContactId = null;
-  if (data.responsableType === "CONTACT") data.responsableOrganisationId = null;
-  if (!data.responsableType) {
-    data.responsableOrganisationId = null;
-    data.responsableContactId = null;
-  }
-
-  const verger = await prisma.verger.create({ data });
+  const verger = await prisma.verger.create({ data: prismaData });
   return NextResponse.json(verger, { status: 201 });
 }
