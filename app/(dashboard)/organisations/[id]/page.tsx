@@ -196,102 +196,107 @@ export default async function OrganisationDetailPage({ params }: { params: Promi
         </div>
       </div>
 
-      {/* Vergers (ADMIN uniquement) */}
-      {role === "ADMIN" && (
+      {/* Interactions + Vergers côte à côte */}
+      <div className={`grid grid-cols-1 gap-4 ${role === "ADMIN" ? "lg:grid-cols-2" : ""}`}>
+
+        {/* Interactions */}
         <div className="bg-white rounded-xl shadow-sm border border-gray-200">
           <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
             <h2 className="font-semibold text-gray-900 flex items-center gap-2">
-              <Leaf size={16} className="text-green-500" />
-              Vergers responsables ({organisation.vergers.length})
+              <MessageSquare size={16} className="text-gray-400" />
+              Interactions ({organisation.interactions.length})
             </h2>
             <Link
-              href={`/vergers/nouveau`}
+              href={`/interactions/nouvelle?organisationId=${organisation.id}`}
               className="text-sm text-blue-600 hover:underline flex items-center gap-1"
             >
               <Plus size={14} />
-              Nouveau verger
+              Ajouter
             </Link>
           </div>
-          {organisation.vergers.length === 0 ? (
-            <p className="px-6 py-6 text-sm text-gray-400 text-center">Aucun verger rattaché à cette organisation.</p>
+          {organisation.interactions.length === 0 ? (
+            <p className="px-6 py-6 text-sm text-gray-400 text-center">Aucune interaction enregistrée.</p>
           ) : (
             <ul className="divide-y divide-gray-100">
-              {organisation.vergers.map((v) => (
-                <li key={v.id}>
-                  <Link href={`/vergers/${v.id}`} className="flex items-center gap-3 px-6 py-3 hover:bg-gray-50 transition-colors">
-                    <div className="w-7 h-7 rounded-lg bg-green-50 flex items-center justify-center flex-shrink-0">
-                      <Leaf size={14} className="text-green-500" />
+              {organisation.interactions.map((i) => (
+                <li key={i.id} className="px-6 py-4 flex items-start gap-3">
+                  <span className="text-lg mt-0.5">{TYPE_INTERACTION_ICONS[i.type]}</span>
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2">
+                      <span className="font-medium text-sm text-gray-900">{i.sujet}</span>
+                      <span className="text-xs bg-gray-100 text-gray-500 px-2 py-0.5 rounded-full">
+                        {TYPE_INTERACTION_LABELS[i.type]}
+                      </span>
                     </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="text-sm font-medium text-gray-900">{v.nom}</div>
-                      <div className="text-xs text-gray-400 flex items-center gap-2">
-                        {v.ville && <span>{v.ville}</span>}
-                        {v.nbArbres != null && (
-                          <>
-                            {v.ville && <span>·</span>}
-                            <span>{v.nbArbres} arbres</span>
-                          </>
-                        )}
-                      </div>
+                    <div className="text-xs text-gray-500 mt-1 flex items-center gap-2">
+                      <span>{formatDate(i.date)}</span>
+                      {i.contact && (
+                        <>
+                          <span>·</span>
+                          <Link href={`/contacts/${i.contact.id}`} className="hover:text-blue-600">
+                            {i.contact.prenom} {i.contact.nom}
+                          </Link>
+                        </>
+                      )}
+                      <span>·</span>
+                      <span>par {i.user.nom}</span>
                     </div>
-                  </Link>
+                    {i.description && (
+                      <p className="text-sm text-gray-600 mt-1 whitespace-pre-wrap">{i.description}</p>
+                    )}
+                  </div>
                 </li>
               ))}
             </ul>
           )}
         </div>
-      )}
 
-      {/* Interactions */}
-      <div className="bg-white rounded-xl shadow-sm border border-gray-200">
-        <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
-          <h2 className="font-semibold text-gray-900 flex items-center gap-2">
-            <MessageSquare size={16} className="text-gray-400" />
-            Interactions ({organisation.interactions.length})
-          </h2>
-          <Link
-            href={`/interactions/nouvelle?organisationId=${organisation.id}`}
-            className="text-sm text-blue-600 hover:underline flex items-center gap-1"
-          >
-            <Plus size={14} />
-            Ajouter
-          </Link>
-        </div>
-        {organisation.interactions.length === 0 ? (
-          <p className="px-6 py-6 text-sm text-gray-400 text-center">Aucune interaction enregistrée.</p>
-        ) : (
-          <ul className="divide-y divide-gray-100">
-            {organisation.interactions.map((i) => (
-              <li key={i.id} className="px-6 py-4 flex items-start gap-3">
-                <span className="text-lg mt-0.5">{TYPE_INTERACTION_ICONS[i.type]}</span>
-                <div className="flex-1">
-                  <div className="flex items-center gap-2">
-                    <span className="font-medium text-sm text-gray-900">{i.sujet}</span>
-                    <span className="text-xs bg-gray-100 text-gray-500 px-2 py-0.5 rounded-full">
-                      {TYPE_INTERACTION_LABELS[i.type]}
-                    </span>
-                  </div>
-                  <div className="text-xs text-gray-500 mt-1 flex items-center gap-2">
-                    <span>{formatDate(i.date)}</span>
-                    {i.contact && (
-                      <>
-                        <span>·</span>
-                        <Link href={`/contacts/${i.contact.id}`} className="hover:text-blue-600">
-                          {i.contact.prenom} {i.contact.nom}
-                        </Link>
-                      </>
-                    )}
-                    <span>·</span>
-                    <span>par {i.user.nom}</span>
-                  </div>
-                  {i.description && (
-                    <p className="text-sm text-gray-600 mt-1 whitespace-pre-wrap">{i.description}</p>
-                  )}
-                </div>
-              </li>
-            ))}
-          </ul>
+        {/* Vergers (ADMIN uniquement) */}
+        {role === "ADMIN" && (
+          <div className="bg-white rounded-xl shadow-sm border border-gray-200">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
+              <h2 className="font-semibold text-gray-900 flex items-center gap-2">
+                <Leaf size={16} className="text-green-500" />
+                Vergers ({organisation.vergers.length})
+              </h2>
+              <Link
+                href={`/vergers/nouveau`}
+                className="text-sm text-blue-600 hover:underline flex items-center gap-1"
+              >
+                <Plus size={14} />
+                Nouveau verger
+              </Link>
+            </div>
+            {organisation.vergers.length === 0 ? (
+              <p className="px-6 py-6 text-sm text-gray-400 text-center">Aucun verger rattaché à cette organisation.</p>
+            ) : (
+              <ul className="divide-y divide-gray-100">
+                {organisation.vergers.map((v) => (
+                  <li key={v.id}>
+                    <Link href={`/vergers/${v.id}`} className="flex items-center gap-3 px-6 py-3 hover:bg-gray-50 transition-colors">
+                      <div className="w-7 h-7 rounded-lg bg-green-50 flex items-center justify-center flex-shrink-0">
+                        <Leaf size={14} className="text-green-500" />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="text-sm font-medium text-gray-900">{v.nom}</div>
+                        <div className="text-xs text-gray-400 flex items-center gap-2">
+                          {v.ville && <span>{v.ville}</span>}
+                          {v.nbArbres != null && (
+                            <>
+                              {v.ville && <span>·</span>}
+                              <span>{v.nbArbres} arbres</span>
+                            </>
+                          )}
+                        </div>
+                      </div>
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
         )}
+
       </div>
     </div>
   );
