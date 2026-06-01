@@ -25,8 +25,8 @@ function NouvelleInteractionForm() {
   const [contacts, setContacts] = useState<Contact[]>([]);
 
   useEffect(() => {
-    fetch("/api/organisations").then((r) => r.json()).then(setOrganisations);
-    fetch("/api/contacts").then((r) => r.json()).then(setContacts);
+    fetch("/api/organisations?limit=9999").then((r) => r.json()).then((d) => setOrganisations(Array.isArray(d) ? d : (d.data ?? [])));
+    fetch("/api/contacts?limit=9999").then((r) => r.json()).then((d) => setContacts(Array.isArray(d) ? d : (d.data ?? [])));
   }, []);
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {

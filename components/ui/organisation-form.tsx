@@ -42,9 +42,10 @@ export function OrganisationForm({ defaultValues }: Props) {
   const [membreSnhf, setMembreSnhf] = useState(defaultValues?.membreSnhf ?? false);
 
   useEffect(() => {
-    fetch("/api/organisations")
+    fetch("/api/organisations?limit=9999")
       .then((r) => r.json())
-      .then((data: OrganisationOption[]) => {
+      .then((d) => {
+        const data: OrganisationOption[] = Array.isArray(d) ? d : (d.data ?? []);
         setOrganisations(data.filter((o) => o.id !== defaultValues?.id));
       });
   }, [defaultValues?.id]);

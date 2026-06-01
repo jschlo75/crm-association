@@ -23,16 +23,16 @@ function NouvelleCampagneForm() {
 
   useEffect(() => {
     if (role !== "ADMIN" && role !== "RESTREINT") { router.push("/campagnes"); return; }
-    fetch("/api/organisations").then((r) => r.json()).then(setOrganisations);
+    fetch("/api/organisations?limit=9999").then((r) => r.json()).then((d) => setOrganisations(Array.isArray(d) ? d : (d.data ?? [])));
   }, [role]);
 
   useEffect(() => {
     const url = filtreOrganisationId
-      ? `/api/contacts?organisationId=${filtreOrganisationId}`
-      : "/api/contacts";
+      ? `/api/contacts?organisationId=${filtreOrganisationId}&limit=9999`
+      : "/api/contacts?limit=9999";
     fetch(url)
       .then((r) => r.json())
-      .then((data: Contact[]) => setContacts(data));
+      .then((d) => setContacts(Array.isArray(d) ? d : (d.data ?? [])));
   }, [filtreOrganisationId]);
 
   const destinataires = contacts.filter((c) => c.email);

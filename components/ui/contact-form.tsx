@@ -38,7 +38,7 @@ export function ContactForm({ defaultValues, defaultOrganisationId }: Props) {
   const [isMembre, setIsMembre] = useState(defaultValues?.isMembre ?? false);
 
   useEffect(() => {
-    fetch("/api/organisations").then((r) => r.json()).then(setOrganisations);
+    fetch("/api/organisations?limit=9999").then((r) => r.json()).then((d) => setOrganisations(Array.isArray(d) ? d : (d.data ?? [])));
   }, []);
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
