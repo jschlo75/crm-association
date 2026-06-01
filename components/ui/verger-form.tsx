@@ -50,8 +50,8 @@ export function VergerForm({ initialData }: VergerFormProps) {
   const [error, setError] = useState("");
 
   useEffect(() => {
-    fetch("/api/organisations").then((r) => r.json()).then((d) => setOrganisations(Array.isArray(d) ? d : []));
-    fetch("/api/contacts").then((r) => r.json()).then((d) => setContacts(Array.isArray(d) ? d : []));
+    fetch("/api/organisations?limit=9999").then((r) => r.json()).then((d) => setOrganisations(Array.isArray(d) ? d : (d.data ?? [])));
+    fetch("/api/contacts?limit=9999").then((r) => r.json()).then((d) => setContacts(Array.isArray(d) ? d : (d.data ?? [])));
   }, []);
 
   const set = (key: string, value: string) => setForm((f) => ({ ...f, [key]: value }));
