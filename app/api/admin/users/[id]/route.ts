@@ -17,6 +17,24 @@ async function requireAdmin() {
   return session;
 }
 
+export async function GET(_: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+  const session = await requireAdmin();
+  if (!session) return NextResponse.json({ error: "Non autorisé" }, { status: 403 });
+
+  const { id } = await params;
+  const user = await prisma.user.findUnique({
+    where: { id },
+    select: {
+      id: true, prenom: true, nom: true, email: true, role: true, actif: true,
+      consentementPartageContacts: true, consentementEmailsInfo: true, consentementMisAJourLe: true,
+      createdAt: true, updatedAt: true,
+      connexions: { orderBy: { createdAt: "desc" }, take: 10, select: { createdAt: true, role: true } },
+    },
+  });
+  if (!user) return NextResponse.json({ error: "Introuvable" }, { status: 404 });
+  return NextResponse.json(user);
+}
+
 export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const session = await requireAdmin();
   if (!session) return NextResponse.json({ error: "Non autorisé" }, { status: 403 });

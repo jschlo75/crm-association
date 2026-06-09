@@ -200,15 +200,15 @@ export default function AdminPage() {
                 return (
                   <tr key={user.id} className="hover:bg-gray-50">
                     <td className="px-6 py-4">
-                      <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-700 text-xs font-bold">
+                      <Link href={`/admin/utilisateurs/${user.id}`} className="flex items-center gap-3 group">
+                        <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-700 text-xs font-bold flex-shrink-0">
                           {user.nom[0]}
                         </div>
                         <div>
-                          <div className="font-medium text-gray-900">{user.nom}</div>
+                          <div className="font-medium text-gray-900 group-hover:text-blue-600 transition-colors">{user.nom}</div>
                           <div className="text-gray-500 text-xs">{user.email}</div>
                         </div>
-                      </div>
+                      </Link>
                     </td>
                     <td className="px-6 py-4">
                       <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium ${
