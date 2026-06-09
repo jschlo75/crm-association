@@ -8,6 +8,7 @@ const updateSchema = z.object({
   nom: z.string().min(1).optional(),
   role: z.enum(["ADMIN", "MEMBRE", "RESTREINT"]).optional(),
   actif: z.boolean().optional(),
+  organisationId: z.string().optional().nullable(),
 });
 
 async function requireAdmin() {
@@ -27,6 +28,8 @@ export async function GET(_: NextRequest, { params }: { params: Promise<{ id: st
     select: {
       id: true, prenom: true, nom: true, email: true, role: true, actif: true,
       consentementPartageContacts: true, consentementEmailsInfo: true, consentementMisAJourLe: true,
+      organisationId: true,
+      organisation: { select: { id: true, nom: true } },
       createdAt: true, updatedAt: true,
       connexions: { orderBy: { createdAt: "desc" }, take: 10, select: { createdAt: true, role: true } },
     },
@@ -44,10 +47,11 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
   const parsed = updateSchema.safeParse(body);
   if (!parsed.success) return NextResponse.json({ error: parsed.error }, { status: 400 });
 
+  const { organisationId, ...rest } = parsed.data;
   const user = await prisma.user.update({
     where: { id },
-    data: parsed.data,
-    select: { id: true, nom: true, email: true, role: true, actif: true },
+    data: { ...rest, organisationId: organisationId ?? undefined },
+    select: { id: true, nom: true, email: true, role: true, actif: true, organisationId: true, organisation: { select: { id: true, nom: true } } },
   });
 
   return NextResponse.json(user);

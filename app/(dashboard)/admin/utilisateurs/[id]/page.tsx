@@ -5,8 +5,8 @@ import { useParams, useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 import {
-  ArrowLeft, User, Mail, Shield, ShieldCheck, CheckCircle2, XCircle,
-  Clock, Trash2, ToggleLeft, ToggleRight, Send
+  ArrowLeft, Mail, Shield, ShieldCheck, CheckCircle2, XCircle,
+  Clock, Trash2, ToggleLeft, ToggleRight, Send, Building2
 } from "lucide-react";
 import { formatDate } from "@/lib/utils";
 
@@ -20,10 +20,14 @@ type UserDetail = {
   consentementPartageContacts: boolean;
   consentementEmailsInfo: boolean;
   consentementMisAJourLe: string | null;
+  organisationId: string | null;
+  organisation: { id: string; nom: string } | null;
   createdAt: string;
   updatedAt: string;
   connexions: { createdAt: string; role: string }[];
 };
+
+type OrgOption = { id: string; nom: string };
 
 const ROLE_LABELS: Record<string, string> = { ADMIN: "Administrateur", MEMBRE: "Membre", RESTREINT: "Restreint" };
 const ROLE_COLORS: Record<string, string> = {
@@ -39,6 +43,8 @@ export default function UserDetailPage() {
   const currentUserId = (session?.user as { id: string })?.id;
 
   const [user, setUser] = useState<UserDetail | null>(null);
+  const [organisations, setOrganisations] = useState<OrgOption[]>([]);
+  const [orgLoading, setOrgLoading] = useState(false);
   const [loading, setLoading] = useState(true);
   const [actionLoading, setActionLoading] = useState("");
 
@@ -46,6 +52,9 @@ export default function UserDetailPage() {
     fetch(`/api/admin/users/${id}`)
       .then((r) => r.json())
       .then((d) => { setUser(d); setLoading(false); });
+    fetch("/api/organisations?limit=9999")
+      .then((r) => r.json())
+      .then((d) => setOrganisations(Array.isArray(d) ? d : (d.data ?? [])));
   }, [id]);
 
   async function update(data: object) {
@@ -58,6 +67,12 @@ export default function UserDetailPage() {
       const updated = await res.json();
       setUser((prev) => prev ? { ...prev, ...updated } : prev);
     }
+  }
+
+  async function updateOrganisation(organisationId: string | null) {
+    setOrgLoading(true);
+    await update({ organisationId });
+    setOrgLoading(false);
   }
 
   async function toggleRole() {
@@ -175,6 +190,36 @@ export default function UserDetailPage() {
         <div className="mt-4 pt-4 border-t border-gray-100 grid grid-cols-2 gap-3 text-xs text-gray-500">
           <div>Créé le <span className="text-gray-700 font-medium">{formatDate(user.createdAt)}</span></div>
           <div>Modifié le <span className="text-gray-700 font-medium">{formatDate(user.updatedAt)}</span></div>
+        </div>
+      </div>
+
+      {/* Organisation */}
+      <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+        <h2 className="font-semibold text-gray-900 flex items-center gap-2 mb-4">
+          <Building2 size={16} className="text-gray-400" />
+          Organisation rattachée
+        </h2>
+        <div className="flex items-center gap-3">
+          <select
+            value={user.organisationId ?? ""}
+            onChange={(e) => updateOrganisation(e.target.value || null)}
+            disabled={orgLoading}
+            className="flex-1 px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50"
+          >
+            <option value="">— Aucune organisation —</option>
+            {organisations.map((o) => (
+              <option key={o.id} value={o.id}>{o.nom}</option>
+            ))}
+          </select>
+          {user.organisation && (
+            <Link
+              href={`/organisations/${user.organisation.id}`}
+              className="text-sm text-blue-600 hover:underline whitespace-nowrap flex items-center gap-1"
+            >
+              <Building2 size={13} />
+              Voir la fiche
+            </Link>
+          )}
         </div>
       </div>
 

@@ -51,11 +51,15 @@ model User {
   consentementPartageContacts  Boolean       @default(false)
   consentementEmailsInfo       Boolean       @default(false)
   consentementMisAJourLe       DateTime?
+  organisationId               String?
+  organisation                 Organisation? @relation(fields: [organisationId], references: [id], onDelete: SetNull)
   createdAt                    DateTime      @default(now())
   updatedAt                    DateTime      @updatedAt
   interactions                 Interaction[]
   campagnes                    Campagne[]
   connexions                   LoginLog[]
+
+  @@index([organisationId])
 }
 
 model LoginLog {
@@ -93,6 +97,7 @@ model Organisation {
   contacts          Contact[]
   interactions      Interaction[]
   vergers           Verger[]
+  users             User[]
 
   @@index([nom])
   @@index([type])
