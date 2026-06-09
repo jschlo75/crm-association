@@ -11,7 +11,7 @@ export async function GET() {
   const id = (session.user as { id: string }).id;
   const user = await prisma.user.findUnique({
     where: { id },
-    select: { id: true, prenom: true, nom: true, email: true, role: true },
+    select: { id: true, prenom: true, nom: true, email: true, role: true, consentementPartageContacts: true, consentementEmailsInfo: true, consentementMisAJourLe: true },
   });
   return NextResponse.json(user);
 }
@@ -21,7 +21,7 @@ export async function PUT(req: Request) {
   if (!session) return NextResponse.json({ error: "Non autorisé" }, { status: 401 });
 
   const id = (session.user as { id: string }).id;
-  const { prenom, nom, email, ancienMotDePasse, nouveauMotDePasse } = await req.json();
+  const { prenom, nom, email, ancienMotDePasse, nouveauMotDePasse, consentementPartageContacts, consentementEmailsInfo } = await req.json();
 
   if (!nom || !email) {
     return NextResponse.json({ error: "Nom et email obligatoires" }, { status: 400 });
@@ -54,8 +54,16 @@ export async function PUT(req: Request) {
 
   const updated = await prisma.user.update({
     where: { id },
-    data: { prenom: prenom || null, nom, email, ...passwordData },
-    select: { id: true, prenom: true, nom: true, email: true, role: true },
+    data: {
+      prenom: prenom || null,
+      nom,
+      email,
+      consentementPartageContacts: !!consentementPartageContacts,
+      consentementEmailsInfo: !!consentementEmailsInfo,
+      consentementMisAJourLe: new Date(),
+      ...passwordData,
+    },
+    select: { id: true, prenom: true, nom: true, email: true, role: true, consentementPartageContacts: true, consentementEmailsInfo: true, consentementMisAJourLe: true },
   });
 
   return NextResponse.json(updated);

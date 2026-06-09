@@ -41,18 +41,21 @@ enum StatutParticipant {
 }
 
 model User {
-  id           String        @id @default(cuid())
-  prenom       String?
-  nom          String
-  email        String        @unique
-  password     String
-  role         Role          @default(MEMBRE)
-  actif        Boolean       @default(true)
-  createdAt    DateTime      @default(now())
-  updatedAt    DateTime      @updatedAt
-  interactions Interaction[]
-  campagnes    Campagne[]
-  connexions   LoginLog[]
+  id                           String        @id @default(cuid())
+  prenom                       String?
+  nom                          String
+  email                        String        @unique
+  password                     String
+  role                         Role          @default(MEMBRE)
+  actif                        Boolean       @default(true)
+  consentementPartageContacts  Boolean       @default(false)
+  consentementEmailsInfo       Boolean       @default(false)
+  consentementMisAJourLe       DateTime?
+  createdAt                    DateTime      @default(now())
+  updatedAt                    DateTime      @updatedAt
+  interactions                 Interaction[]
+  campagnes                    Campagne[]
+  connexions                   LoginLog[]
 }
 
 model LoginLog {

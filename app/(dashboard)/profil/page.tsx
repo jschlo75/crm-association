@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
-import { User, Mail, Lock, CheckCircle, AlertCircle } from "lucide-react";
+import { User, Mail, Lock, CheckCircle, AlertCircle, ShieldCheck } from "lucide-react";
 
 type Message = { type: "success" | "error"; text: string };
 
@@ -16,6 +16,9 @@ export default function ProfilPage() {
   const [ancienMotDePasse, setAncienMotDePasse] = useState("");
   const [nouveauMotDePasse, setNouveauMotDePasse] = useState("");
   const [confirmMotDePasse, setConfirmMotDePasse] = useState("");
+  const [consentementPartageContacts, setConsentementPartageContacts] = useState(false);
+  const [consentementEmailsInfo, setConsentementEmailsInfo] = useState(false);
+  const [consentementMisAJourLe, setConsentementMisAJourLe] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState<Message | null>(null);
 
@@ -27,6 +30,9 @@ export default function ProfilPage() {
         setPrenom(data.prenom || "");
         setNom(data.nom || "");
         setEmail(data.email || "");
+        setConsentementPartageContacts(data.consentementPartageContacts ?? false);
+        setConsentementEmailsInfo(data.consentementEmailsInfo ?? false);
+        setConsentementMisAJourLe(data.consentementMisAJourLe || null);
       });
   }, []);
 
@@ -49,12 +55,15 @@ export default function ProfilPage() {
         email,
         ancienMotDePasse: ancienMotDePasse || undefined,
         nouveauMotDePasse: nouveauMotDePasse || undefined,
+        consentementPartageContacts,
+        consentementEmailsInfo,
       }),
     });
 
     const data = await res.json();
     if (res.ok) {
       setMessage({ type: "success", text: "Profil mis à jour avec succès." });
+      setConsentementMisAJourLe(data.consentementMisAJourLe || null);
       setAncienMotDePasse("");
       setNouveauMotDePasse("");
       setConfirmMotDePasse("");
@@ -200,6 +209,57 @@ export default function ProfilPage() {
               </div>
             </div>
           </div>
+        </div>
+
+        {/* Consentements */}
+        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 space-y-4">
+          <h2 className="font-semibold text-gray-900 flex items-center gap-2">
+            <ShieldCheck size={16} className="text-gray-400" />
+            Consentements
+          </h2>
+          <p className="text-xs text-gray-500">
+            Conformément au RGPD, vous pouvez à tout moment modifier vos préférences ci-dessous.
+          </p>
+          <div className="space-y-4">
+            <label className="flex items-start gap-3 cursor-pointer group">
+              <input
+                type="checkbox"
+                checked={consentementPartageContacts}
+                onChange={(e) => setConsentementPartageContacts(e.target.checked)}
+                className="mt-0.5 w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500 cursor-pointer flex-shrink-0"
+              />
+              <div>
+                <span className="text-sm font-medium text-gray-800 group-hover:text-blue-700 transition-colors">
+                  Partage de mes informations de contact
+                </span>
+                <p className="text-xs text-gray-500 mt-0.5">
+                  J&apos;accepte que mes coordonnées (nom, email, téléphone) soient partagées avec les autres membres du groupe arboriculture fruitière familiale de la SNHF.
+                </p>
+              </div>
+            </label>
+
+            <label className="flex items-start gap-3 cursor-pointer group">
+              <input
+                type="checkbox"
+                checked={consentementEmailsInfo}
+                onChange={(e) => setConsentementEmailsInfo(e.target.checked)}
+                className="mt-0.5 w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500 cursor-pointer flex-shrink-0"
+              />
+              <div>
+                <span className="text-sm font-medium text-gray-800 group-hover:text-blue-700 transition-colors">
+                  Réception d&apos;emails d&apos;information de la SNHF
+                </span>
+                <p className="text-xs text-gray-500 mt-0.5">
+                  J&apos;accepte de recevoir des emails d&apos;information, d&apos;actualité et d&apos;invitation aux événements de la Société Nationale d&apos;Horticulture de France.
+                </p>
+              </div>
+            </label>
+          </div>
+          {consentementMisAJourLe && (
+            <p className="text-xs text-gray-400 pt-2 border-t border-gray-100">
+              Dernière mise à jour des consentements : {new Date(consentementMisAJourLe).toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric", hour: "2-digit", minute: "2-digit" })}
+            </p>
+          )}
         </div>
 
         <button
