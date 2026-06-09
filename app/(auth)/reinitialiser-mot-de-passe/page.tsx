@@ -18,7 +18,7 @@ function ReinitialisationForm() {
 
   useEffect(() => {
     if (!token) { setTokenValid(false); return; }
-    fetch(`/api/auth/reinitialiser-mot-de-passe?token=${token}`)
+    fetch(`/api/reinitialiser-mot-de-passe?token=${token}`)
       .then((r) => setTokenValid(r.ok))
       .catch(() => setTokenValid(false));
   }, [token]);
@@ -31,7 +31,7 @@ function ReinitialisationForm() {
     setLoading(true);
     setError("");
 
-    const res = await fetch("/api/auth/reinitialiser-mot-de-passe", {
+    const res = await fetch("/api/reinitialiser-mot-de-passe", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ token, password }),

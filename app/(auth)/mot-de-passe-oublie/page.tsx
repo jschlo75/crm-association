@@ -14,7 +14,7 @@ export default function MotDePasseOubliePage() {
     setLoading(true);
     setError("");
 
-    const res = await fetch("/api/auth/mot-de-passe-oublie", {
+    const res = await fetch("/api/mot-de-passe-oublie", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email }),
