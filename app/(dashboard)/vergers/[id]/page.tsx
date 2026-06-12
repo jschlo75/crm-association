@@ -3,7 +3,7 @@ import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { notFound, redirect } from "next/navigation";
 import Link from "next/link";
-import { Leaf, MapPin, Pencil, Trash2, Building2, User, Hash, GitBranch } from "lucide-react";
+import { Leaf, MapPin, Pencil, Trash2, Building2, User, Hash, GitBranch, CalendarDays } from "lucide-react";
 import { AddressMap } from "@/components/ui/address-map";
 import { DeleteVergerButton } from "./delete-button";
 
@@ -97,6 +97,17 @@ export default async function VergerDetailPage({ params }: { params: Promise<{ i
             </div>
           )}
 
+          {/* Date de création */}
+          {verger.dateCreation && (
+            <div className="space-y-1">
+              <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">Date de création</p>
+              <div className="flex items-center gap-2 text-sm text-gray-800">
+                <CalendarDays size={14} className="text-gray-400" />
+                <span>{new Date(verger.dateCreation).toLocaleDateString("fr-FR")}</span>
+              </div>
+            </div>
+          )}
+
           {/* Nombre d'arbres */}
           {verger.nbArbres != null && (
             <div className="space-y-1">
@@ -138,7 +149,7 @@ export default async function VergerDetailPage({ params }: { params: Promise<{ i
             </div>
           )}
 
-          {!verger.nbArbres && !verger.especesVarietes && !verger.formesEspalier && !verger.notes && !verger.responsableType && (
+          {!verger.dateCreation && !verger.nbArbres && !verger.especesVarietes && !verger.formesEspalier && !verger.notes && !verger.responsableType && (
             <p className="text-sm text-gray-400">Aucune information renseignée.</p>
           )}
         </div>

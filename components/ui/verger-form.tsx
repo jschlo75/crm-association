@@ -15,6 +15,7 @@ type VergerFormData = {
   responsableType?: string | null;
   responsableOrganisationId?: string | null;
   responsableContactId?: string | null;
+  dateCreation?: string | null;
   nbArbres?: number | null;
   especesVarietes?: string | null;
   formesEspalier?: string | null;
@@ -38,6 +39,7 @@ export function VergerForm({ initialData }: VergerFormProps) {
     responsableType: initialData?.responsableType ?? "",
     responsableOrganisationId: initialData?.responsableOrganisationId ?? "",
     responsableContactId: initialData?.responsableContactId ?? "",
+    dateCreation: initialData?.dateCreation ? initialData.dateCreation.slice(0, 10) : "",
     nbArbres: initialData?.nbArbres?.toString() ?? "",
     especesVarietes: initialData?.especesVarietes ?? "",
     formesEspalier: initialData?.formesEspalier ?? "",
@@ -70,6 +72,7 @@ export function VergerForm({ initialData }: VergerFormProps) {
       responsableType: form.responsableType || null,
       responsableOrganisationId: form.responsableType === "ORGANISATION" ? form.responsableOrganisationId || null : null,
       responsableContactId: form.responsableType === "CONTACT" ? form.responsableContactId || null : null,
+      dateCreation: form.dateCreation || null,
       nbArbres: form.nbArbres ? parseInt(form.nbArbres) : null,
       especesVarietes: form.especesVarietes || null,
       formesEspalier: form.formesEspalier || null,
@@ -108,15 +111,26 @@ export function VergerForm({ initialData }: VergerFormProps) {
       {/* Identité */}
       <div>
         <h3 className="text-sm font-semibold text-gray-700 mb-3 pb-2 border-b border-gray-100">Identité</h3>
-        <div>
-          <label className={labelClass}>Nom du verger *</label>
-          <input
-            value={form.nom}
-            onChange={(e) => set("nom", e.target.value)}
-            required
-            className={inputClass}
-            placeholder="Ex. Verger de la Croix"
-          />
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label className={labelClass}>Nom du verger *</label>
+            <input
+              value={form.nom}
+              onChange={(e) => set("nom", e.target.value)}
+              required
+              className={inputClass}
+              placeholder="Ex. Verger de la Croix"
+            />
+          </div>
+          <div>
+            <label className={labelClass}>Date de création</label>
+            <input
+              type="date"
+              value={form.dateCreation}
+              onChange={(e) => set("dateCreation", e.target.value)}
+              className={inputClass}
+            />
+          </div>
         </div>
       </div>
 

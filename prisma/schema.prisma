@@ -146,6 +146,7 @@ model Verger {
   responsableOrganisation   Organisation? @relation(fields: [responsableOrganisationId], references: [id], onDelete: SetNull)
   responsableContactId      String?
   responsableContact        Contact?      @relation(fields: [responsableContactId], references: [id], onDelete: SetNull)
+  dateCreation              DateTime?
   nbArbres                  Int?
   especesVarietes           String?
   formesEspalier            String?
