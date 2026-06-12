@@ -16,6 +16,7 @@ export async function GET() {
   });
 
   const rows = users.map((u) => ({
+    "Prénom":        u.prenom ?? "",
     "Nom":           u.nom,
     "Email":         u.email,
     "Rôle":          u.role === "ADMIN" ? "Administrateur" : u.role === "RESTREINT" ? "Restreint" : "Membre",

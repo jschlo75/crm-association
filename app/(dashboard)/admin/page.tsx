@@ -48,6 +48,7 @@ function Pagination({ page, pages, total, onPage }: { page: number; pages: numbe
 
 type User = {
   id: string;
+  prenom: string | null;
   nom: string;
   email: string;
   role: "ADMIN" | "MEMBRE" | "RESTREINT";
@@ -110,6 +111,7 @@ export default function AdminPage() {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
+        prenom: getValue("prenom") || undefined,
         nom: getValue("nom"),
         email: getValue("email"),
         password: getValue("password"),
@@ -212,7 +214,11 @@ export default function AdminPage() {
             )}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label className={labelClass}>Nom complet *</label>
+                <label className={labelClass}>Prénom</label>
+                <input name="prenom" className={inputClass} />
+              </div>
+              <div>
+                <label className={labelClass}>Nom *</label>
                 <input name="nom" required className={inputClass} />
               </div>
               <div>
@@ -286,10 +292,10 @@ export default function AdminPage() {
                     <td className="px-6 py-4">
                       <Link href={`/admin/utilisateurs/${user.id}`} className="flex items-center gap-3 group">
                         <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-700 text-xs font-bold flex-shrink-0">
-                          {user.nom[0]}
+                          {user.prenom ? user.prenom[0] : user.nom[0]}
                         </div>
                         <div>
-                          <div className="font-medium text-gray-900 group-hover:text-blue-600 transition-colors">{user.nom}</div>
+                          <div className="font-medium text-gray-900 group-hover:text-blue-600 transition-colors">{[user.prenom, user.nom].filter(Boolean).join(" ")}</div>
                           <div className="text-gray-500 text-xs">{user.email}</div>
                         </div>
                       </Link>
