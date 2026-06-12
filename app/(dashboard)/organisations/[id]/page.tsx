@@ -5,7 +5,7 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import {
   Building2, Mail, Phone, Globe, BadgeCheck, Users, MessageSquare,
-  Pencil, Plus, Trash2, ChevronsUp, GitBranch, Leaf
+  Pencil, Plus, Trash2, ChevronsUp, GitBranch, Leaf, UserCircle, Shield
 } from "lucide-react";
 import {
   formatDate, TYPE_ORGANISATION_LABELS, TYPE_INTERACTION_LABELS, TYPE_INTERACTION_ICONS
@@ -29,6 +29,7 @@ export default async function OrganisationDetailPage({ params }: { params: Promi
         include: { contact: true, user: true },
       },
       vergers: { orderBy: { nom: "asc" } },
+      users: { orderBy: { nom: "asc" }, select: { id: true, prenom: true, nom: true, email: true, role: true, actif: true } },
     },
   });
 
@@ -195,6 +196,44 @@ export default async function OrganisationDetailPage({ params }: { params: Promi
           )}
         </div>
       </div>
+
+      {/* Utilisateurs */}
+      {organisation.users.length > 0 && (
+        <div className="bg-white rounded-xl shadow-sm border border-gray-200">
+          <div className="flex items-center gap-2 px-6 py-4 border-b border-gray-100">
+            <UserCircle size={16} className="text-gray-400" />
+            <h2 className="font-semibold text-gray-900">Utilisateurs ({organisation.users.length})</h2>
+          </div>
+          <ul className="divide-y divide-gray-100">
+            {organisation.users.map((u) => (
+              <li key={u.id}>
+                <Link href={`/admin/utilisateurs/${u.id}`} className="flex items-center gap-3 px-6 py-3 hover:bg-gray-50 transition-colors">
+                  <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-700 text-sm font-bold flex-shrink-0">
+                    {u.prenom ? u.prenom[0] : u.nom[0]}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="text-sm font-medium text-gray-900">{[u.prenom, u.nom].filter(Boolean).join(" ")}</div>
+                    <div className="text-xs text-gray-500">{u.email}</div>
+                  </div>
+                  <div className="flex items-center gap-2 flex-shrink-0">
+                    <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium ${
+                      u.role === "ADMIN" ? "bg-purple-100 text-purple-700"
+                      : u.role === "RESTREINT" ? "bg-amber-100 text-amber-700"
+                      : "bg-gray-100 text-gray-600"
+                    }`}>
+                      <Shield size={10} />
+                      {u.role === "ADMIN" ? "Admin" : u.role === "RESTREINT" ? "Restreint" : "Membre"}
+                    </span>
+                    {!u.actif && (
+                      <span className="inline-flex px-2 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-600">Inactif</span>
+                    )}
+                  </div>
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
 
       {/* Interactions + Vergers côte à côte */}
       <div className={`grid grid-cols-1 gap-4 ${role === "ADMIN" ? "lg:grid-cols-2" : ""}`}>
