@@ -40,7 +40,7 @@ export async function GET(req: NextRequest) {
       orderBy: { nom: "asc" },
       skip,
       take: limit,
-      select: { id: true, nom: true, email: true, role: true, actif: true, createdAt: true, organisation: { select: { id: true, nom: true } } },
+      select: { id: true, prenom: true, nom: true, email: true, role: true, actif: true, createdAt: true, organisation: { select: { id: true, nom: true } } },
     }),
     prisma.user.count({ where }),
   ]);
