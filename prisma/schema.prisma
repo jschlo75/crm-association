@@ -228,7 +228,7 @@ model CampagneDestinataire {
   id          String   @id @default(cuid())
   campagneId  String
   campagne    Campagne @relation(fields: [campagneId], references: [id], onDelete: Cascade)
-  contactId   String
+  contactId   String?
   email       String
   nom         String
   envoye      Boolean  @default(false)
