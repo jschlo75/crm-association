@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { Plus, Trash2, Shield, User, ShieldCheck, Mail, Building2, ChevronLeft, ChevronRight } from "lucide-react";
+import { Plus, Trash2, Shield, User, ShieldCheck, Mail, Building2, ChevronLeft, ChevronRight, Download } from "lucide-react";
 import { formatDate } from "@/lib/utils";
 import Link from "next/link";
 
@@ -178,6 +178,14 @@ export default function AdminPage() {
         <h1 className="text-2xl font-bold text-gray-900">Administration — Utilisateurs</h1>
         <div className="flex items-center gap-2">
           {!loading && <p className="text-sm text-gray-500">{total} utilisateur{total > 1 ? "s" : ""}</p>}
+          <a
+            href="/api/export/utilisateurs"
+            download
+            className="flex items-center gap-2 bg-white border border-gray-300 text-gray-700 px-4 py-2 rounded-lg text-sm font-medium hover:bg-gray-50 transition-colors"
+          >
+            <Download size={16} />
+            Exporter Excel
+          </a>
           <Link
             href="/admin/connexions"
             className="flex items-center gap-2 bg-white border border-gray-300 text-gray-700 px-4 py-2 rounded-lg text-sm font-medium hover:bg-gray-50 transition-colors"
