@@ -4,7 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import {
-  Building2, Mail, Phone, Globe, BadgeCheck, Users, MessageSquare,
+  Building2, Mail, Phone, Globe, BadgeCheck, MessageSquare,
   Pencil, Plus, Trash2, ChevronsUp, GitBranch, Leaf, UserCircle, Shield
 } from "lucide-react";
 import {
@@ -23,7 +23,6 @@ export default async function OrganisationDetailPage({ params }: { params: Promi
     include: {
       parent: true,
       sousOrganisations: { orderBy: { nom: "asc" } },
-      contacts: { orderBy: { nom: "asc" } },
       interactions: {
         orderBy: { date: "desc" },
         include: { contact: true, user: true },
@@ -105,96 +104,46 @@ export default async function OrganisationDetailPage({ params }: { params: Promi
         </div>
       )}
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-        {/* Informations */}
-        <div className="lg:col-span-1 bg-white rounded-xl shadow-sm border border-gray-200 p-6 space-y-4">
-          <h2 className="font-semibold text-gray-900">Informations</h2>
-          <div className="space-y-3 text-sm">
-            {organisation.email && (
-              <div className="flex items-center gap-2 text-gray-600">
-                <Mail size={14} className="text-gray-400 flex-shrink-0" />
-                <a href={`mailto:${organisation.email}`} className="hover:text-blue-600 truncate">{organisation.email}</a>
-              </div>
-            )}
-            {organisation.telephone && (
-              <div className="flex items-center gap-2 text-gray-600">
-                <Phone size={14} className="text-gray-400 flex-shrink-0" />
-                <span>{organisation.telephone}</span>
-              </div>
-            )}
-            {organisation.siteWeb && (
-              <div className="flex items-center gap-2 text-gray-600">
-                <Globe size={14} className="text-gray-400 flex-shrink-0" />
-                <a
-                  href={organisation.siteWeb}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="hover:text-blue-600 truncate"
-                >
-                  {organisation.siteWeb.replace(/^https?:\/\//, "")}
-                </a>
-              </div>
-            )}
-            {(organisation.adresse || organisation.ville) && (
-              <AddressMap
-                adresse={organisation.adresse}
-                codePostal={organisation.codePostal}
-                ville={organisation.ville}
-                pays={organisation.pays}
-              />
-            )}
-          </div>
-          {organisation.membreSnhf && (
-            <div className="flex items-center gap-2 text-sm">
-              <BadgeCheck size={14} className="text-blue-500 flex-shrink-0" />
-              <span className="font-medium text-blue-700">Membre SNHF</span>
+      {/* Informations */}
+      <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 space-y-4">
+        <h2 className="font-semibold text-gray-900">Informations</h2>
+        <div className="space-y-3 text-sm">
+          {organisation.email && (
+            <div className="flex items-center gap-2 text-gray-600">
+              <Mail size={14} className="text-gray-400 flex-shrink-0" />
+              <a href={`mailto:${organisation.email}`} className="hover:text-blue-600 truncate">{organisation.email}</a>
             </div>
           )}
-          {organisation.notes && (
-            <div className="pt-3 border-t border-gray-100">
-              <p className="text-xs font-medium text-gray-500 mb-1">Notes</p>
-              <p className="text-sm text-gray-700 whitespace-pre-wrap">{organisation.notes}</p>
+          {organisation.telephone && (
+            <div className="flex items-center gap-2 text-gray-600">
+              <Phone size={14} className="text-gray-400 flex-shrink-0" />
+              <span>{organisation.telephone}</span>
             </div>
           )}
-        </div>
-
-        {/* Contacts */}
-        <div className="lg:col-span-2 bg-white rounded-xl shadow-sm border border-gray-200">
-          <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
-            <h2 className="font-semibold text-gray-900 flex items-center gap-2">
-              <Users size={16} className="text-gray-400" />
-              Contacts ({organisation.contacts.length})
-            </h2>
-            {role === "ADMIN" && (
-              <Link
-                href={`/contacts/nouveau?organisationId=${organisation.id}`}
-                className="text-sm text-blue-600 hover:underline flex items-center gap-1"
-              >
-                <Plus size={14} />
-                Ajouter
-              </Link>
-            )}
-          </div>
-          {organisation.contacts.length === 0 ? (
-            <p className="px-6 py-6 text-sm text-gray-400 text-center">Aucun contact rattaché.</p>
-          ) : (
-            <ul className="divide-y divide-gray-100">
-              {organisation.contacts.map((c) => (
-                <li key={c.id}>
-                  <Link href={`/contacts/${c.id}`} className="flex items-center gap-3 px-6 py-3 hover:bg-gray-50 transition-colors">
-                    <div className="w-8 h-8 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-700 text-sm font-medium flex-shrink-0">
-                      {c.prenom[0]}{c.nom[0]}
-                    </div>
-                    <div>
-                      <div className="text-sm font-medium text-gray-900">{c.prenom} {c.nom}</div>
-                      {c.poste && <div className="text-xs text-gray-500">{c.poste}</div>}
-                    </div>
-                  </Link>
-                </li>
-              ))}
-            </ul>
+          {organisation.siteWeb && (
+            <div className="flex items-center gap-2 text-gray-600">
+              <Globe size={14} className="text-gray-400 flex-shrink-0" />
+              <a href={organisation.siteWeb} target="_blank" rel="noopener noreferrer" className="hover:text-blue-600 truncate">
+                {organisation.siteWeb.replace(/^https?:\/\//, "")}
+              </a>
+            </div>
+          )}
+          {(organisation.adresse || organisation.ville) && (
+            <AddressMap adresse={organisation.adresse} codePostal={organisation.codePostal} ville={organisation.ville} pays={organisation.pays} />
           )}
         </div>
+        {organisation.membreSnhf && (
+          <div className="flex items-center gap-2 text-sm">
+            <BadgeCheck size={14} className="text-blue-500 flex-shrink-0" />
+            <span className="font-medium text-blue-700">Membre SNHF</span>
+          </div>
+        )}
+        {organisation.notes && (
+          <div className="pt-3 border-t border-gray-100">
+            <p className="text-xs font-medium text-gray-500 mb-1">Notes</p>
+            <p className="text-sm text-gray-700 whitespace-pre-wrap">{organisation.notes}</p>
+          </div>
+        )}
       </div>
 
       {/* Utilisateurs */}
