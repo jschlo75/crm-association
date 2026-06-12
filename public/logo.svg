@@ -1,0 +1,66 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 230" width="200" height="230">
+  <defs>
+    <!-- Carré haut-gauche : brun-rouge foncé, texture terreuse -->
+    <radialGradient id="tl" cx="60%" cy="40%" r="70%">
+      <stop offset="0%" stop-color="#8B3A2A"/>
+      <stop offset="40%" stop-color="#6B2A1A"/>
+      <stop offset="100%" stop-color="#3D150A"/>
+    </radialGradient>
+    <!-- Carré haut-droite : vert feuille -->
+    <radialGradient id="tr" cx="40%" cy="50%" r="70%">
+      <stop offset="0%" stop-color="#7DAF3A"/>
+      <stop offset="50%" stop-color="#5A8C22"/>
+      <stop offset="100%" stop-color="#3A6010"/>
+    </radialGradient>
+    <!-- Carré bas-gauche : brun-rouge, feuille -->
+    <radialGradient id="bl" cx="50%" cy="50%" r="70%">
+      <stop offset="0%" stop-color="#B05030"/>
+      <stop offset="50%" stop-color="#8A3518"/>
+      <stop offset="100%" stop-color="#5C1E08"/>
+    </radialGradient>
+    <!-- Carré bas-droite : orange-vert -->
+    <radialGradient id="br" cx="50%" cy="40%" r="70%">
+      <stop offset="0%" stop-color="#C8A020"/>
+      <stop offset="40%" stop-color="#A07C18"/>
+      <stop offset="100%" stop-color="#6B5A10"/>
+    </radialGradient>
+    <!-- Overlay textures -->
+    <filter id="texture">
+      <feTurbulence type="fractalNoise" baseFrequency="0.65" numOctaves="3" stitchTiles="stitch" result="noise"/>
+      <feColorMatrix type="saturate" values="0" in="noise" result="grey"/>
+      <feBlend in="SourceGraphic" in2="grey" mode="multiply" result="blend"/>
+      <feComposite in="blend" in2="SourceGraphic" operator="in"/>
+    </filter>
+  </defs>
+
+  <!-- Grille 2x2 avec petit espacement -->
+  <g>
+    <!-- Haut-gauche -->
+    <rect x="2" y="2" width="96" height="96" fill="url(#tl)" filter="url(#texture)"/>
+    <!-- Haut-droite -->
+    <rect x="102" y="2" width="96" height="96" fill="url(#tr)" filter="url(#texture)"/>
+    <!-- Bas-gauche -->
+    <rect x="2" y="102" width="96" height="96" fill="url(#bl)" filter="url(#texture)"/>
+    <!-- Bas-droite -->
+    <rect x="102" y="102" width="96" height="96" fill="url(#br)" filter="url(#texture)"/>
+  </g>
+
+  <!-- Barre bordeaux diagonale (brushstroke) -->
+  <g opacity="0.95">
+    <path d="M -5,118 Q 30,108 70,112 Q 110,116 150,108 Q 175,104 210,100
+             L 210,122 Q 175,126 150,132 Q 110,138 70,134 Q 30,130 -5,140 Z"
+          fill="#6B1A10" opacity="0.9"/>
+    <path d="M -5,112 Q 40,103 80,107 Q 120,111 160,104 Q 185,100 212,97
+             L 212,107 Q 185,110 160,114 Q 120,121 80,117 Q 40,113 -5,122 Z"
+          fill="#8B2A18" opacity="0.6"/>
+  </g>
+
+  <!-- Texte S N H F -->
+  <text x="100" y="222"
+        font-family="Georgia, 'Times New Roman', serif"
+        font-size="28"
+        font-weight="400"
+        fill="#1a1a1a"
+        text-anchor="middle"
+        letter-spacing="12">SNHF</text>
+</svg>
