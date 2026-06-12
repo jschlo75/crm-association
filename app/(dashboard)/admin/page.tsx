@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { Plus, Trash2, Shield, User, ShieldCheck, Mail } from "lucide-react";
+import { Plus, Trash2, Shield, User, ShieldCheck, Mail, Building2 } from "lucide-react";
 import { formatDate } from "@/lib/utils";
 import Link from "next/link";
 
@@ -14,6 +14,7 @@ type User = {
   role: "ADMIN" | "MEMBRE" | "RESTREINT";
   actif: boolean;
   createdAt: string;
+  organisation: { id: string; nom: string } | null;
 };
 
 export default function AdminPage() {
@@ -188,6 +189,7 @@ export default function AdminPage() {
             <thead className="border-b border-gray-200">
               <tr className="text-left text-xs font-medium text-gray-500 uppercase tracking-wide">
                 <th className="px-6 py-3">Utilisateur</th>
+                <th className="px-6 py-3">Organisation</th>
                 <th className="px-6 py-3">Rôle</th>
                 <th className="px-6 py-3">Statut</th>
                 <th className="px-6 py-3">Créé le</th>
@@ -209,6 +211,16 @@ export default function AdminPage() {
                           <div className="text-gray-500 text-xs">{user.email}</div>
                         </div>
                       </Link>
+                    </td>
+                    <td className="px-6 py-4">
+                      {user.organisation ? (
+                        <Link href={`/organisations/${user.organisation.id}`} className="flex items-center gap-1.5 text-xs text-blue-600 hover:underline">
+                          <Building2 size={12} className="text-gray-400 flex-shrink-0" />
+                          {user.organisation.nom}
+                        </Link>
+                      ) : (
+                        <span className="text-xs text-gray-400">—</span>
+                      )}
                     </td>
                     <td className="px-6 py-4">
                       <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium ${
