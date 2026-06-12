@@ -5,8 +5,7 @@ import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { Users, Eye, EyeOff } from "lucide-react";
 
-type Organisation = { id: string; nom: string };
-type Contact = { id: string; prenom: string; nom: string; email: string | null; organisation: { nom: string } | null };
+type Interlocuteur = { id: string; prenom: string | null; nom: string; email: string };
 
 function NouvelleCampagneForm() {
   const router = useRouter();
@@ -15,27 +14,21 @@ function NouvelleCampagneForm() {
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [organisations, setOrganisations] = useState<Organisation[]>([]);
-  const [contacts, setContacts] = useState<Contact[]>([]);
-  const [filtreOrganisationId, setFiltreOrganisationId] = useState("");
+  const [interlocuteurs, setInterlocuteurs] = useState<Interlocuteur[]>([]);
   const [showPreview, setShowPreview] = useState(false);
   const [contenu, setContenu] = useState("");
 
   useEffect(() => {
     if (role !== "ADMIN" && role !== "RESTREINT") { router.push("/campagnes"); return; }
-    fetch("/api/organisations?limit=9999").then((r) => r.json()).then((d) => setOrganisations(Array.isArray(d) ? d : (d.data ?? [])));
+    fetch("/api/admin/users?limit=9999")
+      .then((r) => r.json())
+      .then((d) => {
+        const all = Array.isArray(d) ? d : (d.data ?? []);
+        setInterlocuteurs(all.filter((u: { consentementEmailsInfo?: boolean; actif?: boolean }) => u.consentementEmailsInfo && u.actif));
+      });
   }, [role]);
 
-  useEffect(() => {
-    const url = filtreOrganisationId
-      ? `/api/contacts?organisationId=${filtreOrganisationId}&limit=9999`
-      : "/api/contacts?limit=9999";
-    fetch(url)
-      .then((r) => r.json())
-      .then((d) => setContacts(Array.isArray(d) ? d : (d.data ?? [])));
-  }, [filtreOrganisationId]);
-
-  const destinataires = contacts.filter((c) => c.email);
+  const destinataires = interlocuteurs;
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -57,7 +50,6 @@ function NouvelleCampagneForm() {
         nom: getValue("nom"),
         sujet: getValue("sujet"),
         contenu,
-        filtreOrganisationId,
       }),
     });
 
@@ -98,30 +90,12 @@ function NouvelleCampagneForm() {
         {/* Destinataires */}
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 space-y-4">
           <h2 className="font-semibold text-gray-900">Destinataires</h2>
-          <div>
-            <label className={labelClass}>Filtrer par organisation (optionnel)</label>
-            <select
-              value={filtreOrganisationId}
-              onChange={(e) => setFiltreOrganisationId(e.target.value)}
-              className={inputClass}
-            >
-              <option value="">Tous les contacts</option>
-              {organisations.map((o) => (
-                <option key={o.id} value={o.id}>{o.nom}</option>
-              ))}
-            </select>
-          </div>
 
           <div className="bg-blue-50 border border-blue-200 rounded-lg px-4 py-3 flex items-center gap-3">
             <Users size={16} className="text-blue-600 flex-shrink-0" />
             <div className="text-sm">
-              <span className="font-semibold text-blue-800">{destinataires.length} destinataire{destinataires.length > 1 ? "s" : ""}</span>
-              <span className="text-blue-600"> avec adresse email</span>
-              {contacts.length - destinataires.length > 0 && (
-                <span className="text-blue-400">
-                  {" "}({contacts.length - destinataires.length} contact{contacts.length - destinataires.length > 1 ? "s" : ""} sans email exclus)
-                </span>
-              )}
+              <span className="font-semibold text-blue-800">{destinataires.length} interlocuteur{destinataires.length > 1 ? "s" : ""}</span>
+              <span className="text-blue-600"> ayant consenti à recevoir des emails</span>
             </div>
           </div>
 
@@ -129,16 +103,19 @@ function NouvelleCampagneForm() {
             <details className="text-sm">
               <summary className="cursor-pointer text-gray-500 hover:text-gray-700">Voir la liste</summary>
               <ul className="mt-2 space-y-1 max-h-40 overflow-y-auto">
-                {destinataires.map((c) => (
-                  <li key={c.id} className="flex items-center gap-2 text-gray-600 py-0.5">
+                {destinataires.map((u) => (
+                  <li key={u.id} className="flex items-center gap-2 text-gray-600 py-0.5">
                     <span className="w-1.5 h-1.5 rounded-full bg-blue-400 flex-shrink-0" />
-                    <span>{c.prenom} {c.nom}</span>
-                    <span className="text-gray-400">— {c.email}</span>
-                    {c.organisation && <span className="text-gray-400 text-xs">({c.organisation.nom})</span>}
+                    <span>{[u.prenom, u.nom].filter(Boolean).join(" ")}</span>
+                    <span className="text-gray-400">— {u.email}</span>
                   </li>
                 ))}
               </ul>
             </details>
+          )}
+
+          {destinataires.length === 0 && (
+            <p className="text-sm text-gray-400 italic">Aucun interlocuteur n'a encore donné son consentement pour recevoir des emails.</p>
           )}
         </div>
 
