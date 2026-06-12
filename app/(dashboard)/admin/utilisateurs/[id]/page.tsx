@@ -6,7 +6,7 @@ import { useSession } from "next-auth/react";
 import Link from "next/link";
 import {
   ArrowLeft, Mail, Shield, ShieldCheck, CheckCircle2, XCircle,
-  Clock, Trash2, ToggleLeft, ToggleRight, Send, Building2
+  Clock, Trash2, ToggleLeft, ToggleRight, Send, Building2, Pencil, Check, X
 } from "lucide-react";
 import { formatDate } from "@/lib/utils";
 
@@ -47,6 +47,10 @@ export default function UserDetailPage() {
   const [orgLoading, setOrgLoading] = useState(false);
   const [loading, setLoading] = useState(true);
   const [actionLoading, setActionLoading] = useState("");
+  const [editingName, setEditingName] = useState(false);
+  const [editPrenom, setEditPrenom] = useState("");
+  const [editNom, setEditNom] = useState("");
+  const [nameLoading, setNameLoading] = useState(false);
 
   useEffect(() => {
     fetch(`/api/admin/users/${id}`)
@@ -67,6 +71,21 @@ export default function UserDetailPage() {
       const updated = await res.json();
       setUser((prev) => prev ? { ...prev, ...updated } : prev);
     }
+  }
+
+  function startEditName() {
+    if (!user) return;
+    setEditPrenom(user.prenom ?? "");
+    setEditNom(user.nom);
+    setEditingName(true);
+  }
+
+  async function saveName() {
+    if (!editNom.trim()) return;
+    setNameLoading(true);
+    await update({ prenom: editPrenom.trim() || null, nom: editNom.trim() });
+    setEditingName(false);
+    setNameLoading(false);
   }
 
   async function updateOrganisation(organisationId: string | null) {
@@ -130,9 +149,38 @@ export default function UserDetailPage() {
               {initiales}
             </div>
             <div>
-              <h1 className="text-xl font-bold text-gray-900">
-                {user.prenom ? `${user.prenom} ${user.nom}` : user.nom}
-              </h1>
+              {editingName ? (
+                <div className="flex items-center gap-2">
+                  <input
+                    value={editPrenom}
+                    onChange={(e) => setEditPrenom(e.target.value)}
+                    placeholder="Prénom"
+                    className="w-28 px-2 py-1 border border-gray-300 rounded text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                  <input
+                    value={editNom}
+                    onChange={(e) => setEditNom(e.target.value)}
+                    placeholder="Nom *"
+                    required
+                    className="w-32 px-2 py-1 border border-gray-300 rounded text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                  <button onClick={saveName} disabled={nameLoading || !editNom.trim()} className="text-green-600 hover:text-green-700 disabled:opacity-40">
+                    <Check size={16} />
+                  </button>
+                  <button onClick={() => setEditingName(false)} className="text-gray-400 hover:text-gray-600">
+                    <X size={16} />
+                  </button>
+                </div>
+              ) : (
+                <div className="flex items-center gap-2">
+                  <h1 className="text-xl font-bold text-gray-900">
+                    {user.prenom ? `${user.prenom} ${user.nom}` : user.nom}
+                  </h1>
+                  <button onClick={startEditName} className="text-gray-400 hover:text-gray-600 transition-colors">
+                    <Pencil size={14} />
+                  </button>
+                </div>
+              )}
               <div className="flex items-center gap-1 text-sm text-gray-500 mt-0.5">
                 <Mail size={13} className="text-gray-400" />
                 <a href={`mailto:${user.email}`} className="hover:text-blue-600">{user.email}</a>
