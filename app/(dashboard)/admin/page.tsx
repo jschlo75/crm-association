@@ -1,11 +1,50 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { Plus, Trash2, Shield, User, ShieldCheck, Mail, Building2 } from "lucide-react";
+import { Plus, Trash2, Shield, User, ShieldCheck, Mail, Building2, ChevronLeft, ChevronRight } from "lucide-react";
 import { formatDate } from "@/lib/utils";
 import Link from "next/link";
+
+const LIMIT = 20;
+
+function Pagination({ page, pages, total, onPage }: { page: number; pages: number; total: number; onPage: (p: number) => void }) {
+  if (pages <= 1) return null;
+  const nums: (number | "…")[] = [];
+  for (let i = 1; i <= pages; i++) {
+    if (i === 1 || i === pages || (i >= page - 1 && i <= page + 1)) nums.push(i);
+    else if (nums[nums.length - 1] !== "…") nums.push("…");
+  }
+  return (
+    <div className="flex items-center justify-between px-6 py-3 border-t border-gray-100">
+      <span className="text-xs text-gray-400">
+        Page {page} / {pages} — {total} utilisateur{total > 1 ? "s" : ""}
+      </span>
+      <div className="flex items-center gap-1">
+        <button onClick={() => onPage(page - 1)} disabled={page <= 1} className="p-1.5 rounded hover:bg-gray-100 disabled:opacity-30 transition-colors">
+          <ChevronLeft size={16} />
+        </button>
+        {nums.map((n, i) =>
+          n === "…" ? (
+            <span key={`e${i}`} className="px-2 text-gray-400 text-sm">…</span>
+          ) : (
+            <button
+              key={n}
+              onClick={() => onPage(n as number)}
+              className={`w-8 h-8 rounded text-sm font-medium transition-colors ${n === page ? "bg-blue-600 text-white" : "hover:bg-gray-100 text-gray-600"}`}
+            >
+              {n}
+            </button>
+          )
+        )}
+        <button onClick={() => onPage(page + 1)} disabled={page >= pages} className="p-1.5 rounded hover:bg-gray-100 disabled:opacity-30 transition-colors">
+          <ChevronRight size={16} />
+        </button>
+      </div>
+    </div>
+  );
+}
 
 type User = {
   id: string;
@@ -23,16 +62,40 @@ export default function AdminPage() {
   const role = (session?.user as { role: string })?.role;
 
   const [users, setUsers] = useState<User[]>([]);
+  const [search, setSearch] = useState("");
+  const [page, setPage] = useState(1);
+  const [total, setTotal] = useState(0);
+  const [pages, setPages] = useState(1);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
   const [formError, setFormError] = useState("");
   const [formLoading, setFormLoading] = useState(false);
 
+  const fetchUsers = useCallback((q: string, p: number) => {
+    setLoading(true);
+    const params = new URLSearchParams({ page: String(p), limit: String(LIMIT) });
+    if (q) params.set("q", q);
+    fetch(`/api/admin/users?${params}`)
+      .then((r) => r.json())
+      .then((res) => { setUsers(res.data ?? []); setTotal(res.total ?? 0); setPages(res.pages ?? 1); setLoading(false); });
+  }, []);
+
   useEffect(() => {
     if (status === "loading") return;
     if (role !== "ADMIN") { router.push("/dashboard"); return; }
-    fetch("/api/admin/users").then((r) => r.json()).then((d) => { setUsers(d); setLoading(false); });
+    fetchUsers(search, page);
   }, [role, status]);
+
+  useEffect(() => {
+    if (status === "loading" || role !== "ADMIN") return;
+    const timer = setTimeout(() => { setPage(1); fetchUsers(search, 1); }, 300);
+    return () => clearTimeout(timer);
+  }, [search]);
+
+  useEffect(() => {
+    if (status === "loading" || role !== "ADMIN") return;
+    fetchUsers(search, page);
+  }, [page]);
 
   async function handleCreate(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -55,10 +118,9 @@ export default function AdminPage() {
     });
 
     if (res.ok) {
-      const newUser = await res.json();
-      setUsers((prev) => [...prev, newUser]);
       setShowForm(false);
       form.reset();
+      fetchUsers(search, page);
     } else {
       const data = await res.json();
       setFormError(data.error || "Erreur lors de la création.");
@@ -115,6 +177,7 @@ export default function AdminPage() {
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <h1 className="text-2xl font-bold text-gray-900">Administration — Utilisateurs</h1>
         <div className="flex items-center gap-2">
+          {!loading && <p className="text-sm text-gray-500">{total} utilisateur{total > 1 ? "s" : ""}</p>}
           <Link
             href="/admin/connexions"
             className="flex items-center gap-2 bg-white border border-gray-300 text-gray-700 px-4 py-2 rounded-lg text-sm font-medium hover:bg-gray-50 transition-colors"
@@ -181,10 +244,21 @@ export default function AdminPage() {
         </div>
       )}
 
+      <div className="relative">
+        <input
+          type="text"
+          placeholder="Rechercher un utilisateur (nom, email)..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          className="w-full pl-4 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white text-sm"
+        />
+      </div>
+
       <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-x-auto">
         {loading ? (
           <div className="p-8 text-center text-gray-400 text-sm">Chargement...</div>
         ) : (
+          <>
           <table className="w-full text-sm min-w-[600px]">
             <thead className="border-b border-gray-200">
               <tr className="text-left text-xs font-medium text-gray-500 uppercase tracking-wide">
@@ -279,6 +353,8 @@ export default function AdminPage() {
               })}
             </tbody>
           </table>
+          <Pagination page={page} pages={pages} total={total} onPage={(p) => { setPage(p); window.scrollTo({ top: 0, behavior: "smooth" }); }} />
+          </>
         )}
       </div>
     </div>

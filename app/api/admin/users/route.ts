@@ -23,12 +23,28 @@ export async function GET(req: NextRequest) {
   const session = await requireAdmin(req);
   if (!session) return NextResponse.json({ error: "Non autorisé" }, { status: 403 });
 
-  const users = await prisma.user.findMany({
-    orderBy: { nom: "asc" },
-    select: { id: true, nom: true, email: true, role: true, actif: true, createdAt: true, organisation: { select: { id: true, nom: true } } },
-  });
+  const { searchParams } = new URL(req.url);
+  const q = searchParams.get("q") || "";
+  const page = Math.max(1, parseInt(searchParams.get("page") || "1"));
+  const limit = Math.min(100, Math.max(1, parseInt(searchParams.get("limit") || "20")));
+  const skip = (page - 1) * limit;
 
-  return NextResponse.json(users);
+  const where = q
+    ? { OR: [{ nom: { contains: q, mode: "insensitive" as const } }, { email: { contains: q, mode: "insensitive" as const } }] }
+    : undefined;
+
+  const [users, total] = await Promise.all([
+    prisma.user.findMany({
+      where,
+      orderBy: { nom: "asc" },
+      skip,
+      take: limit,
+      select: { id: true, nom: true, email: true, role: true, actif: true, createdAt: true, organisation: { select: { id: true, nom: true } } },
+    }),
+    prisma.user.count({ where }),
+  ]);
+
+  return NextResponse.json({ data: users, total, pages: Math.ceil(total / limit), page });
 }
 
 export async function POST(req: NextRequest) {
