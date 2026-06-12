@@ -16,7 +16,7 @@ export default async function ModifierVergerPage({ params }: { params: Promise<{
   return (
     <div className="max-w-2xl space-y-6">
       <h1 className="text-2xl font-bold text-gray-900">Modifier le verger</h1>
-      <VergerForm initialData={{ ...verger, id }} />
+      <VergerForm initialData={{ ...verger, id, dateCreation: verger.dateCreation ? verger.dateCreation.toISOString().slice(0, 10) : null }} />
     </div>
   );
 }
