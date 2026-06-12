@@ -202,7 +202,7 @@ export default async function OrganisationDetailPage({ params }: { params: Promi
         <div className="bg-white rounded-xl shadow-sm border border-gray-200">
           <div className="flex items-center gap-2 px-6 py-4 border-b border-gray-100">
             <UserCircle size={16} className="text-gray-400" />
-            <h2 className="font-semibold text-gray-900">Utilisateurs ({organisation.users.length})</h2>
+            <h2 className="font-semibold text-gray-900">Interlocuteurs ({organisation.users.length})</h2>
           </div>
           <ul className="divide-y divide-gray-100">
             {organisation.users.map((u) => (

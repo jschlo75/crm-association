@@ -19,7 +19,7 @@ function Pagination({ page, pages, total, onPage }: { page: number; pages: numbe
   return (
     <div className="flex items-center justify-between px-6 py-3 border-t border-gray-100">
       <span className="text-xs text-gray-400">
-        Page {page} / {pages} — {total} utilisateur{total > 1 ? "s" : ""}
+        Page {page} / {pages} — {total} interlocuteur{total > 1 ? "s" : ""}
       </span>
       <div className="flex items-center gap-1">
         <button onClick={() => onPage(page - 1)} disabled={page <= 1} className="p-1.5 rounded hover:bg-gray-100 disabled:opacity-30 transition-colors">
@@ -177,9 +177,9 @@ export default function AdminPage() {
   return (
     <div className="space-y-6 max-w-4xl">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-        <h1 className="text-2xl font-bold text-gray-900">Administration — Utilisateurs</h1>
+        <h1 className="text-2xl font-bold text-gray-900">Administration — Interlocuteurs</h1>
         <div className="flex items-center gap-2">
-          {!loading && <p className="text-sm text-gray-500">{total} utilisateur{total > 1 ? "s" : ""}</p>}
+          {!loading && <p className="text-sm text-gray-500">{total} interlocuteur{total > 1 ? "s" : ""}</p>}
           <a
             href="/api/export/utilisateurs"
             download
@@ -200,14 +200,14 @@ export default function AdminPage() {
             className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors"
           >
             <Plus size={16} />
-            Nouvel utilisateur
+            Nouvel interlocuteur
           </button>
         </div>
       </div>
 
       {showForm && (
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-          <h2 className="font-semibold text-gray-900 mb-4">Créer un compte utilisateur</h2>
+          <h2 className="font-semibold text-gray-900 mb-4">Créer un compte interlocuteur</h2>
           <form onSubmit={handleCreate} className="space-y-4">
             {formError && (
               <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm">{formError}</div>
@@ -261,7 +261,7 @@ export default function AdminPage() {
       <div className="relative">
         <input
           type="text"
-          placeholder="Rechercher un utilisateur (nom, email)..."
+          placeholder="Rechercher un interlocuteur (nom, email)..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           className="w-full pl-4 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white text-sm"
@@ -276,7 +276,7 @@ export default function AdminPage() {
           <table className="w-full text-sm min-w-[600px]">
             <thead className="border-b border-gray-200">
               <tr className="text-left text-xs font-medium text-gray-500 uppercase tracking-wide">
-                <th className="px-6 py-3">Utilisateur</th>
+                <th className="px-6 py-3">Interlocuteur</th>
                 <th className="px-6 py-3">Organisation</th>
                 <th className="px-6 py-3">Rôle</th>
                 <th className="px-6 py-3">Statut</th>
