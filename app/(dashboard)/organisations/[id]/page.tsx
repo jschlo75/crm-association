@@ -5,7 +5,7 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import {
   Building2, Mail, Phone, Globe, BadgeCheck, MessageSquare,
-  Pencil, Plus, Trash2, ChevronsUp, GitBranch, Leaf, UserCircle, Shield
+  Pencil, Plus, Trash2, ChevronsUp, GitBranch, Leaf, UserCircle
 } from "lucide-react";
 import {
   formatDate, TYPE_ORGANISATION_LABELS, TYPE_INTERACTION_LABELS, TYPE_INTERACTION_ICONS
@@ -28,7 +28,7 @@ export default async function OrganisationDetailPage({ params }: { params: Promi
         include: { contact: true, user: true },
       },
       vergers: { orderBy: { nom: "asc" } },
-      users: { orderBy: { nom: "asc" }, select: { id: true, prenom: true, nom: true, email: true, role: true, actif: true } },
+      users: { where: { consentementPartageContacts: true, actif: true }, orderBy: { nom: "asc" }, select: { id: true, prenom: true, nom: true, email: true } },
     },
   });
 
@@ -163,19 +163,6 @@ export default async function OrganisationDetailPage({ params }: { params: Promi
                   <div className="flex-1 min-w-0">
                     <div className="text-sm font-medium text-gray-900">{[u.prenom, u.nom].filter(Boolean).join(" ")}</div>
                     <div className="text-xs text-gray-500">{u.email}</div>
-                  </div>
-                  <div className="flex items-center gap-2 flex-shrink-0">
-                    <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium ${
-                      u.role === "ADMIN" ? "bg-purple-100 text-purple-700"
-                      : u.role === "RESTREINT" ? "bg-amber-100 text-amber-700"
-                      : "bg-gray-100 text-gray-600"
-                    }`}>
-                      <Shield size={10} />
-                      {u.role === "ADMIN" ? "Admin" : u.role === "RESTREINT" ? "Restreint" : "Membre"}
-                    </span>
-                    {!u.actif && (
-                      <span className="inline-flex px-2 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-600">Inactif</span>
-                    )}
                   </div>
                 </Link>
               </li>
