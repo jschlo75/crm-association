@@ -8,7 +8,19 @@ const MEMBRE_FORBIDDEN    = ["/vergers"];
 export default withAuth(
   function middleware(req) {
     const { pathname } = req.nextUrl;
-    const role = (req.nextauth.token as { role?: string })?.role;
+    const token = req.nextauth.token as { role?: string; consentementPartageContacts?: boolean };
+    const role = token?.role;
+
+    // Utilisateur RESTREINT sans consentement → page de bienvenue/consentement
+    if (
+      role === "RESTREINT" &&
+      !token?.consentementPartageContacts &&
+      !pathname.startsWith("/consentement") &&
+      !pathname.startsWith("/api/consentement") &&
+      !pathname.startsWith("/api/auth")
+    ) {
+      return NextResponse.redirect(new URL("/consentement", req.url));
+    }
 
     if (role === "RESTREINT" && RESTREINT_FORBIDDEN.some((p) => pathname.startsWith(p))) {
       return NextResponse.redirect(new URL("/dashboard", req.url));

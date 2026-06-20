@@ -30,19 +30,33 @@ export const authOptions: NextAuthOptions = {
           data: { userId: user.id, email: user.email, nom: user.nom, role: user.role },
         });
 
-        return { id: user.id, name: user.nom, email: user.email, role: user.role };
+        return { id: user.id, name: user.nom, email: user.email, role: user.role, consentementPartageContacts: user.consentementPartageContacts };
       },
     }),
   ],
   callbacks: {
-    async jwt({ token, user }) {
-      if (user) token.role = (user as unknown as { role: string }).role;
+    async jwt({ token, user, trigger }) {
+      if (user) {
+        const u = user as unknown as { role: string; consentementPartageContacts: boolean };
+        token.role = u.role;
+        token.consentementPartageContacts = u.consentementPartageContacts;
+      }
+      // Lors d'un update() côté client, relire le consentement en base
+      if (trigger === "update" && token.sub) {
+        const fresh = await prisma.user.findUnique({
+          where: { id: token.sub },
+          select: { consentementPartageContacts: true },
+        });
+        if (fresh) token.consentementPartageContacts = fresh.consentementPartageContacts;
+      }
       return token;
     },
     async session({ session, token }) {
       if (session.user) {
-        (session.user as { id: string; role: string }).id = token.sub!;
-        (session.user as { id: string; role: string }).role = token.role as string;
+        const u = session.user as { id: string; role: string; consentementPartageContacts: boolean };
+        u.id = token.sub!;
+        u.role = token.role as string;
+        u.consentementPartageContacts = token.consentementPartageContacts as boolean;
       }
       return session;
     },
