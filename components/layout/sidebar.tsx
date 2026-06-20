@@ -15,7 +15,7 @@ const navItems = [
   { href: "/dashboard",        label: "Tableau de bord",  icon: LayoutDashboard, roles: ["ADMIN", "MEMBRE", "RESTREINT"] },
   { href: "/organisations",   label: "Organisations",    icon: Building2,        roles: ["ADMIN", "MEMBRE", "RESTREINT"] },
   { href: "/interlocuteurs",  label: "Interlocuteurs",   icon: UserCircle,       roles: ["RESTREINT"] },
-  { href: "/vergers",         label: "Vergers",          icon: Leaf,             roles: ["ADMIN"] },
+  { href: "/vergers",         label: "Vergers",          icon: Leaf,             roles: ["ADMIN", "RESTREINT"] },
   { href: "/interactions", label: "Interactions",     icon: MessageSquare,    roles: ["ADMIN", "MEMBRE"] },
   { href: "/evenements",   label: "Événements",       icon: CalendarDays,     roles: ["ADMIN", "MEMBRE", "RESTREINT"] },
   { href: "/campagnes",    label: "Campagnes email",  icon: Mail,             roles: ["ADMIN", "MEMBRE"] },
