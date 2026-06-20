@@ -22,11 +22,17 @@ export default function ConsentementPage() {
 
   useEffect(() => {
     if (!session) return;
-    const u = session.user as { name?: string; prenom?: string; nom?: string };
-    setNom(u.name || "");
-    fetch("/api/organisations?limit=9999")
-      .then((r) => r.json())
-      .then((d) => setOrganisations(Array.isArray(d) ? d : (d.data ?? [])));
+    Promise.all([
+      fetch("/api/profil").then((r) => r.json()),
+      fetch("/api/organisations?limit=9999").then((r) => r.json()),
+    ]).then(([profil, orgs]) => {
+      setPrenom(profil.prenom ?? "");
+      setNom(profil.nom ?? "");
+      setOrganisationId(profil.organisationId ?? "");
+      setConsentementPartage(profil.consentementPartageContacts ?? false);
+      setConsentementEmails(profil.consentementEmailsInfo ?? false);
+      setOrganisations(Array.isArray(orgs) ? orgs : (orgs.data ?? []));
+    });
   }, [session]);
 
   async function handleSubmit(e: React.FormEvent) {
