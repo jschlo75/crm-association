@@ -19,7 +19,8 @@ export default withAuth(
       !pathname.startsWith("/api/consentement") &&
       !pathname.startsWith("/api/auth") &&
       !pathname.startsWith("/api/profil") &&
-      !pathname.startsWith("/api/organisations")
+      !pathname.startsWith("/api/organisations") &&
+      !pathname.startsWith("/api/interlocuteurs")
     ) {
       return NextResponse.redirect(new URL("/consentement", req.url));
     }
