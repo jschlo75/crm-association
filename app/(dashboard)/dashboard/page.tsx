@@ -72,9 +72,9 @@ export default async function DashboardPage() {
   const role = (session?.user as { role?: string })?.role;
   const isAdmin = role === "ADMIN";
 
-  const [nbComptes, nbContacts, nbEvenementsAVenir, nbVergers] = await Promise.all([
+  const [nbComptes, nbInterlocuteurs, nbEvenementsAVenir, nbVergers] = await Promise.all([
     prisma.organisation.count(),
-    prisma.contact.count(),
+    prisma.user.count({ where: { actif: true } }),
     prisma.evenement.count({ where: { date: { gte: new Date() } } }),
     isAdmin ? prisma.verger.count() : Promise.resolve(null),
     // fetchActualitesSnhf(), // ← décommenter pour réactiver les actualités SNHF
@@ -82,7 +82,7 @@ export default async function DashboardPage() {
 
   const stats = [
     { label: "Organisations",      value: nbComptes,          icon: Building2,    href: "/organisations", color: "bg-blue-600" },
-    { label: "Contacts",           value: nbContacts,         icon: Users,        href: "/contacts",      color: "bg-emerald-600" },
+    { label: "Interlocuteurs",     value: nbInterlocuteurs,   icon: Users,        href: "/admin",         color: "bg-emerald-600" },
     ...(isAdmin && nbVergers !== null
       ? [{ label: "Vergers", value: nbVergers, icon: Leaf, href: "/vergers", color: "bg-green-600" }]
       : []),
