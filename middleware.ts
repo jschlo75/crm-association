@@ -17,7 +17,9 @@ export default withAuth(
       !token?.consentementPartageContacts &&
       !pathname.startsWith("/consentement") &&
       !pathname.startsWith("/api/consentement") &&
-      !pathname.startsWith("/api/auth")
+      !pathname.startsWith("/api/auth") &&
+      !pathname.startsWith("/api/profil") &&
+      !pathname.startsWith("/api/organisations")
     ) {
       return NextResponse.redirect(new URL("/consentement", req.url));
     }
