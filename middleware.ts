@@ -2,7 +2,7 @@ import { withAuth } from "next-auth/middleware";
 import { NextResponse } from "next/server";
 
 // Routes interdites par rôle
-const RESTREINT_FORBIDDEN = ["/interactions", "/import", "/admin", "/vergers"];
+const RESTREINT_FORBIDDEN = ["/interactions", "/import", "/admin", "/vergers", "/campagnes"];
 const MEMBRE_FORBIDDEN    = ["/vergers"];
 
 export default withAuth(

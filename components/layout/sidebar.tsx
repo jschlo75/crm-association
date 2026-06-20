@@ -18,7 +18,7 @@ const navItems = [
   { href: "/vergers",         label: "Vergers",          icon: Leaf,             roles: ["ADMIN"] },
   { href: "/interactions", label: "Interactions",     icon: MessageSquare,    roles: ["ADMIN", "MEMBRE"] },
   { href: "/evenements",   label: "Événements",       icon: CalendarDays,     roles: ["ADMIN", "MEMBRE", "RESTREINT"] },
-  { href: "/campagnes",    label: "Campagnes email",  icon: Mail,             roles: ["ADMIN", "MEMBRE", "RESTREINT"] },
+  { href: "/campagnes",    label: "Campagnes email",  icon: Mail,             roles: ["ADMIN", "MEMBRE"] },
 ];
 
 const adminNavItems = [
