@@ -11,10 +11,8 @@ type Organisation = {
   nom: string;
   type: string | null;
   membreSnhf: boolean;
-  email: string | null;
   telephone: string | null;
   ville: string | null;
-  _count: { contacts: number; interactions: number };
 };
 
 const TYPES = [
@@ -237,12 +235,9 @@ export default function OrganisationsPage() {
                           </span>
                         )}
                       </div>
-                      <div className="text-sm text-gray-500 mt-0.5 flex items-center gap-3">
-                        {org.ville && <span>{org.ville}</span>}
-                        {org.email && <span>{org.email}</span>}
-                        <span>{org._count.contacts} contact{org._count.contacts > 1 ? "s" : ""}</span>
-                        <span>{org._count.interactions} interaction{org._count.interactions > 1 ? "s" : ""}</span>
-                      </div>
+                      {org.ville && (
+                        <div className="text-sm text-gray-500 mt-0.5">{org.ville}</div>
+                      )}
                     </div>
                     <ChevronRight size={16} className="text-gray-400 flex-shrink-0" />
                   </Link>
