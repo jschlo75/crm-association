@@ -326,39 +326,6 @@ export function VergerForm({ initialData }: { initialData?: VergerFormData }) {
         </div>
       </div>
 
-      {/* Responsable */}
-      <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 space-y-4">
-        <h3 className={sectionClass}>Responsable</h3>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div>
-            <label className={labelClass}>Type de responsable</label>
-            <select value={form.responsableType} onChange={(e) => set("responsableType", e.target.value)} className={inputClass}>
-              <option value="">— Aucun —</option>
-              <option value="ORGANISATION">Organisation</option>
-              <option value="CONTACT">Contact</option>
-            </select>
-          </div>
-          {form.responsableType === "ORGANISATION" && (
-            <div>
-              <label className={labelClass}>Organisation</label>
-              <select value={form.responsableOrganisationId} onChange={(e) => set("responsableOrganisationId", e.target.value)} className={inputClass}>
-                <option value="">— Sélectionner —</option>
-                {organisations.map((o) => <option key={o.id} value={o.id}>{o.nom}</option>)}
-              </select>
-            </div>
-          )}
-          {form.responsableType === "CONTACT" && (
-            <div>
-              <label className={labelClass}>Contact</label>
-              <select value={form.responsableContactId} onChange={(e) => set("responsableContactId", e.target.value)} className={inputClass}>
-                <option value="">— Sélectionner —</option>
-                {contacts.map((c) => <option key={c.id} value={c.id}>{c.prenom} {c.nom}</option>)}
-              </select>
-            </div>
-          )}
-        </div>
-      </div>
-
       {/* Tableau des arbres */}
       <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 space-y-4">
         <h3 className={sectionClass}>Arbres</h3>

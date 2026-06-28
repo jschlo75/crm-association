@@ -105,21 +105,6 @@ export default async function VergerDetailPage({ params }: { params: Promise<{ i
               </div>
             </div>
           )}
-          {verger.responsableType && (verger.responsableOrganisation || verger.responsableContact) && (
-            <div>
-              <p className={labelClass}>Responsable</p>
-              {verger.responsableType === "ORGANISATION" && verger.responsableOrganisation && (
-                <Link href={`/organisations/${verger.responsableOrganisation.id}`} className="flex items-center gap-2 text-sm text-blue-600 hover:underline">
-                  <Building2 size={14} className="text-gray-400" />{verger.responsableOrganisation.nom}
-                </Link>
-              )}
-              {verger.responsableType === "CONTACT" && verger.responsableContact && (
-                <Link href={`/contacts/${verger.responsableContact.id}`} className="flex items-center gap-2 text-sm text-blue-600 hover:underline">
-                  <User size={14} className="text-gray-400" />{verger.responsableContact.prenom} {verger.responsableContact.nom}
-                </Link>
-              )}
-            </div>
-          )}
         </div>
       </div>
 
