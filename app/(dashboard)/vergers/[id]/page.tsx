@@ -64,7 +64,7 @@ export default async function VergerDetailPage({ params }: { params: Promise<{ i
             </div>
           </div>
         </div>
-        {role === "ADMIN" && (
+        {["ADMIN", "RESTREINT"].includes(role) && (
           <div className="flex items-center gap-2">
             <Link
               href={`/vergers/${id}/modifier`}
@@ -73,7 +73,7 @@ export default async function VergerDetailPage({ params }: { params: Promise<{ i
               <Pencil size={15} />
               Modifier
             </Link>
-            <DeleteVergerButton id={verger.id} />
+            {role === "ADMIN" && <DeleteVergerButton id={verger.id} />}
           </div>
         )}
       </div>

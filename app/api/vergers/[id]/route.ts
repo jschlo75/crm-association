@@ -65,7 +65,7 @@ export async function GET(_: NextRequest, { params }: { params: Promise<{ id: st
 export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const session = await getServerSession(authOptions);
   const role = (session?.user as { role: string })?.role;
-  if (!session || role !== "ADMIN")
+  if (!session || !["ADMIN", "RESTREINT"].includes(role))
     return NextResponse.json({ error: "Non autorisé" }, { status: 403 });
 
   const { id } = await params;

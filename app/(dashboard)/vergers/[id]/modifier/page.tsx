@@ -7,7 +7,7 @@ import { VergerForm } from "@/components/ui/verger-form";
 export default async function ModifierVergerPage({ params }: { params: Promise<{ id: string }> }) {
   const session = await getServerSession(authOptions);
   const role = (session?.user as { role: string })?.role;
-  if (role !== "ADMIN") redirect("/dashboard");
+  if (!["ADMIN", "RESTREINT"].includes(role)) redirect("/dashboard");
 
   const { id } = await params;
   const verger = await prisma.verger.findUnique({
