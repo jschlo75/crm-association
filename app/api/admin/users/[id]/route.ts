@@ -28,7 +28,9 @@ export async function GET(_: NextRequest, { params }: { params: Promise<{ id: st
     where: { id },
     select: {
       id: true, prenom: true, nom: true, email: true, role: true, actif: true,
-      consentementPartageContacts: true, consentementEmailsInfo: true, consentementMisAJourLe: true,
+      consentementPartageContacts: true, consentementPartageContactsLe: true,
+      consentementEmailsInfo: true, consentementEmailsInfoLe: true,
+      consentementMisAJourLe: true,
       organisationId: true,
       organisation: { select: { id: true, nom: true } },
       createdAt: true, updatedAt: true,

@@ -48,7 +48,9 @@ model User {
   role                         Role          @default(RESTREINT)
   actif                        Boolean       @default(true)
   consentementPartageContacts  Boolean       @default(false)
+  consentementPartageContactsLe DateTime?
   consentementEmailsInfo       Boolean       @default(false)
+  consentementEmailsInfoLe     DateTime?
   consentementMisAJourLe       DateTime?
   organisationId               String?
   organisation                 Organisation? @relation(fields: [organisationId], references: [id], onDelete: SetNull)

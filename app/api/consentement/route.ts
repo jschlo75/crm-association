@@ -23,6 +23,13 @@ export async function PUT(req: NextRequest) {
 
   const { prenom, nom, organisationId, consentementPartageContacts, consentementEmailsInfo } = parsed.data;
 
+  const current = await prisma.user.findUnique({
+    where: { id: userId },
+    select: { consentementPartageContacts: true, consentementEmailsInfo: true },
+  });
+
+  const now = new Date();
+
   await prisma.user.update({
     where: { id: userId },
     data: {
@@ -31,7 +38,13 @@ export async function PUT(req: NextRequest) {
       organisationId: organisationId || null,
       consentementPartageContacts,
       consentementEmailsInfo,
-      consentementMisAJourLe: new Date(),
+      consentementMisAJourLe: now,
+      ...(consentementPartageContacts !== current?.consentementPartageContacts
+        ? { consentementPartageContactsLe: consentementPartageContacts ? now : null }
+        : {}),
+      ...(consentementEmailsInfo !== current?.consentementEmailsInfo
+        ? { consentementEmailsInfoLe: consentementEmailsInfo ? now : null }
+        : {}),
     },
   });
 

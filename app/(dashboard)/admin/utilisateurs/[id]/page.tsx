@@ -18,7 +18,9 @@ type UserDetail = {
   role: "ADMIN" | "RESTREINT";
   actif: boolean;
   consentementPartageContacts: boolean;
+  consentementPartageContactsLe: string | null;
   consentementEmailsInfo: boolean;
+  consentementEmailsInfoLe: string | null;
   consentementMisAJourLe: string | null;
   organisationId: string | null;
   organisation: { id: string; nom: string } | null;
@@ -277,29 +279,35 @@ export default function UserDetailPage() {
           Consentements
         </h2>
         <div className="space-y-3">
-          <div className="flex items-center gap-3">
+          <div className="flex items-start gap-3">
             {user.consentementPartageContacts
-              ? <CheckCircle2 size={16} className="text-green-500 flex-shrink-0" />
-              : <XCircle size={16} className="text-gray-300 flex-shrink-0" />}
+              ? <CheckCircle2 size={16} className="text-green-500 flex-shrink-0 mt-0.5" />
+              : <XCircle size={16} className="text-gray-300 flex-shrink-0 mt-0.5" />}
             <div>
               <p className={`text-sm font-medium ${user.consentementPartageContacts ? "text-gray-800" : "text-gray-400"}`}>
                 Partage des informations de contact
               </p>
               <p className="text-xs text-gray-400">
                 {user.consentementPartageContacts ? "Accordé" : "Non accordé"}
+                {user.consentementPartageContactsLe && (
+                  <span> · le {new Date(user.consentementPartageContactsLe).toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" })}</span>
+                )}
               </p>
             </div>
           </div>
-          <div className="flex items-center gap-3">
+          <div className="flex items-start gap-3">
             {user.consentementEmailsInfo
-              ? <CheckCircle2 size={16} className="text-green-500 flex-shrink-0" />
-              : <XCircle size={16} className="text-gray-300 flex-shrink-0" />}
+              ? <CheckCircle2 size={16} className="text-green-500 flex-shrink-0 mt-0.5" />
+              : <XCircle size={16} className="text-gray-300 flex-shrink-0 mt-0.5" />}
             <div>
               <p className={`text-sm font-medium ${user.consentementEmailsInfo ? "text-gray-800" : "text-gray-400"}`}>
                 Réception d&apos;emails d&apos;information SNHF
               </p>
               <p className="text-xs text-gray-400">
                 {user.consentementEmailsInfo ? "Accordé" : "Non accordé"}
+                {user.consentementEmailsInfoLe && (
+                  <span> · le {new Date(user.consentementEmailsInfoLe).toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" })}</span>
+                )}
               </p>
             </div>
           </div>
