@@ -256,12 +256,6 @@ export default async function OrganisationDetailPage({ params }: { params: Promi
                         <div className="text-sm font-medium text-gray-900">{v.nom}</div>
                         <div className="text-xs text-gray-400 flex items-center gap-2">
                           {v.ville && <span>{v.ville}</span>}
-                          {v.nbArbres != null && (
-                            <>
-                              {v.ville && <span>·</span>}
-                              <span>{v.nbArbres} arbres</span>
-                            </>
-                          )}
                         </div>
                       </div>
                     </Link>
