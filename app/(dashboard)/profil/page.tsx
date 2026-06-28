@@ -241,7 +241,7 @@ export default function ProfilPage() {
                 </p>
                 {consentementPartageContactsLe && (
                   <p className="text-xs text-gray-400 mt-1">
-                    Accordé le {new Date(consentementPartageContactsLe).toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" })}
+                    Accordé le {new Date(consentementPartageContactsLe).toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric", hour: "2-digit", minute: "2-digit" })}
                   </p>
                 )}
               </div>
@@ -263,7 +263,7 @@ export default function ProfilPage() {
                 </p>
                 {consentementEmailsInfoLe && (
                   <p className="text-xs text-gray-400 mt-1">
-                    Accordé le {new Date(consentementEmailsInfoLe).toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" })}
+                    Accordé le {new Date(consentementEmailsInfoLe).toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric", hour: "2-digit", minute: "2-digit" })}
                   </p>
                 )}
               </div>
