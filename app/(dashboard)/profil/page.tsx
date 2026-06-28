@@ -269,11 +269,6 @@ export default function ProfilPage() {
               </div>
             </label>
           </div>
-          {consentementMisAJourLe && (
-            <p className="text-xs text-gray-400 pt-2 border-t border-gray-100">
-              Dernière mise à jour : {new Date(consentementMisAJourLe).toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric", hour: "2-digit", minute: "2-digit" })}
-            </p>
-          )}
         </div>
 
         <button
