@@ -67,6 +67,8 @@ export default function ProfilPage() {
     const data = await res.json();
     if (res.ok) {
       setMessage({ type: "success", text: "Profil mis à jour avec succès." });
+      setConsentementPartageContactsLe(data.consentementPartageContactsLe || null);
+      setConsentementEmailsInfoLe(data.consentementEmailsInfoLe || null);
       setConsentementMisAJourLe(data.consentementMisAJourLe || null);
       setAncienMotDePasse("");
       setNouveauMotDePasse("");

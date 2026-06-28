@@ -35,6 +35,11 @@ export async function PUT(req: Request) {
     return NextResponse.json({ error: "Cet email est déjà utilisé par un autre compte" }, { status: 409 });
   }
 
+  const current = await prisma.user.findUnique({
+    where: { id },
+    select: { consentementPartageContacts: true, consentementEmailsInfo: true },
+  });
+
   // Changement de mot de passe optionnel
   let passwordData = {};
   if (nouveauMotDePasse) {
@@ -52,6 +57,7 @@ export async function PUT(req: Request) {
     passwordData = { password: await bcrypt.hash(nouveauMotDePasse, 10) };
   }
 
+  const now = new Date();
   const updated = await prisma.user.update({
     where: { id },
     data: {
@@ -60,10 +66,16 @@ export async function PUT(req: Request) {
       email,
       consentementPartageContacts: !!consentementPartageContacts,
       consentementEmailsInfo: !!consentementEmailsInfo,
-      consentementMisAJourLe: new Date(),
+      consentementMisAJourLe: now,
+      ...(!!consentementPartageContacts !== current?.consentementPartageContacts
+        ? { consentementPartageContactsLe: consentementPartageContacts ? now : null }
+        : {}),
+      ...(!!consentementEmailsInfo !== current?.consentementEmailsInfo
+        ? { consentementEmailsInfoLe: consentementEmailsInfo ? now : null }
+        : {}),
       ...passwordData,
     },
-    select: { id: true, prenom: true, nom: true, email: true, role: true, consentementPartageContacts: true, consentementEmailsInfo: true, consentementMisAJourLe: true },
+    select: { id: true, prenom: true, nom: true, email: true, role: true, consentementPartageContacts: true, consentementPartageContactsLe: true, consentementEmailsInfo: true, consentementEmailsInfoLe: true, consentementMisAJourLe: true },
   });
 
   return NextResponse.json(updated);
