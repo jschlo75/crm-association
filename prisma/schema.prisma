@@ -45,7 +45,7 @@ model User {
   nom                          String
   email                        String        @unique
   password                     String
-  role                         Role          @default(MEMBRE)
+  role                         Role          @default(RESTREINT)
   actif                        Boolean       @default(true)
   consentementPartageContacts  Boolean       @default(false)
   consentementEmailsInfo       Boolean       @default(false)
