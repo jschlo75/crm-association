@@ -312,11 +312,6 @@ export default function UserDetailPage() {
             </div>
           </div>
         </div>
-        {user.consentementMisAJourLe && (
-          <p className="mt-4 pt-3 border-t border-gray-100 text-xs text-gray-400">
-            Dernière mise à jour : {new Date(user.consentementMisAJourLe).toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric", hour: "2-digit", minute: "2-digit" })}
-          </p>
-        )}
         {!user.consentementMisAJourLe && (
           <p className="mt-4 pt-3 border-t border-gray-100 text-xs text-gray-400 italic">
             L&apos;utilisateur n&apos;a pas encore renseigné ses préférences.
