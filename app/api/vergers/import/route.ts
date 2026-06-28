@@ -18,7 +18,7 @@ function parseNum(val: unknown): number | null {
 
 function parseIntVal(val: unknown): number | null {
   if (val === null || val === undefined || val === "") return null;
-  const n = Number.parseIntVal(String(val), 10);
+  const n = Math.round(Number(String(val)));
   return isNaN(n) ? null : n;
 }
 
