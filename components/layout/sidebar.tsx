@@ -12,13 +12,13 @@ import {
 import { LOGO_B64 } from "@/lib/logo-base64";
 
 const navItems = [
-  { href: "/dashboard",        label: "Tableau de bord",  icon: LayoutDashboard, roles: ["ADMIN", "MEMBRE", "RESTREINT"] },
-  { href: "/organisations",   label: "Organisations",    icon: Building2,        roles: ["ADMIN", "MEMBRE", "RESTREINT"] },
+  { href: "/dashboard",        label: "Tableau de bord",  icon: LayoutDashboard, roles: ["ADMIN", "RESTREINT"] },
+  { href: "/organisations",   label: "Organisations",    icon: Building2,        roles: ["ADMIN", "RESTREINT"] },
   { href: "/interlocuteurs",  label: "Interlocuteurs",   icon: UserCircle,       roles: ["RESTREINT"] },
   { href: "/vergers",         label: "Vergers",          icon: Leaf,             roles: ["ADMIN", "RESTREINT"] },
-  { href: "/interactions", label: "Interactions",     icon: MessageSquare,    roles: ["ADMIN", "MEMBRE"] },
-  { href: "/evenements",   label: "Événements",       icon: CalendarDays,     roles: ["ADMIN", "MEMBRE", "RESTREINT"] },
-  { href: "/campagnes",    label: "Campagnes email",  icon: Mail,             roles: ["ADMIN", "MEMBRE"] },
+  { href: "/interactions", label: "Interactions",     icon: MessageSquare,    roles: ["ADMIN"] },
+  { href: "/evenements",   label: "Événements",       icon: CalendarDays,     roles: ["ADMIN", "RESTREINT"] },
+  { href: "/campagnes",    label: "Campagnes email",  icon: Mail,             roles: ["ADMIN"] },
 ];
 
 const adminNavItems = [

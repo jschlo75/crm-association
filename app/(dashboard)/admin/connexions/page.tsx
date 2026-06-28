@@ -15,7 +15,6 @@ type LogEntry = {
 
 const ROLE_LABELS: Record<string, { label: string; color: string }> = {
   ADMIN:     { label: "Admin",     color: "bg-purple-100 text-purple-700" },
-  MEMBRE:    { label: "Membre",    color: "bg-gray-100 text-gray-600" },
   RESTREINT: { label: "Restreint", color: "bg-amber-100 text-amber-700" },
 };
 

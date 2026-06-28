@@ -3,7 +3,6 @@ import { NextResponse } from "next/server";
 
 // Routes interdites par rôle
 const RESTREINT_FORBIDDEN = ["/interactions", "/import", "/admin", "/campagnes"];
-const MEMBRE_FORBIDDEN    = ["/vergers"];
 
 export default withAuth(
   function middleware(req) {
@@ -26,9 +25,6 @@ export default withAuth(
     }
 
     if (role === "RESTREINT" && RESTREINT_FORBIDDEN.some((p) => pathname.startsWith(p))) {
-      return NextResponse.redirect(new URL("/dashboard", req.url));
-    }
-    if (role === "MEMBRE" && MEMBRE_FORBIDDEN.some((p) => pathname.startsWith(p))) {
       return NextResponse.redirect(new URL("/dashboard", req.url));
     }
 

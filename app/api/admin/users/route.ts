@@ -10,7 +10,7 @@ const createUserSchema = z.object({
   nom: z.string().min(1),
   email: z.string().email(),
   password: z.string().min(8),
-  role: z.enum(["ADMIN", "MEMBRE", "RESTREINT"]),
+  role: z.enum(["ADMIN", "RESTREINT"]).default("RESTREINT"),
 });
 
 async function requireAdmin(req: NextRequest) {

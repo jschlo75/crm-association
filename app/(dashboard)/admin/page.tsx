@@ -51,7 +51,7 @@ type User = {
   prenom: string | null;
   nom: string;
   email: string;
-  role: "ADMIN" | "MEMBRE" | "RESTREINT";
+  role: "ADMIN" | "RESTREINT";
   actif: boolean;
   createdAt: string;
   organisation: { id: string; nom: string } | null;
@@ -131,8 +131,8 @@ export default function AdminPage() {
   }
 
   async function toggleRole(user: User) {
-    const cycle: Record<User["role"], User["role"]> = { MEMBRE: "RESTREINT", RESTREINT: "ADMIN", ADMIN: "MEMBRE" };
-    const newRole = cycle[user.role] ?? "MEMBRE";
+    const cycle: Record<User["role"], User["role"]> = { RESTREINT: "ADMIN", ADMIN: "RESTREINT" };
+    const newRole = cycle[user.role] ?? "RESTREINT";
     const res = await fetch(`/api/admin/users/${user.id}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
@@ -232,7 +232,6 @@ export default function AdminPage() {
               <div>
                 <label className={labelClass}>Rôle *</label>
                 <select name="role" className={inputClass}>
-                  <option value="MEMBRE">Membre</option>
                   <option value="RESTREINT">Restreint</option>
                   <option value="ADMIN">Administrateur</option>
                 </select>

@@ -15,7 +15,7 @@ type UserDetail = {
   prenom: string | null;
   nom: string;
   email: string;
-  role: "ADMIN" | "MEMBRE" | "RESTREINT";
+  role: "ADMIN" | "RESTREINT";
   actif: boolean;
   consentementPartageContacts: boolean;
   consentementEmailsInfo: boolean;
@@ -29,10 +29,9 @@ type UserDetail = {
 
 type OrgOption = { id: string; nom: string };
 
-const ROLE_LABELS: Record<string, string> = { ADMIN: "Administrateur", MEMBRE: "Membre", RESTREINT: "Restreint" };
+const ROLE_LABELS: Record<string, string> = { ADMIN: "Administrateur", RESTREINT: "Restreint" };
 const ROLE_COLORS: Record<string, string> = {
   ADMIN: "bg-purple-100 text-purple-700",
-  MEMBRE: "bg-gray-100 text-gray-600",
   RESTREINT: "bg-amber-100 text-amber-700",
 };
 
@@ -97,8 +96,8 @@ export default function UserDetailPage() {
   async function toggleRole() {
     if (!user) return;
     setActionLoading("role");
-    const cycle: Record<string, string> = { MEMBRE: "RESTREINT", RESTREINT: "ADMIN", ADMIN: "MEMBRE" };
-    await update({ role: cycle[user.role] ?? "MEMBRE" });
+    const cycle: Record<string, string> = { RESTREINT: "ADMIN", ADMIN: "RESTREINT" };
+    await update({ role: cycle[user.role] ?? "RESTREINT" });
     setActionLoading("");
   }
 
