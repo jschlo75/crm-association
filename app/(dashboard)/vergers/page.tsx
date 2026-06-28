@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
-import { Tractor, Plus, Search, MapPin, Leaf } from "lucide-react";
+import { Tractor, Plus, Search, MapPin, Leaf, FileUp } from "lucide-react";
 
 type Verger = {
   id: string;
@@ -54,13 +54,22 @@ export default function VergersPage() {
           </div>
         </div>
         {role === "ADMIN" && (
-          <Link
-            href="/vergers/nouveau"
-            className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors"
-          >
-            <Plus size={16} />
-            Nouveau verger
-          </Link>
+          <div className="flex items-center gap-2">
+            <Link
+              href="/vergers/importer"
+              className="flex items-center gap-2 bg-white border border-gray-300 text-gray-700 px-4 py-2 rounded-lg text-sm font-medium hover:bg-gray-50 transition-colors"
+            >
+              <FileUp size={16} />
+              Importer
+            </Link>
+            <Link
+              href="/vergers/nouveau"
+              className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors"
+            >
+              <Plus size={16} />
+              Nouveau verger
+            </Link>
+          </div>
         )}
       </div>
 
