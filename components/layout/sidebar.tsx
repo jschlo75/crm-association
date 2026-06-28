@@ -98,6 +98,13 @@ export function Sidebar({ role, userName }: { role: string; userName: string }) 
           "lg:translate-x-0"
         )}
       >
+        {/* Bandeau staging */}
+        {process.env.NEXT_PUBLIC_ENV === "staging" && (
+          <div className="bg-amber-400 text-amber-900 text-xs font-bold text-center py-1 tracking-widest uppercase">
+            Staging
+          </div>
+        )}
+
         {/* En-tête */}
         <div className="px-4 pt-4 pb-3 border-b border-blue-800">
           <div className="flex justify-end lg:hidden">
