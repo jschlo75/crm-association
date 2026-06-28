@@ -17,7 +17,9 @@ export default function ProfilPage() {
   const [nouveauMotDePasse, setNouveauMotDePasse] = useState("");
   const [confirmMotDePasse, setConfirmMotDePasse] = useState("");
   const [consentementPartageContacts, setConsentementPartageContacts] = useState(false);
+  const [consentementPartageContactsLe, setConsentementPartageContactsLe] = useState<string | null>(null);
   const [consentementEmailsInfo, setConsentementEmailsInfo] = useState(false);
+  const [consentementEmailsInfoLe, setConsentementEmailsInfoLe] = useState<string | null>(null);
   const [consentementMisAJourLe, setConsentementMisAJourLe] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState<Message | null>(null);
@@ -31,7 +33,9 @@ export default function ProfilPage() {
         setNom(data.nom || "");
         setEmail(data.email || "");
         setConsentementPartageContacts(data.consentementPartageContacts ?? false);
+        setConsentementPartageContactsLe(data.consentementPartageContactsLe || null);
         setConsentementEmailsInfo(data.consentementEmailsInfo ?? false);
+        setConsentementEmailsInfoLe(data.consentementEmailsInfoLe || null);
         setConsentementMisAJourLe(data.consentementMisAJourLe || null);
       });
   }, []);
@@ -235,6 +239,11 @@ export default function ProfilPage() {
                 <p className="text-xs text-gray-500 mt-0.5">
                   J&apos;accepte que mes coordonnées (nom, email, téléphone) soient partagées avec les autres membres du groupe arboriculture fruitière familiale de la SNHF.
                 </p>
+                {consentementPartageContactsLe && (
+                  <p className="text-xs text-gray-400 mt-1">
+                    Accordé le {new Date(consentementPartageContactsLe).toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" })}
+                  </p>
+                )}
               </div>
             </label>
 
@@ -252,12 +261,17 @@ export default function ProfilPage() {
                 <p className="text-xs text-gray-500 mt-0.5">
                   J&apos;accepte de recevoir des emails d&apos;information, d&apos;actualité et d&apos;invitation aux événements de la Société Nationale d&apos;Horticulture de France.
                 </p>
+                {consentementEmailsInfoLe && (
+                  <p className="text-xs text-gray-400 mt-1">
+                    Accordé le {new Date(consentementEmailsInfoLe).toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" })}
+                  </p>
+                )}
               </div>
             </label>
           </div>
           {consentementMisAJourLe && (
             <p className="text-xs text-gray-400 pt-2 border-t border-gray-100">
-              Dernière mise à jour des consentements : {new Date(consentementMisAJourLe).toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric", hour: "2-digit", minute: "2-digit" })}
+              Dernière mise à jour : {new Date(consentementMisAJourLe).toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric", hour: "2-digit", minute: "2-digit" })}
             </p>
           )}
         </div>
