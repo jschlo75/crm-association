@@ -290,7 +290,7 @@ export default function UserDetailPage() {
               <p className="text-xs text-gray-400">
                 {user.consentementPartageContacts ? "Accordé" : "Non accordé"}
                 {user.consentementPartageContactsLe && (
-                  <span> · le {new Date(user.consentementPartageContactsLe).toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" })}</span>
+                  <span> · le {new Date(user.consentementPartageContactsLe).toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric", hour: "2-digit", minute: "2-digit" })}</span>
                 )}
               </p>
             </div>
@@ -306,7 +306,7 @@ export default function UserDetailPage() {
               <p className="text-xs text-gray-400">
                 {user.consentementEmailsInfo ? "Accordé" : "Non accordé"}
                 {user.consentementEmailsInfoLe && (
-                  <span> · le {new Date(user.consentementEmailsInfoLe).toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" })}</span>
+                  <span> · le {new Date(user.consentementEmailsInfoLe).toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric", hour: "2-digit", minute: "2-digit" })}</span>
                 )}
               </p>
             </div>
