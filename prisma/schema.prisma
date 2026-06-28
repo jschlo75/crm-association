@@ -141,22 +141,50 @@ model Verger {
   codePostal                String?
   ville                     String?
   pays                      String        @default("France")
+  contact                   String?
+  proprietaire              String?
+  exploitant                String?
+  ouvertPublic              Boolean       @default(false)
+  superficie                Float?
+  sol                       String?
+  ph                        Float?
+  pluviometrie              Float?
+  moisDeficit               String?
   responsableType           String?
   responsableOrganisationId String?
   responsableOrganisation   Organisation? @relation(fields: [responsableOrganisationId], references: [id], onDelete: SetNull)
   responsableContactId      String?
   responsableContact        Contact?      @relation(fields: [responsableContactId], references: [id], onDelete: SetNull)
-  dateCreation              DateTime?
-  nbArbres                  Int?
-  especesVarietes           String?
-  formesEspalier            String?
+  anneeCreation             Int?
+  anneeConversion           Int?
+  certifications            String?
+  objectifs                 String?
+  personnelEmployes         String?
+  personnelBenevoles        String?
+  activitesFormation        String?
+  autresActivites           String?
   notes                     String?
   createdAt                 DateTime      @default(now())
   updatedAt                 DateTime      @updatedAt
+  arbres                    VergerArbre[]
 
   @@index([nom])
   @@index([responsableOrganisationId])
   @@index([responsableContactId])
+}
+
+model VergerArbre {
+  id       String  @id @default(cuid())
+  vergerId String
+  verger   Verger  @relation(fields: [vergerId], references: [id], onDelete: Cascade)
+  espece   String
+  nbArbres Int?
+  varietes String?
+  formes   String?
+  ageMoyen Int?
+  ordre    Int     @default(0)
+
+  @@index([vergerId])
 }
 
 model Interaction {
